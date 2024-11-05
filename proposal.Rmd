@@ -5,6 +5,14 @@ date: "2024-11-05"
 output: html_document
 ---
 
+## Team members
+
+The group members (names and UNIs) (alphabetical order) 
+
+Zhengyong Cheng, Boxiang Tang, Wenjie Wu, Xiaoni Xu (xx2485), Yiran Xu (yx2954) 
+
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
