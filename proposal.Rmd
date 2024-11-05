@@ -17,7 +17,7 @@ Zhengyong Cheng, Boxiang Tang, Wenjie Wu, Xiaoni Xu (xx2485), Yiran Xu (yx2954)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## R Markdown (test)
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
