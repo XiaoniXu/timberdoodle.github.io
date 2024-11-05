@@ -9,6 +9,6 @@ output: html_document
 
 The group members (names and UNIs) (alphabetical order) 
 
-Zhengyong Cheng, Boxiang Tang, Wenjie Wu, Xiaoni Xu (xx2485), Yiran Xu (yx2954) 
+Zhengyong Cheng, Boxiang Tang (bt2654), Wenjie Wu, Xiaoni Xu (xx2485), Yiran Xu (yx2954) 
 
 ## The tentative project title: The Migration and Distribution Pattern of Birds in New York State 
