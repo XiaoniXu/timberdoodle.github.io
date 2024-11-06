@@ -1,7 +1,7 @@
 ---
-title: "Proposal"
-date: "2024-11-05"
-output: html_document
+title: "Proposal" 
+date: "2024-11-06"
+output: pdf_document
 ---
 
 ### 1. The group members (names and UNIs) (alphabetical order):
@@ -11,29 +11,16 @@ Zhengyong Chen (zc2822), Boxiang Tang (bt2654), Wenjie Wu (ww2744), Xiaoni Xu (x
 The Migration and Distribution Pattern of Birds in New York State
 
 ### 3. The motivation for this project:
-The migration pattern of birds offers a unique window into the health and dynamics of ecosystems. Bird migration is a complex and fascinating phenomenon. By creating multiple panels showing the frequency, geolocation, species count, time cumulation, we can give valuable insights into how weather or geographic features affect the lives of birds. Ultimately, this project could contribute to a better understanding of ecological shifts and inform strategies to protect bird populations.
+The migration pattern of birds offers a unique window into the health and dynamics of ecosystems. By creating multiple panels showing the frequency, geo-location, species count with time, this project could contribute to a better understanding of ecological shifts and inform strategies to protect bird populations.
 
 ### 4. The intended final products:
 A web page with animations showing the density of selected birds with time and migration patterns in New York State.
 
 ### 5. The anticipated data sources:
-Citizen science data on eBird, an online platform to submit bird observations developed by Cornell Lab of Ornithology, will be used. The raw observation data including location, time, breeding codes, and other factors is requested through the website ebird.org (https://science.ebird.org/en/use-ebird-data). R packages developed by eBird for data visualization of status and trends of species will be used (https://ebird.github.io/ebirdst/).
+Citizen science data on eBird, an online platform to submit bird observations developed by Cornell Lab of Ornithology, will be used. The raw observation data including location, time, breeding codes, and other factors is requested on (https://science.ebird.org/en/use-ebird-data). R packages developed by eBird for data visualization of status and trends of species will be used (https://ebird.github.io/ebirdst/).
 
 ### 6. The planned analyses / visualizations / coding challenges:
-*   Request for raw data permission from eBird
-*   Read and understand the raw data
-*   Changing the raw data type (i.e., original data document is .txt)
-*   Raw data cleaning and processing
-*   Spatial data manipulation & Environmental data integration
-*   Times- Series analysis challenges
-*   Define proper visualization methods
-*   Git-hub R package for interactive dynamic migration & distribution map
-*   Temporal distribution & Spatial distribution & Migratory patterns analysis
+1. Request for raw data permission from eBird, read and understand the raw data; 2. Changing the raw data type (i.e., original data document is .txt), raw data cleaning and processing; 3. Spatial data manipulation & Environmental data integration; 4. Times- Series analysis; 5. Define proper visualization methods; 6. Git-hub R package for interactive dynamic migration & distribution map; 7. Temporal distribution & Spatial distribution & Migratory patterns analysis
 
 ### 7. The planned timeline:
-*   Get the data by November 8th
-*   Formalize detailed ideas and topic by November 11th
-*   Data screening + cleaning + filtering by November 15th
-*   Data analysis + Data visualization by November 22nd
-*   Webpage development by November December 7th
-*   Presentation (2 min video) by November December 7th
+1. Get the data by **11.8**; 2. Formalize detailed ideas and topic by **11.11**; 3. Data screening + cleaning + filtering by **11.15**; 4. Data analysis + Data visualization by **11.22**; 5. Webpage development by **12.7**; 6. Presentation (2 min video) by **12.7**.
