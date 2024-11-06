@@ -12,3 +12,7 @@ The group members (names and UNIs) (alphabetical order)
 Zhengyong Cheng, Boxiang Tang (bt2654), Wenjie Wu, Xiaoni Xu (xx2485), Yiran Xu (yx2954) 
 
 ## The tentative project title: The Migration and Distribution Pattern of Birds in New York State 
+
+## The motivation for this project: 
+
+The migration pattern of birds offers a unique window into the health and dynamics of ecosystems. Bird migration is a complex and fascinating phenomenon. By creating multiple panels showing the frequency, geolocation, species count, time cumulation, we can give valuable insights into how weather or geographic features affect the lives of birds. Ultimately, this project could contribute to a better understanding of ecological shifts and inform strategies to protect bird populations. 
