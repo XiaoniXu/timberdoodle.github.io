@@ -9,8 +9,9 @@ output:
 This is the website for final project for course P8105 at Columbia University. 
 
 
-<img src="images/amwo1.jpg" style="width:75%">
 
 <img src="images/amwo4.jpg" style="width:75%">
 
 For general information about American Woodcocks, visit its [eBird page](https://ebird.org/species/amewoo).
+
+[about](about.html)
