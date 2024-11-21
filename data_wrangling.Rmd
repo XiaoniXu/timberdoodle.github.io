@@ -1,0 +1,82 @@
+---
+title: "data_wrangling"
+author: "Xiaoni Xu"
+date: "2024-11-20"
+output: html_document
+---
+
+```{r, message = FALSE}
+library(auk)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(lubridate)
+library(readr)
+library(sf)
+
+```
+
+```{r}
+amwo <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt"
+
+
+amwo_samp <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024_sampling.txt"
+checklists <- read_sampling(amwo_samp)
+glimpse(checklists)
+
+observations <- read_ebd(amwo)
+glimpse(observations)
+```
+Fold shared checklists
+```{r}
+checklists_shared <- read_sampling(amwo_samp, unique = FALSE)
+# identify shared checklists
+checklists_shared |> 
+  filter(!is.na(group_identifier)) |> 
+  arrange(group_identifier) |> 
+  select(sampling_event_identifier, group_identifier)
+
+
+checklists_unique <- auk_unique(checklists_shared, checklists_only = TRUE)
+nrow(checklists_shared)
+nrow(checklists_unique)
+```
+
+```{r}
+# load gis data
+ne_land <- read_sf("data/gis-data.gpkg", "ne_land") |> 
+  st_geometry()
+ne_country_lines <- read_sf("data/gis-data.gpkg", "ne_country_lines") |> 
+  st_geometry()
+ne_state_lines <- read_sf("data/gis-data.gpkg", "ne_state_lines") |> 
+  st_geometry()
+study_region <- read_sf("data/gis-data.gpkg", "ne_states") |> 
+  filter(state_code == "US-NY") |> 
+  st_geometry()
+
+# prepare ebird data for mapping
+checklists_sf <- checklists |> 
+  # convert to spatial points
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
+
+# map
+par(mar = c(0.25, 0.25, 4, 0.25))
+# set up plot area
+plot(st_geometry(checklists_sf), 
+     main = "American Woodcock eBird Observations\n 2019-2024",
+     col = NA, border = NA)
+# contextual gis data
+plot(ne_land, col = "#cfcfcf", border = "#888888", lwd = 0.5, add = TRUE)
+plot(study_region, col = "#e6e6e6", border = NA, add = TRUE)
+plot(ne_state_lines, col = "#ffffff", lwd = 0.75, add = TRUE)
+plot(ne_country_lines, col = "#ffffff", lwd = 1.5, add = TRUE)
+# ebird observations
+
+# legend
+legend("bottomright", bty = "n",
+       col = c("#555555", "#4daf4a"),
+       legend = c("eBird checklist", "American Woodcock sighting"),
+       pch = 19)
+box()
+```
+
