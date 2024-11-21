@@ -289,11 +289,16 @@ library(lubridate)
 library(readr)
 library(sf)</code></pre>
 <pre><code>## Warning: package &#39;sf&#39; was built under R version 4.4.2</code></pre>
-<pre class="r"><code>amwo &lt;- &quot;data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt&quot;
+<div id="loading-the-data" class="section level2">
+<h2>Loading the data</h2>
+<pre class="r"><code># observation data
+amwo &lt;- &quot;data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt&quot;
 
 
+# checklist data
 amwo_samp &lt;- &quot;data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024_sampling.txt&quot;
-checklists &lt;- read_sampling(amwo_samp)
+
+checklists &lt;- read_sampling(amwo_samp) # the 600MB file will take a while to load
 glimpse(checklists)</code></pre>
 <pre><code>## Rows: 2,276,777
 ## Columns: 31
@@ -380,9 +385,15 @@ glimpse(observations)</code></pre>
 ## $ reason                    &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
 ## $ trip_comments             &lt;chr&gt; NA, NA, &quot;Warm and calm. 59F. A few scattered…
 ## $ species_comments          &lt;chr&gt; NA, NA, NA, NA, &quot;South end of Snakeroot Trai…</code></pre>
-<p>Fold shared checklists</p>
+</div>
+<div id="collapsing-shared-checklists" class="section level2">
+<h2>Collapsing shared checklists</h2>
+<p>Checklists with the same <code>group_identifier</code> provide
+duplicates information on the same checklist in the eBird database. We
+then collapse those shared checklists using
+<code>auk_unique()</code>.</p>
 <pre class="r"><code>checklists_shared &lt;- read_sampling(amwo_samp, unique = FALSE)
-# identify shared checklists
+
 checklists_shared |&gt; 
   filter(!is.na(group_identifier)) |&gt; 
   arrange(group_identifier) |&gt; 
@@ -402,10 +413,86 @@ checklists_shared |&gt;
 ## 10 S133797306                G10000134       
 ## # ℹ 499,621 more rows</code></pre>
 <pre class="r"><code>checklists_unique &lt;- auk_unique(checklists_shared, checklists_only = TRUE)
+
 nrow(checklists_shared)</code></pre>
 <pre><code>## [1] 2561151</code></pre>
 <pre class="r"><code>nrow(checklists_unique)</code></pre>
 <pre><code>## [1] 2276777</code></pre>
+<p>A new variable, <code>checklist_id</code>, was created that is set to
+group_identifier for shared checklists and sampling_event_identifier for
+non-shared checklists.</p>
+</div>
+<div id="filtering-non-complete-checklists" class="section level2">
+<h2>Filtering non-complete checklists</h2>
+<p>Exclude non-complete checklists:</p>
+<pre class="r"><code>checklists &lt;- checklists |&gt; 
+  filter(all_species_reported)
+
+observations &lt;- observations |&gt; 
+  filter(all_species_reported)</code></pre>
+</div>
+<div id="zero-filling" class="section level2">
+<h2>Zero-filling</h2>
+<p>eBird has the ability to transform the data to produce
+detection/non-detection data (also called presence/absence data). With
+presence-only data, but no information of the amount of search effort
+expended to produce that data, it is difficult to estimate or predict
+how common a species is.</p>
+<p>“Zero-filling” the data process: for complete checklists, information
+about non-detections can be inferred from the SED: if there is a record
+in the SED but no record for a species in the EBD, then a count of zero
+individuals of that species can be inferred.</p>
+<pre class="r"><code>observations &lt;- observations %&gt;%
+  filter(checklist_id %in% checklists$checklist_id)
+
+zf &lt;- auk_zerofill(observations, checklists, collapse = TRUE)</code></pre>
+<p>Before continuing, we’ll transform some of the variables to a more
+useful form for modelling. We convert time to a decimal value between 0
+and 24, force the distance traveled to 0 for stationary checklists, and
+create a new variable for speed.</p>
+<pre class="r"><code># function to convert time observation to hours since midnight
+time_to_decimal &lt;- function(x) {
+  x &lt;- hms(x, quiet = TRUE)
+  hour(x) + minute(x) / 60 + second(x) / 3600
+}
+
+# clean up variables
+zf &lt;- zf |&gt; 
+  mutate(
+    # convert count to integer and X to NA
+    # ignore the warning &quot;NAs introduced by coercion&quot;
+    observation_count = as.integer(observation_count),
+    # effort_distance_km to 0 for stationary counts
+    effort_distance_km = if_else(protocol_type == &quot;Stationary&quot;, 
+                                 0, effort_distance_km),
+    # convert duration to hours
+    effort_hours = duration_minutes / 60,
+    # speed km/h
+    effort_speed_kmph = effort_distance_km / effort_hours,
+    # convert time to decimal hours since midnight
+    hours_of_day = time_to_decimal(time_observations_started),
+    # split date into year and day of year
+    year = year(observation_date),
+    day_of_year = yday(observation_date)
+  )</code></pre>
+<pre><code>## Warning: There was 1 warning in `mutate()`.
+## ℹ In argument: `observation_count = as.integer(observation_count)`.
+## Caused by warning:
+## ! NAs introduced by coercion</code></pre>
+<p>Accounting for variation in effort: restricting checklists to
+traveling or stationary counts less than 6 hours in duration and 10 km
+in length, at speeds below 100km/h, and with 10 or fewer observers.</p>
+<pre class="r"><code># additional filtering
+zf_filtered &lt;- zf |&gt; 
+  filter(protocol_type %in% c(&quot;Stationary&quot;, &quot;Traveling&quot;),
+         effort_hours &lt;= 6,
+         effort_distance_km &lt;= 10,
+         effort_speed_kmph &lt;= 100,
+         number_observers &lt;= 10)</code></pre>
+</div>
+<div id="exploratory-analysis-and-visualization" class="section level2">
+<h2>Exploratory analysis and visualization</h2>
+<p>We make a simple map of the observations. This map uses GIS data.</p>
 <pre class="r"><code># load gis data
 ne_land &lt;- read_sf(&quot;data/gis-data.gpkg&quot;, &quot;ne_land&quot;) |&gt; 
   st_geometry()
@@ -418,15 +505,27 @@ study_region &lt;- read_sf(&quot;data/gis-data.gpkg&quot;, &quot;ne_states&quot;
   st_geometry()
 
 # prepare ebird data for mapping
+
+checklists &lt;- zf_filtered |&gt; 
+  select(checklist_id, observer_id, 
+         observation_count, species_observed, 
+         state_code, locality_id, latitude, longitude,
+         protocol_type, all_species_reported,
+         observation_date, year, day_of_year,
+         hours_of_day, 
+         effort_hours, effort_distance_km, effort_speed_kmph,
+         number_observers)
+
 checklists_sf &lt;- checklists |&gt; 
   # convert to spatial points
-  st_as_sf(coords = c(&quot;longitude&quot;, &quot;latitude&quot;), crs = 4326)
+  st_as_sf(coords = c(&quot;longitude&quot;, &quot;latitude&quot;), crs = 4326) |&gt; 
+  select(species_observed)
 
 # map
 par(mar = c(0.25, 0.25, 4, 0.25))
 # set up plot area
 plot(st_geometry(checklists_sf), 
-     main = &quot;American Woodcock eBird Observations\n 2019-2024&quot;,
+     main = &quot;American Woodcock eBird Observations 2019-2024&quot;,
      col = NA, border = NA)
 # contextual gis data
 plot(ne_land, col = &quot;#cfcfcf&quot;, border = &quot;#888888&quot;, lwd = 0.5, add = TRUE)
@@ -434,14 +533,22 @@ plot(study_region, col = &quot;#e6e6e6&quot;, border = NA, add = TRUE)
 plot(ne_state_lines, col = &quot;#ffffff&quot;, lwd = 0.75, add = TRUE)
 plot(ne_country_lines, col = &quot;#ffffff&quot;, lwd = 1.5, add = TRUE)
 # ebird observations
-
+# not observed
+plot(filter(checklists_sf, !species_observed),
+     pch = 19, cex = 0.1, col = alpha(&quot;#555555&quot;, 0.25),
+     add = TRUE)
+# observed
+plot(filter(checklists_sf, species_observed),
+     pch = 19, cex = 0.3, col = alpha(&quot;#4daf4a&quot;, 1),
+     add = TRUE)
 # legend
 legend(&quot;bottomright&quot;, bty = &quot;n&quot;,
        col = c(&quot;#555555&quot;, &quot;#4daf4a&quot;),
        legend = c(&quot;eBird checklist&quot;, &quot;American Woodcock sighting&quot;),
        pch = 19)
 box()</code></pre>
-<p><img src="data_wrangling_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="data_wrangling_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
 
 
 
