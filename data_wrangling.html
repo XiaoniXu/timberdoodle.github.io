@@ -253,6 +253,9 @@ $(document).ready(function () {
   <a href="about.html">About</a>
 </li>
 <li>
+  <a href="data_wrangling.html">Data Wrangling</a>
+</li>
+<li>
   <a href="mailto:&lt;xx2485@cumc.columbia.edu&gt;">
     <span class="fa fa-envelope fa-lg"></span>
      
@@ -297,6 +300,8 @@ amwo &lt;- &quot;data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt&quot;
 
 # checklist data
 amwo_samp &lt;- &quot;data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024_sampling.txt&quot;
+# downloaded from https://drive.google.com/drive/u/0/folders/1Ui7op-20dxaKV9Bpibyv5otlqgyZTty-
+# add the .txt file into your local ./data folder
 
 checklists &lt;- read_sampling(amwo_samp) # the 600MB file will take a while to load
 glimpse(checklists)</code></pre>

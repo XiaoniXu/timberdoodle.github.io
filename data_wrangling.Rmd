@@ -23,6 +23,8 @@ amwo <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt"
 
 # checklist data
 amwo_samp <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024_sampling.txt"
+# downloaded from https://drive.google.com/drive/u/0/folders/1Ui7op-20dxaKV9Bpibyv5otlqgyZTty-
+# add the .txt file into your local ./data folder
 
 checklists <- read_sampling(amwo_samp) # the 600MB file will take a while to load
 glimpse(checklists)
