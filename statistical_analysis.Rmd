@@ -1,0 +1,62 @@
+---
+title: "statistical_analysis"
+author: "Zhengyong Chen"
+output: html_document
+---
+
+```{r setup, include=FALSE, message=FALSE}
+library(auk)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(lubridate)
+library(readr)
+library(sf)
+```
+
+Data copied from data_wrangling...
+
+```{r}
+amwo <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt"
+amwo_samp <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024_sampling.txt"
+observations <- read_ebd(amwo)
+checklists <- read_sampling(amwo_samp) # the 600MB file will take a while to load
+
+checklists_shared <- read_sampling(amwo_samp, unique = FALSE)
+checklists_shared |> 
+  filter(!is.na(group_identifier)) |> 
+  arrange(group_identifier) |> 
+  select(sampling_event_identifier, group_identifier)
+
+checklists_unique <- auk_unique(checklists_shared, checklists_only = TRUE)
+
+checklists <- checklists |> 
+  filter(all_species_reported)
+
+observations <- observations |> 
+  filter(all_species_reported)
+
+observations <- observations %>%
+  filter(checklist_id %in% checklists$checklist_id)
+```
+
+
+## Statistical Analysis
+
+Select some useful variables from observations.
+
+```{r}
+observations_selected <- 
+  observations |> 
+  select(county, observation_count, county, locality_type, latitude, longitude, 
+         observation_date, time_observations_started, protocol_type, duration_minutes,
+         effort_distance_km, number_observers) |> 
+  mutate(
+    year = lubridate::year(as.Date(observation_date)),
+    month = lubridate::month(as.Date(observation_date)),
+    day = lubridate::day(as.Date(observation_date))
+  ) 
+```
+
+
+
