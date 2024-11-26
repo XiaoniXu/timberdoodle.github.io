@@ -147,8 +147,8 @@ kruskal_result <- data.frame(
 )
 
 # Save results as a nice table
-kruskal_result %>%
-  kbl(caption = "Kruskal-Wallis Test Results") %>%
+kruskal_result |> 
+  kbl(caption = "Kruskal-Wallis Test Results") |> 
   kable_classic(full_width = FALSE, html_font = "Times")
 ```
 

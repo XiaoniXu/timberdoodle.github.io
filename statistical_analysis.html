@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Zhengyong Chen" />
+
+
+<title>statistical_analysis</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="data_wrangling.html">Data Wrangling</a>
+</li>
+<li>
+  <a href="mailto:&lt;xx2485@cumc.columbia.edu&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://github.com/XiaoniXu/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">statistical_analysis</h1>
+<h4 class="author">Zhengyong Chen</h4>
+
+</div>
+
+
+<p>Data copied from data_wrangling…</p>
+<pre class="r"><code>amwo &lt;- &quot;data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt&quot;
+amwo_samp &lt;- &quot;data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024_sampling.txt&quot;
+observations &lt;- read_ebd(amwo)
+checklists &lt;- read_sampling(amwo_samp) # the 600MB file will take a while to load
+
+checklists_shared &lt;- read_sampling(amwo_samp, unique = FALSE)
+checklists_shared |&gt; 
+  filter(!is.na(group_identifier)) |&gt; 
+  arrange(group_identifier) |&gt; 
+  select(sampling_event_identifier, group_identifier)</code></pre>
+<pre><code>## # A tibble: 499,631 × 2
+##    sampling_event_identifier group_identifier
+##    &lt;chr&gt;                     &lt;chr&gt;           
+##  1 S133795590                G10000026       
+##  2 S133795510                G10000026       
+##  3 S133796607                G10000075       
+##  4 S133796609                G10000075       
+##  5 S133796610                G10000075       
+##  6 S133796860                G10000119       
+##  7 S133796859                G10000119       
+##  8 S133796979                G10000122       
+##  9 S133796980                G10000122       
+## 10 S133797306                G10000134       
+## # ℹ 499,621 more rows</code></pre>
+<pre class="r"><code>checklists_unique &lt;- auk_unique(checklists_shared, checklists_only = TRUE)
+
+checklists &lt;- checklists |&gt; 
+  filter(all_species_reported)
+
+observations &lt;- observations |&gt; 
+  filter(all_species_reported)
+
+observations &lt;- observations %&gt;%
+  filter(checklist_id %in% checklists$checklist_id)</code></pre>
+<div id="descriptive-statistics-statistical-analysis"
+class="section level2">
+<h2>Descriptive Statistics &amp; Statistical Analysis</h2>
+<p>…of American Woodcock in NY</p>
+<p><strong>Select and add some useful variables from
+observations.</strong></p>
+<pre class="r"><code>observations_selected &lt;- 
+  observations |&gt;
+  select(county, observation_count, county, locality_type, latitude, longitude, 
+         observation_date, time_observations_started, protocol_type, duration_minutes,
+         effort_distance_km, number_observers) |&gt; 
+  filter(observation_count != &quot;X&quot;) |&gt; 
+  mutate(
+    observation_count = as.numeric(observation_count),
+    year = lubridate::year(as.Date(observation_date)),
+    month = lubridate::month(as.Date(observation_date)),
+    day = lubridate::day(as.Date(observation_date)),
+    season = case_when(
+      month %in% c(12, 1, 2) ~ &quot;Winter&quot;,
+      month %in% c(3, 4, 5) ~ &quot;Spring&quot;,
+      month %in% c(6, 7, 8) ~ &quot;Summer&quot;,
+      month %in% c(9, 10, 11) ~ &quot;Fall&quot;),
+    time_of_day = case_when(
+      as.numeric(format(as.POSIXct(time_observations_started, format = &quot;%H:%M:%S&quot;), &quot;%H&quot;)) &gt;= 5 &amp;
+      as.numeric(format(as.POSIXct(time_observations_started, format = &quot;%H:%M:%S&quot;), &quot;%H&quot;)) &lt; 12 ~ &quot;Morning&quot;,
+      as.numeric(format(as.POSIXct(time_observations_started, format = &quot;%H:%M:%S&quot;), &quot;%H&quot;)) &gt;= 12 &amp;
+      as.numeric(format(as.POSIXct(time_observations_started, format = &quot;%H:%M:%S&quot;), &quot;%H&quot;)) &lt; 17 ~ &quot;Afternoon&quot;,
+      as.numeric(format(as.POSIXct(time_observations_started, format = &quot;%H:%M:%S&quot;), &quot;%H&quot;)) &gt;= 17 &amp;
+      as.numeric(format(as.POSIXct(time_observations_started, format = &quot;%H:%M:%S&quot;), &quot;%H&quot;)) &lt; 21 ~ &quot;Evening&quot;,
+      TRUE ~ &quot;Night&quot;)
+  )</code></pre>
+<p><strong>Does the season affect the activity of
+woodcocks?</strong></p>
+<pre class="r"><code>observations_selected &lt;- observations_selected |&gt; 
+  mutate(season = factor(season, levels = c(&quot;Winter&quot;, &quot;Spring&quot;, &quot;Summer&quot;, &quot;Fall&quot;)))
+
+season_summary &lt;- observations_selected |&gt; 
+  group_by(season) |&gt; 
+  summarise(total_observation_count = sum(observation_count, na.rm = TRUE))
+
+ggplot(season_summary, aes(x = season, y = total_observation_count, fill = season)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  scale_fill_manual(values = c(&quot;Winter&quot; = &quot;#56B4E9&quot;, 
+                               &quot;Spring&quot; = &quot;#009E73&quot;, 
+                               &quot;Summer&quot; = &quot;#F0E442&quot;, 
+                               &quot;Fall&quot; = &quot;#E69F00&quot;)) +
+  labs(
+    title = &quot;Observation Count of Woodcocks by Season in NY&quot;,
+    x = &quot;Season&quot;, 
+    y = &quot;Total Observation Count&quot;
+  ) +
+  theme_minimal() +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>The total observation count in Spring in NY is significantly higher
+than in any other season…</p>
+<p><strong>When do American woodcocks usually appear?</strong></p>
+<pre class="r"><code>observations_selected &lt;- observations_selected |&gt; 
+  mutate(time_of_day = factor(time_of_day, levels = c(&quot;Morning&quot;, &quot;Afternoon&quot;, &quot;Evening&quot;, &quot;Night&quot;)))
+
+# Summarize observation counts by time of day
+time_summary &lt;- observations_selected |&gt; 
+  group_by(time_of_day) |&gt; 
+  summarise(total_observation_count = n())
+
+# Create the plot
+ggplot(time_summary, aes(x = time_of_day, y = total_observation_count, fill = time_of_day)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  scale_fill_manual(values = c(
+    &quot;Morning&quot; = &quot;#FFD700&quot;, 
+    &quot;Afternoon&quot; = &quot;#FFA500&quot;, 
+    &quot;Evening&quot; = &quot;#1E90FF&quot;,  
+    &quot;Night&quot; = &quot;#4B0082&quot; 
+  )) +
+  labs(
+    title = &quot;Observation Count by Time of Day&quot;,
+    x = &quot;Time of Day&quot;,
+    y = &quot;Total Observation Count&quot;
+  ) +
+  theme_minimal() +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Are the difference significant?</p>
+<pre class="r"><code>kruskal_test &lt;- kruskal.test(observation_count ~ time_of_day, data = observations_selected)
+
+# Extract test results
+kruskal_result &lt;- data.frame(
+  Statistic = round(kruskal_test$statistic, 3),
+  Degrees_of_Freedom = kruskal_test$parameter,
+  P_Value = format.pval(kruskal_test$p.value, digits = 3, scientific = TRUE)
+)
+
+# Save results as a nice table
+kruskal_result %&gt;%
+  kbl(caption = &quot;Kruskal-Wallis Test Results&quot;) %&gt;%
+  kable_classic(full_width = FALSE, html_font = &quot;Times&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Times; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Kruskal-Wallis Test Results
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Statistic
+</th>
+<th style="text-align:right;">
+Degrees_of_Freedom
+</th>
+<th style="text-align:left;">
+P_Value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Kruskal-Wallis chi-squared
+</td>
+<td style="text-align:right;">
+1298.153
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+&lt;2e-16
+</td>
+</tr>
+</tbody>
+</table>
+<p>There is strong evidence that the observation counts differ
+significantly across the time periods (Morning, Afternoon, Evening,
+Night).</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
