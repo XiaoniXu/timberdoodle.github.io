@@ -13,6 +13,7 @@ library(lubridate)
 library(readr)
 library(sf)
 library(kableExtra)
+library(leaflet)
 ```
 
 Data copied from data_wrangling...
@@ -155,4 +156,75 @@ kruskal_result |>
 There is strong evidence that the observation counts differ significantly across the time periods (Morning, Afternoon, Evening, Night).
 
 
+```{r}
+# Summarize the data by county
+county_summary <- observations_selected |> 
+  filter(!is.na(county)) |> 
+  group_by(county) |> 
+  summarise(total_observation_count = sum(observation_count, na.rm = TRUE))
+
+# Create a bar plot
+ggplot(county_summary, aes(x = reorder(county, -total_observation_count), y = total_observation_count, fill = total_observation_count)) +
+  geom_bar(stat = "identity") +
+  scale_fill_gradient(low = "lightblue", high = "darkblue", name = "Count") +
+  labs(
+    title = "Observation Counts by County",
+    x = "County",
+    y = "Total Observation Count"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        legend.position = "bottom")
+```
+
+
+```{r}
+# Prepare the data
+observations_selected_clean <- observations_selected |> 
+  filter(!is.na(longitude) & !is.na(latitude))
+
+# Define colors for four categories
+category_colors <- c(
+  "1" = "skyblue",  
+  "2" = "orange", 
+  "3" = "red",  
+  ">3" = "purple"  
+)
+
+# Function to assign colors based on categories
+custom_color <- function(count) {
+  ifelse(
+    count > 3, 
+    category_colors[">3"],  # Orange for counts >3
+    category_colors[as.character(count)]  # Use category-specific color for 1, 2, 3
+  )
+}
+
+# Create an interactive map
+leaflet(data = observations_selected_clean) |> 
+  addTiles() |>   # Add default OpenStreetMap tiles
+  addCircleMarkers(
+    ~longitude, ~latitude,  # Longitude and Latitude
+    radius = 4,            # Marker size
+    fillColor = ~custom_color(observation_count),  # Apply category colors
+    color = "grey",        # Grey outline for all markers
+    fillOpacity = 0.6,     # Set fill opacity for transparency
+    stroke = TRUE,         # Add borders to markers
+    weight = 0.5,          # Border thickness
+    popup = ~paste("Count:", observation_count, "<br>",
+                   "Time:", substr(time_observations_started, 1, 5), "<br>",
+                   "Date:", observation_date)  # Add popup information
+  ) |> 
+  addLegend(
+    position = "bottomright",
+    colors = unname(category_colors),  # Colors for the legend
+    labels = names(category_colors),  # Labels for the categories
+    title = "Count",
+    opacity = 1
+  ) |> 
+  addControl(
+    html = "NY Woodcocks Observation Map</h5>",  # Title text in HTML
+    position = "topleft"  
+  )
+```
 
