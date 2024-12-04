@@ -24,3 +24,7 @@ output: html_document
 ## 5. Acknowledgements
 
 - McAuley, D. G., D. M. Keppie, and R. M. Whiting Jr. (2020). American Woodcock (Scolopax minor), version 1.0. In Birds of the World (A. F. Poole, Editor). Cornell Lab of Ornithology, Ithaca, NY, USA. https://doi.org/10.2173/bow.amewoo.01
+
+<div style="text-align: center;">
+  <img src="images/amwo_dance.gif" alt="The Woodcock Dance" style="width:300px;">
+</div>
