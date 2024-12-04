@@ -1,0 +1,49 @@
+---
+title: "Modeling"
+author: "Wenjie Wu"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+```{r}
+weather_df <- read_csv("data/zf_with_weather.csv") |>
+   filter(!is.na(t_avg)) |>
+    mutate(t_avg_flag = as.integer((t_avg - min(t_avg, na.rm = TRUE)) / 1)) |>
+    mutate(snow_flag = as.integer((snow - min(snow, na.rm = TRUE)) / 5))
+
+weather_df <-  weather_df |>
+  group_by(t_avg_flag, snow_flag) |>
+  mutate(
+    group_obs_count = n(),  
+    total_obs_count = nrow(weather_df),  
+    obs_ratio = group_obs_count / total_obs_count  
+  ) |>
+  ungroup()
+
+```
+
+
+
+```{r}
+lm_model = lm(obs_ratio ~ tmax + tmin + prcp + snow + snwd, data = weather_df)
+
+summary(lm_model)
+```
+
+```{r}
+new_data = data.frame(
+  tmax = c(10, 15, 20),
+  tmin = c(5, 10, 15),
+  prcp = c(0.1, 0.2, 0.3),
+  snow = c(0, 5, 10),
+  snwd = c(0, 1, 2)
+)
+
+predictions = predict(lm_model, newdata = new_data)
+
+print(predictions)
+```
+
