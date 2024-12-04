@@ -16,6 +16,7 @@ output: html_document
 ## 2. Data & Methods
 
 ### 2.1 eBird data
+
   eBird (ebird.org) is an online citizen science platform for bird observations developed by Cornell Lab of Ornithology (Sullivan et al.). Users can submit observations in the form of a birding checklist, which records the time, distance, duration, location, species observed, and species counts for each birding outing. With over 35,000 checklists submitted daily, eBird has congregated a sizeable amount of data capable of allowing comprehensie data analysis in various field within or adjacent to ornithology.
   
   The observational and sampling data in the form of individual checklists on the platform, eBird Basic Dataset (EBD), is publicly available and is downloaded after submitting a request to download the data of woodcocks. Due to the large file size and limited CPU powers, the dataset is limited to observations from January 2019 to January 2024 in New York State.
