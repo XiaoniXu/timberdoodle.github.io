@@ -1,6 +1,5 @@
 ---
 title: "statistical_analysis"
-author: "Zhengyong Chen"
 output: html_document
 ---
 
@@ -16,72 +15,14 @@ library(kableExtra)
 library(leaflet)
 ```
 
-Data copied from data_wrangling...
 
-```{r}
-amwo <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt"
-amwo_samp <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024_sampling.txt"
-observations <- read_ebd(amwo)
-checklists <- read_sampling(amwo_samp) # the 600MB file will take a while to load
-
-checklists_shared <- read_sampling(amwo_samp, unique = FALSE)
-checklists_shared |> 
-  filter(!is.na(group_identifier)) |> 
-  arrange(group_identifier) |> 
-  select(sampling_event_identifier, group_identifier)
-
-checklists_unique <- auk_unique(checklists_shared, checklists_only = TRUE)
-
-checklists <- checklists |> 
-  filter(all_species_reported)
-
-observations <- observations |> 
-  filter(all_species_reported)
-
-observations <- observations %>%
-  filter(checklist_id %in% checklists$checklist_id)
-```
-
-
-## Descriptive Statistics & Statistical Analysis 
-
-...of American Woodcock in NY
-
-
-
-**Select and add some useful variables from observations.**
-
-```{r}
-observations_selected <- 
-  observations |>
-  select(county, observation_count, county, locality_type, latitude, longitude, 
-         observation_date, time_observations_started, protocol_type, duration_minutes,
-         effort_distance_km, number_observers) |> 
-  filter(observation_count != "X") |> 
-  mutate(
-    observation_count = as.numeric(observation_count),
-    year = lubridate::year(as.Date(observation_date)),
-    month = lubridate::month(as.Date(observation_date)),
-    day = lubridate::day(as.Date(observation_date)),
-    season = case_when(
-      month %in% c(12, 1, 2) ~ "Winter",
-      month %in% c(3, 4, 5) ~ "Spring",
-      month %in% c(6, 7, 8) ~ "Summer",
-      month %in% c(9, 10, 11) ~ "Fall"),
-    time_of_day = case_when(
-      as.numeric(format(as.POSIXct(time_observations_started, format = "%H:%M:%S"), "%H")) >= 5 &
-      as.numeric(format(as.POSIXct(time_observations_started, format = "%H:%M:%S"), "%H")) < 12 ~ "Morning",
-      as.numeric(format(as.POSIXct(time_observations_started, format = "%H:%M:%S"), "%H")) >= 12 &
-      as.numeric(format(as.POSIXct(time_observations_started, format = "%H:%M:%S"), "%H")) < 17 ~ "Afternoon",
-      as.numeric(format(as.POSIXct(time_observations_started, format = "%H:%M:%S"), "%H")) >= 17 &
-      as.numeric(format(as.POSIXct(time_observations_started, format = "%H:%M:%S"), "%H")) < 21 ~ "Evening",
-      TRUE ~ "Night")
-  )
+```{r, include=FALSE, message=FALSE}
+observations_selected = read_csv("data/observations_selected_clean.csv")
 ```
 
 **Does the season affect the activity of woodcocks?**
 
-```{r}
+```{r, echo=FALSE}
 observations_selected <- observations_selected |> 
   mutate(season = factor(season, levels = c("Winter", "Spring", "Summer", "Fall")))
 
@@ -108,7 +49,7 @@ The total observation count in Spring in NY is significantly higher than in any 
 
 **When do American woodcocks usually appear?**
 
-```{r}
+```{r, echo=FALSE}
 observations_selected <- observations_selected |> 
   mutate(time_of_day = factor(time_of_day, levels = c("Morning", "Afternoon", "Evening", "Night")))
 
@@ -137,7 +78,7 @@ ggplot(time_summary, aes(x = time_of_day, y = total_observation_count, fill = ti
 
 Are the difference significant?
 
-```{r}
+```{r, echo=FALSE}
 kruskal_test <- kruskal.test(observation_count ~ time_of_day, data = observations_selected)
 
 # Extract test results
@@ -156,7 +97,9 @@ kruskal_result |>
 There is strong evidence that the observation counts differ significantly across the time periods (Morning, Afternoon, Evening, Night).
 
 
-```{r}
+**Observation Counts by County**
+
+```{r, echo=FALSE}
 # Summarize the data by county
 county_summary <- observations_selected |> 
   filter(!is.na(county)) |> 
@@ -177,54 +120,4 @@ ggplot(county_summary, aes(x = reorder(county, -total_observation_count), y = to
         legend.position = "bottom")
 ```
 
-
-```{r}
-# Prepare the data
-observations_selected_clean <- observations_selected |> 
-  filter(!is.na(longitude) & !is.na(latitude))
-
-# Define colors for four categories
-category_colors <- c(
-  "1" = "skyblue",  
-  "2" = "orange", 
-  "3" = "red",  
-  ">3" = "purple"  
-)
-
-# Function to assign colors based on categories
-custom_color <- function(count) {
-  ifelse(
-    count > 3, 
-    category_colors[">3"],  # Orange for counts >3
-    category_colors[as.character(count)]  # Use category-specific color for 1, 2, 3
-  )
-}
-
-# Create an interactive map
-leaflet(data = observations_selected_clean) |> 
-  addTiles() |>   # Add default OpenStreetMap tiles
-  addCircleMarkers(
-    ~longitude, ~latitude,  # Longitude and Latitude
-    radius = 4,            # Marker size
-    fillColor = ~custom_color(observation_count),  # Apply category colors
-    color = "grey",        # Grey outline for all markers
-    fillOpacity = 0.6,     # Set fill opacity for transparency
-    stroke = TRUE,         # Add borders to markers
-    weight = 0.5,          # Border thickness
-    popup = ~paste("Count:", observation_count, "<br>",
-                   "Time:", substr(time_observations_started, 1, 5), "<br>",
-                   "Date:", observation_date)  # Add popup information
-  ) |> 
-  addLegend(
-    position = "bottomright",
-    colors = unname(category_colors),  # Colors for the legend
-    labels = names(category_colors),  # Labels for the categories
-    title = "Count",
-    opacity = 1
-  ) |> 
-  addControl(
-    html = "NY Woodcocks Observation Map</h5>",  # Title text in HTML
-    position = "topleft"  
-  )
-```
 
