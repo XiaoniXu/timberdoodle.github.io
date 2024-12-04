@@ -6,6 +6,9 @@ output: html_document
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(tigris)
+library(sf)
+library(ggplot2)
 ```
 
 ```{r}
@@ -29,23 +32,122 @@ weather_df <-  weather_df |>
 
 
 ```{r}
-lm_model = lm(obs_ratio ~ tmax + tmin + prcp + snow + snwd + landcover, data = weather_df)
+lm_model = lm(obs_ratio ~ tmax + tmin + prcp + snow + snwd + landcover + lon + lat, data = weather_df)
 
 summary(lm_model)
 ```
+```{r, echo = FALSE, message = FALSE, warning = FALSE, results = "hide"}
+ny_boundary <- tigris::states(cb = TRUE) |>
+  filter(NAME == "New York") |>
+  st_as_sf()
+```
 
 ```{r}
-new_data = data.frame(
-  tmax = c(10, 15, 20),
-  tmin = c(5, 10, 15),
-  prcp = c(0.1, 0.2, 0.3),
-  snow = c(0, 5, 10),
-  snwd = c(0, 1, 2),
-  landcover = c(81, 22, 24)
-)
+ny_boundary <- st_make_valid(ny_boundary)
 
-predictions = predict(lm_model, newdata = new_data)
+grid_size <- 0.1  
 
-print(predictions)
+ny_grid <- st_make_grid(
+  ny_boundary,
+  cellsize = grid_size,
+  square = TRUE
+) |> 
+  st_as_sf()  
+
+
+ny_grid <- st_intersection(ny_grid, ny_boundary) |>
+ st_make_valid()
+
+ggplot() +
+  geom_sf(data = ny_boundary, fill = NA, color = "black") +  
+  geom_sf(data = ny_grid, fill = "blue", alpha = 0.3) +      
+  labs(
+    title = "Grid Verification on New York Map",
+    x = "Longitude",
+    y = "Latitude"
+  )
 ```
+
+```{r}
+ny_grid <- ny_grid |> st_make_valid()
+
+set.seed(42)  
+sampled_points <- ny_grid |> 
+  st_sample(size = 1000, type = "random") |>  
+  st_as_sf() |>  
+  st_join(ny_grid)  
+
+weather_stats <- weather_df |>
+  summarise(
+    tmax_mean = mean(tmax, na.rm = TRUE),
+    tmax_sd = sd(tmax, na.rm = TRUE),
+    tmax_ci_low = quantile(tmax, probs = 0.025, na.rm = TRUE),
+    tmax_ci_high = quantile(tmax, probs = 0.975, na.rm = TRUE),
+    
+    tmin_mean = mean(tmin, na.rm = TRUE),
+    tmin_sd = sd(tmin, na.rm = TRUE),
+    tmin_ci_low = quantile(tmin, probs = 0.025, na.rm = TRUE),
+    tmin_ci_high = quantile(tmin, probs = 0.975, na.rm = TRUE),
+    
+    prcp_mean = mean(prcp, na.rm = TRUE),
+    prcp_sd = sd(prcp, na.rm = TRUE),
+    prcp_ci_low = quantile(prcp, probs = 0.025, na.rm = TRUE),
+    prcp_ci_high = quantile(prcp, probs = 0.975, na.rm = TRUE),
+    
+    snow_mean = mean(snow, na.rm = TRUE),
+    snow_sd = sd(snow, na.rm = TRUE),
+    snow_ci_low = quantile(snow, probs = 0.025, na.rm = TRUE),
+    snow_ci_high = quantile(snow, probs = 0.975, na.rm = TRUE),
+    
+    snwd_mean = mean(snwd, na.rm = TRUE),
+    snwd_sd = sd(snwd, na.rm = TRUE),
+    snwd_ci_low = quantile(snwd, probs = 0.025, na.rm = TRUE),
+    snwd_ci_high = quantile(snwd, probs = 0.975, na.rm = TRUE)
+  )
+
+predict_data <- ny_grid |> 
+  st_sample(size = 1000, type = "random") |>  
+  st_as_sf() |> 
+  st_coordinates() |> 
+  as.data.frame() |> 
+  rename(lon = X, lat = Y)  
+
+predict_data <- predict_data |>
+  mutate(
+    tmin = runif(n(), min = weather_stats$tmin_ci_low, max = weather_stats$tmin_ci_high),
+    tmax = tmin + runif(n(), min = 1, max = weather_stats$tmax_ci_high - weather_stats$tmax_ci_low),
+    
+    prcp = runif(n(), min = weather_stats$prcp_ci_low, max = weather_stats$prcp_ci_high),
+    snow = runif(n(), min = weather_stats$snow_ci_low, max = weather_stats$snow_ci_high),
+    snwd = runif(n(), min = weather_stats$snwd_ci_low, max = weather_stats$snwd_ci_high),
+    
+    landcover = sample(c(21, 22, 23, 24), n(), replace = TRUE)
+  )
+
+predict_data$obs_ratio <- predict(lm_model, newdata = predict_data)
+```
+
+```{r}
+grid_predictions <- st_join(ny_grid, st_as_sf(predict_data, coords = c("lon", "lat"), crs = st_crs(ny_grid))) |>
+  group_by(x) |>
+  summarise(
+    prob_sum = sum(obs_ratio, na.rm = TRUE), 
+    prob_mean = mean(obs_ratio, na.rm = TRUE)  
+  ) |> 
+  ungroup()
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = ny_boundary, fill = NA, color = "black") +  
+  geom_sf(data = grid_predictions, aes(fill = prob_sum), color = NA, alpha = 0.8) +
+  scale_fill_viridis_c(option = "plasma", name = "Probability Sum") + 
+  labs(
+    title = "Heatmap of Predicted Observation Ratios",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  theme_minimal()
+```
+
 
