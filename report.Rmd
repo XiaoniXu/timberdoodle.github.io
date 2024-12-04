@@ -17,13 +17,29 @@ output: html_document
 
 ### 2.1 eBird data
 
+  eBird (ebird.org) is an online citizen science platform for bird observations developed by Cornell Lab of Ornithology (Sullivan et al.). Users can submit observations in the form of a birding checklist, which records the time, distance, duration, location, species observed, and species counts for each birding outing. With over 35,000 checklists submitted daily, eBird has congregated a sizeable amount of data capable of allowing comprehensie data analysis in various field within or adjacent to ornithology.
+  
+  The observational and sampling data in the form of individual checklists on the platform, eBird Basic Dataset (EBD), is publicly available and is downloaded after submitting a request to download the data of woodcocks. Due to the large file size and limited CPU powers, the dataset is limited to observations from January 2019 to January 2024 in New York State.
+  
+  eBird data is then processed using the `auk` package (Strimas-Mackey et al.) for data visualization and processing.
+
 ## 3. Results
 
 ## 4. Conclusion and Discussion
 
-## 5. Acknowledgements
+## 5. References
 
-- McAuley, D. G., D. M. Keppie, and R. M. Whiting Jr. (2020). American Woodcock (Scolopax minor), version 1.0. In Birds of the World (A. F. Poole, Editor). Cornell Lab of Ornithology, Ithaca, NY, USA. https://doi.org/10.2173/bow.amewoo.01
+
+Sullivan, B. L., Wood, C. L., Iliff, M. J., Bonney, R. E., Fink, D., & Kelling, S. (2009). *eBird: A citizen-based bird observation network in the biological sciences.* Biological Conservation, 142(10), 2282–2292. https://doi.org/10.1016/j.biocon.2009.05.006. Retrieved from [https://www.sciencedirect.com/science/article/pii/S000632070900216X].
+
+Strimas-Mackey, M., Miller, E., & Hochachka, W. (2023). *auk: eBird Data Extraction and Processing with AWK.* Retrieved from [https://cornelllabofornithology.github.io/auk/].
+
+Farley, K. E. (2022). *Habitat selection and consequences for American woodcock in urban landscapes.* (PhD thesis). Rutgers University - Graduate School - Newark. https://doi.org/10.7282/t3-n223-pn60. Retrieved from [https://rucore.libraries.rutgers.edu/rutgers-lib/67482/].
+
+Berigan, L. A. (2024). *Full Annual Cycle Analysis of American Woodcock (Scolopax minor) Distribution, Habitat Use, and Migration Ecology.* (PhD thesis). The University of Maine. Retrieved from [https://digitalcommons.library.umaine.edu/etd/3941].
+
+McAuley, D. G., Keppie, D. M., & Whiting Jr., R. M. (2020). *American Woodcock (Scolopax minor).* In S. M. Billerman, B. K. Keeney, P. G. Rodewald, & T. S. Schulenberg (Eds.), *Birds of the World.* Cornell Lab of Ornithology. https://doi.org/10.2173/bow.amewoo.01. Retrieved from [https://birdsoftheworld.org/bow/species/amewoo/1.0/introduction].
+
 
 <div style="text-align: center;">
   <img src="images/amwo_dance.gif" alt="The Woodcock Dance" style="width:300px;">

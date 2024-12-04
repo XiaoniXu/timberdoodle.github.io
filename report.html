@@ -259,6 +259,9 @@ $(document).ready(function () {
   <a href="statistical_analysis.html">Stats</a>
 </li>
 <li>
+  <a href="modeling.html">Modeling</a>
+</li>
+<li>
   <a href="mailto:&lt;xx2485@cumc.columbia.edu&gt;">
     <span class="fa fa-envelope fa-lg"></span>
      
@@ -317,6 +320,22 @@ encounter a woodcock in the wild.</p>
 <h2>2. Data &amp; Methods</h2>
 <div id="ebird-data" class="section level3">
 <h3>2.1 eBird data</h3>
+<p>eBird (ebird.org) is an online citizen science platform for bird
+observations developed by Cornell Lab of Ornithology (Sullivan et al.).
+Users can submit observations in the form of a birding checklist, which
+records the time, distance, duration, location, species observed, and
+species counts for each birding outing. With over 35,000 checklists
+submitted daily, eBird has congregated a sizeable amount of data capable
+of allowing comprehensie data analysis in various field within or
+adjacent to ornithology.</p>
+<p>The observational and sampling data in the form of individual
+checklists on the platform, eBird Basic Dataset (EBD), is publicly
+available and is downloaded after submitting a request to download the
+data of woodcocks. Due to the large file size and limited CPU powers,
+the dataset is limited to observations from January 2019 to January 2024
+in New York State.</p>
+<p>eBird data is then processed using the <code>auk</code> package
+(Strimas-Mackey et al.) for data visualization and processing.</p>
 </div>
 </div>
 <div id="results" class="section level2">
@@ -325,15 +344,42 @@ encounter a woodcock in the wild.</p>
 <div id="conclusion-and-discussion" class="section level2">
 <h2>4. Conclusion and Discussion</h2>
 </div>
-<div id="acknowledgements" class="section level2">
-<h2>5. Acknowledgements</h2>
-<ul>
-<li>McAuley, D. G., D. M. Keppie, and R. M. Whiting Jr. (2020). American
-Woodcock (Scolopax minor), version 1.0. In Birds of the World (A. F.
-Poole, Editor). Cornell Lab of Ornithology, Ithaca, NY, USA. <a
+<div id="references" class="section level2">
+<h2>5. References</h2>
+<p>Sullivan, B. L., Wood, C. L., Iliff, M. J., Bonney, R. E., Fink, D.,
+&amp; Kelling, S. (2009). <em>eBird: A citizen-based bird observation
+network in the biological sciences.</em> Biological Conservation,
+142(10), 2282–2292. <a
+href="https://doi.org/10.1016/j.biocon.2009.05.006"
+class="uri">https://doi.org/10.1016/j.biocon.2009.05.006</a>. Retrieved
+from [<a
+href="https://www.sciencedirect.com/science/article/pii/S000632070900216X"
+class="uri">https://www.sciencedirect.com/science/article/pii/S000632070900216X</a>].</p>
+<p>Strimas-Mackey, M., Miller, E., &amp; Hochachka, W. (2023). <em>auk:
+eBird Data Extraction and Processing with AWK.</em> Retrieved from [<a
+href="https://cornelllabofornithology.github.io/auk/"
+class="uri">https://cornelllabofornithology.github.io/auk/</a>].</p>
+<p>Farley, K. E. (2022). <em>Habitat selection and consequences for
+American woodcock in urban landscapes.</em> (PhD thesis). Rutgers
+University - Graduate School - Newark. <a
+href="https://doi.org/10.7282/t3-n223-pn60"
+class="uri">https://doi.org/10.7282/t3-n223-pn60</a>. Retrieved from [<a
+href="https://rucore.libraries.rutgers.edu/rutgers-lib/67482/"
+class="uri">https://rucore.libraries.rutgers.edu/rutgers-lib/67482/</a>].</p>
+<p>Berigan, L. A. (2024). <em>Full Annual Cycle Analysis of American
+Woodcock (Scolopax minor) Distribution, Habitat Use, and Migration
+Ecology.</em> (PhD thesis). The University of Maine. Retrieved from [<a
+href="https://digitalcommons.library.umaine.edu/etd/3941"
+class="uri">https://digitalcommons.library.umaine.edu/etd/3941</a>].</p>
+<p>McAuley, D. G., Keppie, D. M., &amp; Whiting Jr., R. M. (2020).
+<em>American Woodcock (Scolopax minor).</em> In S. M. Billerman, B. K.
+Keeney, P. G. Rodewald, &amp; T. S. Schulenberg (Eds.), <em>Birds of the
+World.</em> Cornell Lab of Ornithology. <a
 href="https://doi.org/10.2173/bow.amewoo.01"
-class="uri">https://doi.org/10.2173/bow.amewoo.01</a></li>
-</ul>
+class="uri">https://doi.org/10.2173/bow.amewoo.01</a>. Retrieved from
+[<a
+href="https://birdsoftheworld.org/bow/species/amewoo/1.0/introduction"
+class="uri">https://birdsoftheworld.org/bow/species/amewoo/1.0/introduction</a>].</p>
 <div style="text-align: center;">
 <p><img src="images/amwo_dance.gif" alt="The Woodcock Dance" style="width:300px;"></p>
 </div>
