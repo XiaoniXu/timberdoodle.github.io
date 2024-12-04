@@ -258,6 +258,9 @@ $(document).ready(function () {
   <a href="statistical_analysis.html">Stats</a>
 </li>
 <li>
+  <a href="modeling.html">Modeling</a>
+</li>
+<li>
   <a href="mailto:&lt;xx2485@cumc.columbia.edu&gt;">
     <span class="fa fa-envelope fa-lg"></span>
      
@@ -289,11 +292,11 @@ $(document).ready(function () {
    filter(!is.na(landcover)) |&gt;
     mutate(t_avg_flag = as.integer((t_avg - min(t_avg, na.rm = TRUE)) / 1)) |&gt;
     mutate(snow_flag = as.integer((snow - min(snow, na.rm = TRUE)) / 5))</code></pre>
-<pre><code>## Rows: 1699258 Columns: 29
+<pre><code>## Rows: 1699258 Columns: 31
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr  (10): checklist_id, state, county, usfws_code, atlas_block, locality, o...
-## dbl  (17): bcr_code, duration_minutes, effort_distance_km, number_observers,...
+## dbl  (19): bcr_code, duration_minutes, effort_distance_km, number_observers,...
 ## lgl   (1): all_species_reported
 ## date  (1): observation_date
 ## 
