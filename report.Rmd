@@ -5,13 +5,22 @@ date: "2024-12-04"
 output: html_document
 ---
 
-1. Introduction
+## 1. Introduction
 
-2. Data & Methods
+  American woodcock (*Scolopax minor*; hereinafter woodcock), one of the most common species of shorebirds in eastern North America (McAuley et al.), is an early successional habitat specialist whose populations are declining throughout their range (Bergian). Because it is one of the only shorebird species in North America that reside in habitats not adjacent to water during migration, the land mass of potential suitable habitats for this species is far greater than other water-dependent birds such as dunlin (*Calidris alpina*) or semipalmated plover (*Charadrius semipalmatus*). As a result, woodcocks are more easily stumbled upon in close proximity to human activities: during woodland hikes, county road drives, morning park jogs, or nighttime camps.
+  
+  Along with its significance of being an umbrella species - a representative of an ecosystem specifically for conservation purposes that protects other species within its ecosystem - the woodcock is also one of the highly sought-after shorebird species among naturalists and birders due to its appearance, behavior, and relatively difficulty of detection. In addition, its 'dance' moves has made it into an internet favorite when paired with a wide array of music on social media (Farley). Thus, it has become a curious inquiry to members of science community, policy makers, and the general public for the ecological, temporal, and spatial factors that may affect the chances one could encounter a woodcock in the wild.
+  
+  For this project, we (...)
+  
+## 2. Data & Methods
 
-3. Results
+### 2.1 eBird data
 
-4. Conclusion and Discussion
+## 3. Results
 
-5. Acknowledgements
+## 4. Conclusion and Discussion
 
+## 5. Acknowledgements
+
+- McAuley, D. G., D. M. Keppie, and R. M. Whiting Jr. (2020). American Woodcock (Scolopax minor), version 1.0. In Birds of the World (A. F. Poole, Editor). Cornell Lab of Ornithology, Ithaca, NY, USA. https://doi.org/10.2173/bow.amewoo.01
