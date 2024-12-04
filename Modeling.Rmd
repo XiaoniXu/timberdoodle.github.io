@@ -1,5 +1,5 @@
 ---
-title: "Modeling"
+title: "modeling"
 author: "Wenjie Wu"
 output: html_document
 ---
@@ -9,8 +9,9 @@ library(tidyverse)
 ```
 
 ```{r}
-weather_df <- read_csv("data/zf_with_weather.csv") |>
+weather_df <- read_csv("data/zf_with_weather_landcover.csv") |>
    filter(!is.na(t_avg)) |>
+   filter(!is.na(landcover)) |>
     mutate(t_avg_flag = as.integer((t_avg - min(t_avg, na.rm = TRUE)) / 1)) |>
     mutate(snow_flag = as.integer((snow - min(snow, na.rm = TRUE)) / 5))
 
@@ -28,7 +29,7 @@ weather_df <-  weather_df |>
 
 
 ```{r}
-lm_model = lm(obs_ratio ~ tmax + tmin + prcp + snow + snwd, data = weather_df)
+lm_model = lm(obs_ratio ~ tmax + tmin + prcp + snow + snwd + landcover, data = weather_df)
 
 summary(lm_model)
 ```
@@ -39,7 +40,8 @@ new_data = data.frame(
   tmin = c(5, 10, 15),
   prcp = c(0.1, 0.2, 0.3),
   snow = c(0, 5, 10),
-  snwd = c(0, 1, 2)
+  snwd = c(0, 1, 2),
+  landcover = c(81, 22, 24)
 )
 
 predictions = predict(lm_model, newdata = new_data)
