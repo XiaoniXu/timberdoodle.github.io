@@ -18,6 +18,7 @@ library(terra)
 ```
 
 <<<<<<< HEAD
+
 # Introduction and Objcetive
 
 The primary goal of this section is to conduct a modeling analysis on the existing dataset. By leveraging environmental variables such as latitude, longitude, temperature, and snowfall, we aim to train regression models and ultimately generate a predictive heatmap highlighting the likelihood of observing American Woodcock in New York State.
@@ -36,9 +37,6 @@ The dataset used in this analysis includes eBird data previously collected and a
 	•	This count was divided by the total observations to compute the dependent variable for the regression model, obs_ratio, representing the proportion of observations under the given conditions.
 
 ```{r}
-=======
-```{r, message = FALSE}
->>>>>>> 533384a39d3433bd188c6156d0096c28d6e4b514
 weather_df <- read_csv("data/zf_with_weather_landcover.csv") |>
    filter(!is.na(t_avg)) |>
    filter(!is.na(landcover)) |>
@@ -75,12 +73,11 @@ ny_boundary <- tigris::states(cb = TRUE) |>
   st_as_sf()
 ```
 
-<<<<<<< HEAD
+# Griding for NY state
+
 Making boundary for NY state, preparing for ploting heating map. We applied grid operations to the map of New York State, dividing it into grids to more precisely identify bird observation locations and simulate real-world conditions. After multiple adjustments, a grid size of 0.1 was selected as the optimal scale.
+
 ```{r}
-=======
-```{r, warning = FALSE}
->>>>>>> 533384a39d3433bd188c6156d0096c28d6e4b514
 ny_boundary <- st_make_valid(ny_boundary)
 
 grid_size <- 0.1  
@@ -105,14 +102,14 @@ ggplot() +
     y = "Latitude"
   )
 ```
+
+# Prediction data simulation
+
 For continuous variables such as tmax, tmin, snow, and snwd, we fitted their distributions based on the original data and generated simulated prediction data within the 95% confidence interval. Realistic constraints were also incorporated, such as ensuring tmax is always greater than tmin, southern regions having higher temperatures than northern regions, and snowfall being lower in southern areas compared to the north.
 
-<<<<<<< HEAD
 Within each generated grid, 1,000 data points were simulated, with their latitude and longitude constrained to lie within the respective grid boundaries. Using the previously trained regression model, we predicted the observation ratio (obs_ratio) for each point and summed these values to obtain the total observation probability for each grid. Additionally, realistic landcover data were assigned to each grid based on its geographic location, further enhancing the accuracy and realism of the simulated data to align with actual conditions.
+
 ```{r}
-=======
-```{r, warning = FALSE}
->>>>>>> 533384a39d3433bd188c6156d0096c28d6e4b514
 ny_grid <- ny_grid |> st_make_valid()
 
 set.seed(42)  
@@ -204,6 +201,8 @@ grid_predictions <- st_join(ny_grid, st_as_sf(predict_data_final, coords = c("lo
   ) |> 
   ungroup()
 ```
+
+# Predcting results display
 
 The observation probabilities of the American woodcock are displayed in the form of a heatmap.
 

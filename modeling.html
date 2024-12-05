@@ -330,9 +330,6 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="about.html">About</a>
-</li>
-<li>
   <a href="data_wrangling.html">Data Wrangling</a>
 </li>
 <li>
@@ -340,6 +337,12 @@ div.tocify {
 </li>
 <li>
   <a href="modeling.html">Modeling</a>
+</li>
+<li>
+  <a href="report.html">Report</a>
+</li>
+<li>
+  <a href="about.html">About</a>
 </li>
 <li>
   <a href="mailto:&lt;xx2485@cumc.columbia.edu&gt;">
@@ -376,6 +379,7 @@ div.tocify {
 </div>
 
 
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
 <div id="introduction-and-objcetive" class="section level1">
 <h1>Introduction and Objcetive</h1>
 <p>The primary goal of this section is to conduct a modeling analysis on
@@ -403,7 +407,6 @@ following steps:</p>
    filter(!is.na(t_avg)) |&gt;
    filter(!is.na(landcover)) |&gt;
     mutate(t_avg_flag = as.integer((t_avg - min(t_avg, na.rm = TRUE)) / 1)) |&gt;
-<<<<<<< HEAD
     mutate(snow_flag = as.integer((snow - min(snow, na.rm = TRUE)) / 5))</code></pre>
 <pre><code>## Rows: 1699258 Columns: 31
 ## ── Column specification ────────────────────────────────────────────────────────
@@ -416,11 +419,6 @@ following steps:</p>
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <pre class="r"><code>weather_df &lt;-  weather_df |&gt;
-=======
-    mutate(snow_flag = as.integer((snow - min(snow, na.rm = TRUE)) / 5))
-
-weather_df &lt;-  weather_df |&gt;
->>>>>>> 533384a39d3433bd188c6156d0096c28d6e4b514
   group_by(t_avg_flag, snow_flag) |&gt;
   mutate(
     group_obs_count = n(),  
@@ -471,6 +469,9 @@ summary(lm_model)</code></pre>
 ##   (17023 observations deleted due to missingness)
 ## Multiple R-squared:  0.3359, Adjusted R-squared:  0.3359 
 ## F-statistic: 4.236e+04 on 8 and 669934 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div id="griding-for-ny-state" class="section level1">
+<h1>Griding for NY state</h1>
 <p>Making boundary for NY state, preparing for ploting heating map. We
 applied grid operations to the map of New York State, dividing it into
 grids to more precisely identify bird observation locations and simulate
@@ -489,9 +490,10 @@ ny_grid &lt;- st_make_grid(
 
 
 ny_grid &lt;- st_intersection(ny_grid, ny_boundary) |&gt;
- st_make_valid()
-
-ggplot() +
+ st_make_valid()</code></pre>
+<pre><code>## Warning: attribute variables are assumed to be spatially constant throughout
+## all geometries</code></pre>
+<pre class="r"><code>ggplot() +
   geom_sf(data = ny_boundary, fill = NA, color = &quot;black&quot;) +  
   geom_sf(data = ny_grid, fill = &quot;blue&quot;, alpha = 0.3) +      
   labs(
@@ -499,10 +501,13 @@ ggplot() +
     x = &quot;Longitude&quot;,
     y = &quot;Latitude&quot;
   )</code></pre>
-<p><img src="modeling_files/figure-html/unnamed-chunk-4-1.png" width="672" />
-For continuous variables such as tmax, tmin, snow, and snwd, we fitted
-their distributions based on the original data and generated simulated
-prediction data within the 95% confidence interval. Realistic
+<p><img src="modeling_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="prediction-data-simulation" class="section level1">
+<h1>Prediction data simulation</h1>
+<p>For continuous variables such as tmax, tmin, snow, and snwd, we
+fitted their distributions based on the original data and generated
+simulated prediction data within the 95% confidence interval. Realistic
 constraints were also incorporated, such as ensuring tmax is always
 greater than tmin, southern regions having higher temperatures than
 northern regions, and snowfall being lower in southern areas compared to
@@ -595,6 +600,9 @@ predict_data_final = st_drop_geometry(predict_data_sf)</code></pre>
     prob_mean = mean(obs_ratio, na.rm = TRUE)  
   ) |&gt; 
   ungroup()</code></pre>
+</div>
+<div id="predcting-results-display" class="section level1">
+<h1>Predcting results display</h1>
 <p>The observation probabilities of the American woodcock are displayed
 in the form of a heatmap.</p>
 <pre class="r"><code>ggplot() +
