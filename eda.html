@@ -16,7 +16,7 @@
 <script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -66,6 +66,7 @@ if (window.hljs) {
 
 
 
+<link rel="stylesheet" href="styles.css" type="text/css" />
 
 
 
@@ -336,7 +337,7 @@ div.tocify {
   <a href="data_wrangling.html">Data Wrangling</a>
 </li>
 <li>
-  <a href="statistical_analysis.html">EDA</a>
+  <a href="eda.html">EDA</a>
 </li>
 <li>
   <a href="modeling.html">Modeling</a>
@@ -489,7 +490,7 @@ county_summary &lt;- observations_selected |&gt;
 # Create a bar plot
 ggplot(county_summary, aes(x = reorder(county, -total_observation_count), y = total_observation_count, fill = total_observation_count)) +
   geom_bar(stat = &quot;identity&quot;) +
-  scale_fill_gradient(low = &quot;lightblue&quot;, high = &quot;darkblue&quot;, name = &quot;Count&quot;) +
+  scale_fill_gradient(low = &quot;#4daf4a&quot;, high = &quot;#163315&quot;, name = &quot;Count&quot;) +
   labs(
     title = &quot;Observation Counts by County&quot;,
     x = &quot;County&quot;,

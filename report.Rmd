@@ -11,7 +11,7 @@ output: html_document
   
   Along with its significance of being an umbrella species - a representative of an ecosystem specifically for conservation purposes that protects other species within its ecosystem - the woodcock is also one of the highly sought-after shorebird species among naturalists and birders due to its appearance, behavior, and relatively difficulty of detection. In addition, its 'dance' moves has made it into an internet favorite when paired with a wide array of music on social media (Farley). Thus, it has become a curious inquiry to members of science community, policy makers, and the general public for the ecological, temporal, and spatial factors that may affect the chances one could encounter a woodcock in the wild.
   
-  For this project, we (...)
+  For this project, we first processed the eBird checklist data into a format suitable for further temporal and spatial analysis.
   
 ## 2. Data & Methods
 

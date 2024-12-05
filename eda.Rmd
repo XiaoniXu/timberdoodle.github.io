@@ -121,7 +121,7 @@ county_summary <- observations_selected |>
 # Create a bar plot
 ggplot(county_summary, aes(x = reorder(county, -total_observation_count), y = total_observation_count, fill = total_observation_count)) +
   geom_bar(stat = "identity") +
-  scale_fill_gradient(low = "lightblue", high = "darkblue", name = "Count") +
+  scale_fill_gradient(low = "#4daf4a", high = "#163315", name = "Count") +
   labs(
     title = "Observation Counts by County",
     x = "County",
