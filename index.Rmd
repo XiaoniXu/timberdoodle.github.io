@@ -7,42 +7,38 @@ output:
     code_folding: hide
 ---
 
-<div style="display: flex; align-items: flex-start; gap: 20px;">
+> I heard one in the woods behind my apartment early this morning and I’ve never seen one in the wild before. Since all of the leaves on the ground are dead and dried, I’m worried that it’ll be really difficult for me to spot it due to its camouflage. I’m really eager to add it onto my life list so any suggestions on how to find this little fella would be much appreciated!  
+> — r/birdwatching, Reddit
 
-  <!-- Quote Section -->
-  <blockquote style="font-style: italic; color: #555; border-left: 4px solid #ccc; padding-left: 10px; margin: 0; background-color: #f9f9f9; flex: 1;">
-    I heard one in the woods behind my apartment early this morning and I’ve never seen one in the wild before. Since all of the leaves on the ground are dead and dried, I’m worried that it’ll be really difficult for me to spot it due to its camouflage. I’m really eager to add it onto my life list so any suggestions on how to find this little fella would be much appreciated!  
-    <br><strong>— r/birdwatching, Reddit</strong>
-  </blockquote>
+
+
+<figure style="text-align: center;">
+  <img src="images/amwo1.jpg" style="display: block; margin: auto; width: 75%;">
+  <figcaption style="font-size: 14px; color: #555;">American Woodcock (*Scolopax minor*) at Central Park, Oct 2024, &copy; Xiaoni Xu.</figcaption>
+</figure>
+
+
+<div style="display: flex; align-items: center; gap: 20px;">
+
+  <!-- Text Section -->
+  <div style="flex: 1; font-size: 16px; line-height: 1.6;">
+    As elusive as they might be, the American Woodcock (*Scolopax minor*) is famous for its unorthodox appearance, its captivating courtship flights at sunset, and its dance move on the internet. It is a species of shorebird in eastern United States that is sometimes encountered in urban parks.
+  </div>
 
   <!-- Image Section -->
-  <figure style="text-align: center; flex: 1;">
-    <img src="images/amwo1.jpg" style="width: 100%; max-width: 300px;">
-    <figcaption style="font-size: 14px; color: #555;">
-      American Woodcock (*Scolopax minor*) at Central Park, Oct 2024, &copy; Xiaoni Xu.
-    </figcaption>
-  </figure>
+  <div style="flex: 1; text-align: center;">
+    <img src="images/amwo_dance.gif" alt="The Woodcock Dance" style="width: 300px;">
+  </div>
 
 </div>
 
-As elusive as they might be, the American Woodcock (*Scolopax minor*) is famous for its unorthodox appearance, its captivating courtship flights at sunset, and its dance move on the internet.
 
-<div style="text-align: center;">
-  <img src="images/amwo_dance.gif" alt="The Woodcock Dance" style="width:300px;">
-</div>
 
 For this project, we take a look at the observational data of all American Woodcock sightings on eBird, the biggest online public platform for birding observations in the United States. We attempted to visualize the occurrence of this species and build a prediction model to facilitate the process for one to find a woodcock by themselves.
 
 For general information about American Woodcocks, visit its [eBird page](https://ebird.org/species/amewoo). 
 
-<div style="text-align: center;">
-  <iframe 
-    src="https://ebird.org/map/amewoo?neg=true&env.minX=-74.96461006040708&env.minY=40.487117006902665&env.maxX=-73.20679756040708&env.maxY=41.17705033313023&zh=true&gp=true&ev=Z&excludeExX=false&excludeExAll=false&mr=1-12&bmo=1&emo=12&yr=cur"
-    width="800" 
-    height="600" 
-    style="border: none;">
-  </iframe>
-</div>
+
 
 Find more [about us](about.html).
 
@@ -66,7 +62,7 @@ library(leaflet)
 ```
 
 
-```{r}
+```{r, eval = FALSE}
 amwo <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt"
 amwo_samp <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024_sampling.txt"
 observations <- read_ebd(amwo)
@@ -109,6 +105,11 @@ observations_selected <-
 # Sample data (replace with observations_selected)
 observations_selected_clean <- observations_selected |> 
   filter(!is.na(longitude) & !is.na(latitude))
+```
+
+
+```{r, message = FALSE}
+observations_selected = read_csv("data/observations_selected_clean.csv")
 
 # Define colors for four categories
 category_colors <- c(
@@ -128,7 +129,7 @@ custom_color <- function(count) {
 }
 
 # Render the interactive map
-leaflet(data = observations_selected_clean) %>%
+leaflet(data = observations_selected) %>%
   addTiles() %>%  # Add default OpenStreetMap tiles
   addCircleMarkers(
     ~longitude, ~latitude,  # Longitude and Latitude
