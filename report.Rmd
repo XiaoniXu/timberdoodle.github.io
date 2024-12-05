@@ -23,14 +23,35 @@ output: html_document
   The observational and sampling data in the form of individual checklists on the platform, eBird Basic Dataset (EBD), is publicly available and is downloaded after submitting a request to download the data of woodcocks. Due to the large file size and limited CPU powers, the dataset is limited to observations from January 2019 to January 2024 in New York State.
   
   eBird data is then processed using the `auk` package (Strimas-Mackey et al.) for data visualization and processing. The .txt files were loaded into R, and the shared checklists were collapsed to eliminate replicated observations. The non-complete checklists were then filtered to ensure data cleaniness. The zero-filling method is then used to infer non-detections using the sampling data. Some of the variables were transformed for modeling: time is converted to a decimal value, and a variable for speed is created. Checklists too long or too fast were eliminated.
+  
+### 2.2 environmental variables
 
-## 3. Results
+
+## 3. Modeling
+
+### 3.1 Data preporecessing and modeling
+
+  This analysis used eBird data with environmental variables to calculate the observation ratio (obs_ratio) for modeling. Average temperature (t_avg) and snowfall (snow) were grouped into intervals (1°C and 5 units, respectively), with flag variables created for each range. Observations within the same flag were counted and normalized by the total observations, providing the proportion of American Woodcock sightings under specific conditions.
+  
+  After grouping and flagging the data, a linear model was used to fit the data, with environmental variables as the predictors and obs_ratio as the target variable.
+
+### 3.2 Preiction data simulation
+
+  For continuous variables such as tmax, tmin, snow, and snwd, we fitted their distributions based on the original data and generated simulated prediction data within the 95% confidence interval. Realistic constraints were also incorporated, such as ensuring tmax is always greater than tmin, southern regions having higher temperatures than northern regions, and snowfall being lower in southern areas compared to the north.
+
+  Within each generated grid, 1,000 data points were simulated, with their latitude and longitude constrained to lie within the respective grid boundaries. Using the previously trained regression model, we predicted the observation ratio (obs_ratio) for each point and summed these values to obtain the total observation probability for each grid. Additionally, realistic landcover data were assigned to each grid based on its geographic location, further enhancing the accuracy and realism of the simulated data to align with actual conditions.
+  
+### 3.3 Griding and heating map ploting
+
+  We applied grid operations to the map of New York State, dividing it into grids to more precisely identify bird observation locations and simulate real-world conditions. After multiple adjustments, a grid size of 0.1 was selected as the optimal scale.The final observation probabilities of the American woodcock are displayed in the form of a heatmap.
+  
+## 4. Results
 
   Preliminary exploratory analysis were carried out to answer some common questions related to woodcock detection within New York State. By creating a `season` factor and creating a bar chart showing the number of checklists per season, we visualized the total amount and the difference in number of observations of woodcocks each season. The observation counts were also categorized by time of day to see if there is any significant pattern in time of the day for detection. Then, a chi-squared test is run to test whether the differences between season and day times are significant. Also, the number of observations is also summarized by county.
   
   We were able to observe a significant 
   
-## 4. Conclusion and Discussion
+## 5. Conclusion and Discussion
   
   Overall, we harnessed the power of citizen science data to both answer various questions on sightings of a rather secrete question and create a comprehensive prediction model using various temporal and spatial factors for the abundance in any given place in New York state. We used a charismatic species that is well-known in naturalist and birder community as well as anyone using social media as an example to display our methods in exploring such citizen science data; the same visualizations and analyses that we demonstrated can be easily duplicated for other species and observations, or even non-wildlife data such as occurrence of a disease or the tracking of all crimes in a city.
   

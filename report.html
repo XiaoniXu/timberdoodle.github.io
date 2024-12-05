@@ -354,9 +354,55 @@ were transformed for modeling: time is converted to a decimal value, and
 a variable for speed is created. Checklists too long or too fast were
 eliminated.</p>
 </div>
+<div id="environmental-variables" class="section level3">
+<h3>2.2 environmental variables</h3>
+</div>
+</div>
+<div id="modeling" class="section level2">
+<h2>3. Modeling</h2>
+<div id="data-preporecessing-and-modeling" class="section level3">
+<h3>3.1 Data preporecessing and modeling</h3>
+<p>This analysis used eBird data with environmental variables to
+calculate the observation ratio (obs_ratio) for modeling. Average
+temperature (t_avg) and snowfall (snow) were grouped into intervals (1°C
+and 5 units, respectively), with flag variables created for each range.
+Observations within the same flag were counted and normalized by the
+total observations, providing the proportion of American Woodcock
+sightings under specific conditions.</p>
+<p>After grouping and flagging the data, a linear model was used to fit
+the data, with environmental variables as the predictors and obs_ratio
+as the target variable.</p>
+</div>
+<div id="preiction-data-simulation" class="section level3">
+<h3>3.2 Preiction data simulation</h3>
+<p>For continuous variables such as tmax, tmin, snow, and snwd, we
+fitted their distributions based on the original data and generated
+simulated prediction data within the 95% confidence interval. Realistic
+constraints were also incorporated, such as ensuring tmax is always
+greater than tmin, southern regions having higher temperatures than
+northern regions, and snowfall being lower in southern areas compared to
+the north.</p>
+<p>Within each generated grid, 1,000 data points were simulated, with
+their latitude and longitude constrained to lie within the respective
+grid boundaries. Using the previously trained regression model, we
+predicted the observation ratio (obs_ratio) for each point and summed
+these values to obtain the total observation probability for each grid.
+Additionally, realistic landcover data were assigned to each grid based
+on its geographic location, further enhancing the accuracy and realism
+of the simulated data to align with actual conditions.</p>
+</div>
+<div id="griding-and-heating-map-ploting" class="section level3">
+<h3>3.3 Griding and heating map ploting</h3>
+<p>We applied grid operations to the map of New York State, dividing it
+into grids to more precisely identify bird observation locations and
+simulate real-world conditions. After multiple adjustments, a grid size
+of 0.1 was selected as the optimal scale.The final observation
+probabilities of the American woodcock are displayed in the form of a
+heatmap.</p>
+</div>
 </div>
 <div id="results" class="section level2">
-<h2>3. Results</h2>
+<h2>4. Results</h2>
 <p>Preliminary exploratory analysis were carried out to answer some
 common questions related to woodcock detection within New York State. By
 creating a <code>season</code> factor and creating a bar chart showing
@@ -370,7 +416,7 @@ summarized by county.</p>
 <p>We were able to observe a significant</p>
 </div>
 <div id="conclusion-and-discussion" class="section level2">
-<h2>4. Conclusion and Discussion</h2>
+<h2>5. Conclusion and Discussion</h2>
 <p>Overall, we harnessed the power of citizen science data to both
 answer various questions on sightings of a rather secrete question and
 create a comprehensive prediction model using various temporal and
