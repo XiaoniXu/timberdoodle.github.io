@@ -30,6 +30,8 @@ knitr::opts_chunk$set(
 observations_selected = read_csv("data/observations_selected_clean.csv")
 ```
 
+## Season
+
 **Does the season affect the activity of woodcocks?**
 
 
@@ -146,11 +148,60 @@ season_summary |>
 
 
 
-
+## Time of the day
 
 **When do American woodcocks usually appear?**
 
+
 ```{r}
+# map
+
+# Define colors for the times of day
+time_colors <- c(
+  "Morning" = "#FFD700",    # Gold for Morning
+  "Afternoon" = "#FFA500",  # Orange for Afternoon
+  "Evening" = "#1E90FF",    # Dodger Blue for Evening
+  "Night" = "#4B0082"       # Indigo for Night
+)
+
+# Function to assign colors based on time of day
+time_color <- function(time_of_day) {
+  unname(time_colors[as.character(time_of_day)])  # Use color specific to the time of day
+}
+
+# Render the interactive map
+leaflet(data = observations_selected) %>%
+  addTiles() %>%  # Add default OpenStreetMap tiles
+  addCircleMarkers(
+    ~longitude, ~latitude,  # Longitude and Latitude
+    radius = 3,            # Marker size
+    fillColor = ~time_color(time_of_day),  # Apply time of day colors
+    color = "grey",        # Grey outline for all markers
+    fillOpacity = 0.6,     # Set fill opacity for transparency
+    stroke = TRUE,         # Add borders to markers
+    weight = 0.5,          # Border thickness
+    popup = ~paste("Time of Day:", time_of_day, "<br>",
+                   "Observation Count:", observation_count, "<br>",
+                   "Time:", substr(time_observations_started, 1, 5), "<br>",  # Extract HH:MM
+                   "Date:", observation_date)  # Add popup information
+  ) %>%
+  addLegend(
+    position = "bottomright",
+    colors = unname(time_colors),  # Colors for the legend
+    labels = names(time_colors),  # Labels for the times of day
+    title = "Time of Day",
+    opacity = 1
+  )
+```
+
+
+:::: {style="display: flex;"}
+
+::: {}
+
+
+```{r, fig.align='center', fig.width=6.5, fig.height=4}
+
 observations_selected <- observations_selected |> 
   mutate(time_of_day = factor(time_of_day, levels = c("Morning", "Afternoon", "Evening", "Night")))
 
@@ -177,6 +228,51 @@ ggplot(time_summary, aes(x = time_of_day, y = total_observation_count, fill = ti
   theme(legend.position = "none")
 ```
 
+
+<br><br>  
+
+The total observation count in Morning.....
+
+
+:::
+  
+:::{}
+
+
+```{r, fig.align='center', fig.width=6.5, fig.height=4}
+# table
+# Ensure 'time_of_day' is a factor with a specific order
+observations_selected <- observations_selected |> 
+  mutate(time_of_day = factor(time_of_day, levels = c("Morning", "Afternoon", "Evening", "Night")))
+
+# Summarize total observation count by time of day
+time_summary <- observations_selected |> 
+  group_by(time_of_day) |> 
+  summarise(total_observation_count = sum(observation_count, na.rm = TRUE))
+
+# Create a table using kable for display
+time_summary |> 
+  kable(
+    col.names = c("Time of Day", "Total Observation Count"),
+    caption = "Table: Total observation count of woodcocks by time of day in NY"
+  )
+```
+
+<br><br> 
+
+
+:::
+  
+::::
+  
+
+
+<br><br> 
+
+
+
+
+
 Are the difference significant?
 
 ```{r}
@@ -198,9 +294,15 @@ kruskal_result |>
 There is strong evidence that the observation counts differ significantly across the time periods (Morning, Afternoon, Evening, Night).
 
 
+## County
+
 **Observation Counts by County**
 
-```{r}
+:::: {style="display: flex;"}
+
+::: {}
+
+```{r, fig.align='center', fig.width=5, fig.height=4}
 # Summarize the data by county
 county_summary <- observations_selected |> 
   filter(!is.na(county)) |> 
@@ -217,8 +319,24 @@ ggplot(county_summary, aes(x = reorder(county, -total_observation_count), y = to
     y = "Total Observation Count"
   ) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1),
-        legend.position = "bottom")
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 6),
+        legend.position = "right",
+        plot.title = element_text(size = 10, hjust = 0.5),  # Smaller title, centered
+        axis.title.x = element_text(size = 8),  
+        axis.title.y = element_text(size = 8),
+        legend.text = element_text(size = 8))
 ```
+
+:::
+
+:::{}
+
+
+
+
+:::
+::::
+
+
 
 
