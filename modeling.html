@@ -395,14 +395,19 @@ State.</p>
 collected and augmented with relevant environmental variables. To derive
 the observation ratio for subsequent modeling, we implemented the
 following steps:</p>
-<pre><code>1.  Variable Grouping and Flagging:
-•   The average temperature (t_avg) was grouped at intervals of 1°C.
-•   Snowfall (snow) was grouped at intervals of 5 units.
-•   For each grouped range, corresponding flag variables were created.
-
-2.  Observation Counting:
-•   For observations within the same flag (representing similar environmental conditions), we calculated the count of American Woodcock observed.
-•   This count was divided by the total observations to compute the dependent variable for the regression model, obs_ratio, representing the proportion of observations under the given conditions.</code></pre>
+<ol style="list-style-type: decimal">
+<li><p>Variable Grouping and Flagging: • The average temperature (t_avg)
+was grouped at intervals of 1°C.</p>
+<p>• Snowfall (snow) was grouped at intervals of 5 units.</p>
+<p>• For each grouped range, corresponding flag variables were
+created.</p></li>
+<li><p>Observation Counting: • For observations within the same flag
+(representing similar environmental conditions), we calculated the count
+of American Woodcock observed.</p>
+<p>• This count was divided by the total observations to compute the
+dependent variable for the regression model, obs_ratio, representing the
+proportion of observations under the given conditions.</p></li>
+</ol>
 <pre class="r"><code>weather_df &lt;- read_csv(&quot;data/zf_with_weather_landcover.csv&quot;) |&gt;
    filter(!is.na(t_avg)) |&gt;
    filter(!is.na(landcover)) |&gt;
