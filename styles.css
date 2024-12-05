@@ -1,0 +1,13 @@
+body {
+    font-family: Cambria, serif; /* Sets the font to Cambria */
+    font-size: 18px; /* Adjusts font size */
+    line-height: 1.6; /* Improves readability by increasing line spacing */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Cambria, serif; /* Ensures headings also use Cambria */
+}
+
+p {
+    margin-bottom: 1em; /* Adds spacing between paragraphs */
+}

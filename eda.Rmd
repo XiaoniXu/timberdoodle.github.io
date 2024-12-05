@@ -1,6 +1,10 @@
 ---
-title: "statistical_analysis"
-output: html_document
+title: "EDA"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE, message=FALSE}
@@ -13,6 +17,12 @@ library(readr)
 library(sf)
 library(kableExtra)
 library(leaflet)
+
+# Set default figure options
+knitr::opts_chunk$set(
+  fig.width = 6,
+  out.width = "90%"
+)
 ```
 
 
@@ -22,7 +32,7 @@ observations_selected = read_csv("data/observations_selected_clean.csv")
 
 **Does the season affect the activity of woodcocks?**
 
-```{r, echo=FALSE}
+```{r}
 observations_selected <- observations_selected |> 
   mutate(season = factor(season, levels = c("Winter", "Spring", "Summer", "Fall")))
 
@@ -45,11 +55,13 @@ ggplot(season_summary, aes(x = season, y = total_observation_count, fill = seaso
   theme(legend.position = "none")
 ```
 
+
+
 The total observation count in Spring in NY is significantly higher than in any other season...
 
 **When do American woodcocks usually appear?**
 
-```{r, echo=FALSE}
+```{r}
 observations_selected <- observations_selected |> 
   mutate(time_of_day = factor(time_of_day, levels = c("Morning", "Afternoon", "Evening", "Night")))
 
@@ -78,7 +90,7 @@ ggplot(time_summary, aes(x = time_of_day, y = total_observation_count, fill = ti
 
 Are the difference significant?
 
-```{r, echo=FALSE}
+```{r}
 kruskal_test <- kruskal.test(observation_count ~ time_of_day, data = observations_selected)
 
 # Extract test results
@@ -99,7 +111,7 @@ There is strong evidence that the observation counts differ significantly across
 
 **Observation Counts by County**
 
-```{r, echo=FALSE}
+```{r}
 # Summarize the data by county
 county_summary <- observations_selected |> 
   filter(!is.na(county)) |> 

@@ -7,8 +7,8 @@ navbar:
       href: about.html
     - text: "Data Wrangling"
       href: data_wrangling.html
-    - text: "Stats"
-      href: statistical_analysis.html
+    - text: "EDA"
+      href: eda.html
     - text: "Modeling"
       href: modeling.html
     - icon: fa-envelope fa-lg
@@ -17,5 +17,5 @@ navbar:
       href: http://github.com/XiaoniXu/
 output:
   html_document:
-    theme: simplex
+      css: styles.css
     

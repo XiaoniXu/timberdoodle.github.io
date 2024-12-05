@@ -1,20 +1,21 @@
 ---
-title: "Timberdoodle: how to find one yourself"
+title: "Where would you expect to see a woodcock?"
 output: 
   html_document:
     toc: true
     toc_float: true
+    code_folding: hide
 ---
 
-This is the website for final project for course P8105 at Columbia University. 
 
 
 
-<img src="images/amwo4.jpg" style="width:75%">
+<img src="images/amwo1.jpg" style="display: block; margin: auto; width: 75%;">
+
 
 For general information about American Woodcocks, visit its [eBird page](https://ebird.org/species/amewoo).
 
-[about](about.html)
+Find more [about us](about.html).
 
 
 
@@ -23,7 +24,7 @@ For general information about American Woodcocks, visit its [eBird page](https:/
 
 **American Woodcocks Observation in NY**
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE, warning = FALSE}
 library(auk)
 library(dplyr)
 library(ggplot2)
@@ -33,7 +34,10 @@ library(readr)
 library(sf)
 library(kableExtra)
 library(leaflet)
+```
 
+
+```{r}
 amwo <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt"
 amwo_samp <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024_sampling.txt"
 observations <- read_ebd(amwo)
@@ -79,10 +83,10 @@ observations_selected_clean <- observations_selected |>
 
 # Define colors for four categories
 category_colors <- c(
-  "1" = "#87CEEB",  # Sky blue for count = 1
-  "2" = "#FFA500",  # Bright orange for count = 2
-  "3" = "#FF0000",  # Bright red for count = 3
-  ">3" = "#800080"  # Dark purple for count >3
+  "1" = "#5acc56", 
+  "2" = "#4daf4a",  
+  "3" = "#2d662b",  
+  ">3" = "#163315"  
 )
 
 # Function to assign colors based on categories

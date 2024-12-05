@@ -1,7 +1,11 @@
 ---
-title: "modeling"
+title: "Prediction Modeling"
 author: "Wenjie Wu"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -11,7 +15,7 @@ library(sf)
 library(ggplot2)
 ```
 
-```{r}
+```{r, message = FALSE}
 weather_df <- read_csv("data/zf_with_weather_landcover.csv") |>
    filter(!is.na(t_avg)) |>
    filter(!is.na(landcover)) |>
@@ -31,7 +35,7 @@ weather_df <-  weather_df |>
 
 
 
-```{r}
+```{r, warning = FALSE}
 lm_model = lm(obs_ratio ~ tmax + tmin + prcp + snow + snwd + landcover + lon + lat, data = weather_df)
 
 summary(lm_model)
@@ -42,7 +46,7 @@ ny_boundary <- tigris::states(cb = TRUE) |>
   st_as_sf()
 ```
 
-```{r}
+```{r, warning = FALSE}
 ny_boundary <- st_make_valid(ny_boundary)
 
 grid_size <- 0.1  
@@ -68,7 +72,7 @@ ggplot() +
   )
 ```
 
-```{r}
+```{r, warning = FALSE}
 ny_grid <- ny_grid |> st_make_valid()
 
 set.seed(42)  
