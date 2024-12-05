@@ -18,7 +18,7 @@
 <script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -62,6 +62,7 @@ if (window.hljs) {
 
 
 
+<link rel="stylesheet" href="styles.css" type="text/css" />
 
 
 
@@ -250,16 +251,19 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="about.html">About</a>
-</li>
-<li>
   <a href="data_wrangling.html">Data Wrangling</a>
 </li>
 <li>
-  <a href="statistical_analysis.html">Stats</a>
+  <a href="eda.html">EDA</a>
 </li>
 <li>
   <a href="modeling.html">Modeling</a>
+</li>
+<li>
+  <a href="report.html">Report</a>
+</li>
+<li>
+  <a href="about.html">About</a>
 </li>
 <li>
   <a href="mailto:&lt;xx2485@cumc.columbia.edu&gt;">
@@ -298,11 +302,11 @@ populations are declining throughout their range (Bergian). Because it
 is one of the only shorebird species in North America that reside in
 habitats not adjacent to water during migration, the land mass of
 potential suitable habitats for this species is far greater than other
-water-dependent birds such as dunlin (<em>Calidris alpina</em>) or
-semipalmated plover (<em>Charadrius semipalmatus</em>). As a result,
-woodcocks are more easily stumbled upon in close proximity to human
-activities: during woodland hikes, county road drives, morning park
-jogs, or nighttime camps.</p>
+water-dependent birds in Order Charadriiformes such as dunlin
+(<em>Calidris alpina</em>) or semipalmated plover (<em>Charadrius
+semipalmatus</em>). As a result, woodcocks are more easily stumbled upon
+in close proximity to human activities: during woodland hikes, county
+road drives, morning park jogs, or nighttime camps.</p>
 <p>Along with its significance of being an umbrella species - a
 representative of an ecosystem specifically for conservation purposes
 that protects other species within its ecosystem - the woodcock is also
@@ -314,7 +318,13 @@ favorite when paired with a wide array of music on social media
 community, policy makers, and the general public for the ecological,
 temporal, and spatial factors that may affect the chances one could
 encounter a woodcock in the wild.</p>
-<p>For this project, we (…)</p>
+<p>For this project, we demonstrated the observational data in various
+ways in response to scientific questions on detection of woodcocks,
+along with creating a prediction model using variables both included in
+the observational data and inferred using latitude and longitude
+information. Our charts showed the power of citizen science data and the
+multitude of analyses that the data enables researchers and scientists
+to explore and answer new questions.</p>
 </div>
 <div id="data-methods" class="section level2">
 <h2>2. Data &amp; Methods</h2>
@@ -335,14 +345,66 @@ data of woodcocks. Due to the large file size and limited CPU powers,
 the dataset is limited to observations from January 2019 to January 2024
 in New York State.</p>
 <p>eBird data is then processed using the <code>auk</code> package
-(Strimas-Mackey et al.) for data visualization and processing.</p>
+(Strimas-Mackey et al.) for data visualization and processing. The .txt
+files were loaded into R, and the shared checklists were collapsed to
+eliminate replicated observations. The non-complete checklists were then
+filtered to ensure data cleaniness. The zero-filling method is then used
+to infer non-detections using the sampling data. Some of the variables
+were transformed for modeling: time is converted to a decimal value, and
+a variable for speed is created. Checklists too long or too fast were
+eliminated.</p>
 </div>
 </div>
 <div id="results" class="section level2">
 <h2>3. Results</h2>
+<p>Preliminary exploratory analysis were carried out to answer some
+common questions related to woodcock detection within New York State. By
+creating a <code>season</code> factor and creating a bar chart showing
+the number of checklists per season, we visualized the total amount and
+the difference in number of observations of woodcocks each season. The
+observation counts were also categorized by time of day to see if there
+is any significant pattern in time of the day for detection. Then, a
+chi-squared test is run to test whether the differences between season
+and day times are significant. Also, the number of observations is also
+summarized by county.</p>
+<p>We were able to observe a significant</p>
 </div>
 <div id="conclusion-and-discussion" class="section level2">
 <h2>4. Conclusion and Discussion</h2>
+<p>Overall, we harnessed the power of citizen science data to both
+answer various questions on sightings of a rather secrete question and
+create a comprehensive prediction model using various temporal and
+spatial factors for the abundance in any given place in New York state.
+We used a charismatic species that is well-known in naturalist and
+birder community as well as anyone using social media as an example to
+display our methods in exploring such citizen science data; the same
+visualizations and analyses that we demonstrated can be easily
+duplicated for other species and observations, or even non-wildlife data
+such as occurrence of a disease or the tracking of all crimes in a
+city.</p>
+<p>where effort data are not available, in some situations occupancy
+models may be a more robust modelling approach</p>
+<p>analysing complete checklists and using effort variables as
+covariates made the largest difference to the model quality</p>
+<p>the raw data, the volume of data, the model type and the modelling
+objective will all affect the relative benefit of the data processing
+steps that we describe. (Johnston et al.)</p>
+<p>Data selection has been, and will always be a</p>
+<p>One possibility is that checklist submission might be driven by the
+availability of public green spaces where birders are attracted (Lopez
+et al.)</p>
+<p>road density to be negatively associated with the sampling intensity
+across multiple taxa (Mair and Ruete)</p>
+<p>how selected sampling can lead to incorrect inferences about the
+relationship between variables of interest (Grade et al.)</p>
+<p>Within the scope of time and the previous background and experience
+in computational and ornithological knowledge, we were able to uncover a
+plethora of results that would otherwise well hidden inside the data
+set. However, a deeper dive into the more fine-tuned ecology and
+micro-habitats of the woodcock (or other species that reside in
+successional habitats that favor areas with more urban development) is
+needed to provide enough precision for the prediction model suitable for
+ornithological research.</p>
 </div>
 <div id="references" class="section level2">
 <h2>5. References</h2>

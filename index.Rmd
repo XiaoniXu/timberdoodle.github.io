@@ -1,20 +1,46 @@
 ---
-title: "Timberdoodle: how to find one yourself"
+title: "Where would you expect to see a woodcock?"
 output: 
   html_document:
     toc: true
     toc_float: true
+    code_folding: hide
 ---
 
-This is the website for final project for course P8105 at Columbia University. 
+> I heard one in the woods behind my apartment early this morning and I’ve never seen one in the wild before. Since all of the leaves on the ground are dead and dried, I’m worried that it’ll be really difficult for me to spot it due to its camouflage. I’m really eager to add it onto my life list so any suggestions on how to find this little fella would be much appreciated!  
+> — r/birdwatching, Reddit
 
 
 
-<img src="images/amwo4.jpg" style="width:75%">
+<figure style="text-align: center;">
+  <img src="images/amwo1.jpg" style="display: block; margin: auto; width: 75%;">
+  <figcaption style="font-size: 14px; color: #555;">American Woodcock (*Scolopax minor*) at Central Park, Oct 2024, &copy; Xiaoni Xu.</figcaption>
+</figure>
 
-For general information about American Woodcocks, visit its [eBird page](https://ebird.org/species/amewoo).
 
-[about](about.html)
+<div style="display: flex; align-items: center; gap: 20px;">
+
+  <!-- Text Section -->
+  <div style="flex: 1; font-size: 16px; line-height: 1.6;">
+    As elusive as they might be, the American Woodcock (*Scolopax minor*) is famous for its unorthodox appearance, its captivating courtship flights at sunset, and its dance move on the internet. It is a species of shorebird in eastern United States that is sometimes encountered in urban parks.
+  </div>
+
+  <!-- Image Section -->
+  <div style="flex: 1; text-align: center;">
+    <img src="images/amwo_dance.gif" alt="The Woodcock Dance" style="width: 300px;">
+  </div>
+
+</div>
+
+
+
+For this project, we take a look at the observational data of all American Woodcock sightings on eBird, the biggest online public platform for birding observations in the United States. We attempted to visualize the occurrence of this species and build a prediction model to facilitate the process for one to find a woodcock by themselves.
+
+For general information about American Woodcocks, visit its [eBird page](https://ebird.org/species/amewoo). 
+
+
+
+Find more [about us](about.html).
 
 
 
@@ -23,7 +49,7 @@ For general information about American Woodcocks, visit its [eBird page](https:/
 
 **American Woodcocks Observation in NY**
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE, warning = FALSE}
 library(auk)
 library(dplyr)
 library(ggplot2)
@@ -33,7 +59,10 @@ library(readr)
 library(sf)
 library(kableExtra)
 library(leaflet)
+```
 
+
+```{r, eval = FALSE}
 amwo <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt"
 amwo_samp <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024_sampling.txt"
 observations <- read_ebd(amwo)
@@ -76,13 +105,18 @@ observations_selected <-
 # Sample data (replace with observations_selected)
 observations_selected_clean <- observations_selected |> 
   filter(!is.na(longitude) & !is.na(latitude))
+```
+
+
+```{r, message = FALSE}
+observations_selected = read_csv("data/observations_selected_clean.csv")
 
 # Define colors for four categories
 category_colors <- c(
-  "1" = "#87CEEB",  # Sky blue for count = 1
-  "2" = "#FFA500",  # Bright orange for count = 2
-  "3" = "#FF0000",  # Bright red for count = 3
-  ">3" = "#800080"  # Dark purple for count >3
+  "1" = "#5acc56", 
+  "2" = "#4daf4a",  
+  "3" = "#2d662b",  
+  ">3" = "#163315"  
 )
 
 # Function to assign colors based on categories
@@ -95,7 +129,7 @@ custom_color <- function(count) {
 }
 
 # Render the interactive map
-leaflet(data = observations_selected_clean) %>%
+leaflet(data = observations_selected) %>%
   addTiles() %>%  # Add default OpenStreetMap tiles
   addCircleMarkers(
     ~longitude, ~latitude,  # Longitude and Latitude

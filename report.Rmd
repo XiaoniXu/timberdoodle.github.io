@@ -3,15 +3,16 @@ title: "Report"
 author: "Xiaoni Xu"
 date: "2024-12-04"
 output: html_document
+
 ---
 
 ## 1. Introduction
 
-  American woodcock (*Scolopax minor*; hereinafter woodcock), one of the most common species of shorebirds in eastern North America (McAuley et al.), is an early successional habitat specialist whose populations are declining throughout their range (Bergian). Because it is one of the only shorebird species in North America that reside in habitats not adjacent to water during migration, the land mass of potential suitable habitats for this species is far greater than other water-dependent birds such as dunlin (*Calidris alpina*) or semipalmated plover (*Charadrius semipalmatus*). As a result, woodcocks are more easily stumbled upon in close proximity to human activities: during woodland hikes, county road drives, morning park jogs, or nighttime camps.
+  American woodcock (*Scolopax minor*; hereinafter woodcock), one of the most common species of shorebirds in eastern North America (McAuley et al.), is an early successional habitat specialist whose populations are declining throughout their range (Bergian). Because it is one of the only shorebird species in North America that reside in habitats not adjacent to water during migration, the land mass of potential suitable habitats for this species is far greater than other water-dependent birds in Order Charadriiformes such as dunlin (*Calidris alpina*) or semipalmated plover (*Charadrius semipalmatus*). As a result, woodcocks are more easily stumbled upon in close proximity to human activities: during woodland hikes, county road drives, morning park jogs, or nighttime camps.
   
   Along with its significance of being an umbrella species - a representative of an ecosystem specifically for conservation purposes that protects other species within its ecosystem - the woodcock is also one of the highly sought-after shorebird species among naturalists and birders due to its appearance, behavior, and relatively difficulty of detection. In addition, its 'dance' moves has made it into an internet favorite when paired with a wide array of music on social media (Farley). Thus, it has become a curious inquiry to members of science community, policy makers, and the general public for the ecological, temporal, and spatial factors that may affect the chances one could encounter a woodcock in the wild.
   
-  For this project, we (...)
+  For this project, we demonstrated the observational data in various ways in response to scientific questions on detection of woodcocks, along with creating a prediction model using variables both included in the observational data and inferred using latitude and longitude information. Our charts showed the power of citizen science data and the multitude of analyses that the data enables researchers and scientists to explore and answer new questions.
   
 ## 2. Data & Methods
 
@@ -21,12 +22,37 @@ output: html_document
   
   The observational and sampling data in the form of individual checklists on the platform, eBird Basic Dataset (EBD), is publicly available and is downloaded after submitting a request to download the data of woodcocks. Due to the large file size and limited CPU powers, the dataset is limited to observations from January 2019 to January 2024 in New York State.
   
-  eBird data is then processed using the `auk` package (Strimas-Mackey et al.) for data visualization and processing.
+  eBird data is then processed using the `auk` package (Strimas-Mackey et al.) for data visualization and processing. The .txt files were loaded into R, and the shared checklists were collapsed to eliminate replicated observations. The non-complete checklists were then filtered to ensure data cleaniness. The zero-filling method is then used to infer non-detections using the sampling data. Some of the variables were transformed for modeling: time is converted to a decimal value, and a variable for speed is created. Checklists too long or too fast were eliminated.
 
 ## 3. Results
 
+  Preliminary exploratory analysis were carried out to answer some common questions related to woodcock detection within New York State. By creating a `season` factor and creating a bar chart showing the number of checklists per season, we visualized the total amount and the difference in number of observations of woodcocks each season. The observation counts were also categorized by time of day to see if there is any significant pattern in time of the day for detection. Then, a chi-squared test is run to test whether the differences between season and day times are significant. Also, the number of observations is also summarized by county.
+  
+  We were able to observe a significant 
+  
 ## 4. Conclusion and Discussion
-
+  
+  Overall, we harnessed the power of citizen science data to both answer various questions on sightings of a rather secrete question and create a comprehensive prediction model using various temporal and spatial factors for the abundance in any given place in New York state. We used a charismatic species that is well-known in naturalist and birder community as well as anyone using social media as an example to display our methods in exploring such citizen science data; the same visualizations and analyses that we demonstrated can be easily duplicated for other species and observations, or even non-wildlife data such as occurrence of a disease or the tracking of all crimes in a city.
+  
+  where effort data are not available, in some situations occupancy models may be a more robust modelling approach 
+  
+  analysing complete checklists and using effort variables as covariates made the largest difference to the model quality
+  
+   the raw data, the volume of data, the model type and the modelling objective will all affect the relative benefit of the data processing steps that we describe.
+  (Johnston et al.)
+  
+  
+  
+  Data selection has been, and will always be a 
+  
+  One possibility is that checklist submission might be driven by the availability of public green spaces where birders are attracted (Lopez et al.)
+  
+  road density to be negatively associated with the sampling intensity across multiple taxa (Mair and Ruete)
+  
+  how selected sampling can lead to incorrect inferences about the relationship between variables of interest (Grade et al.)
+  
+  Within the scope of time and the previous background and experience in computational and ornithological knowledge, we were able to uncover a plethora of results that would otherwise well hidden inside the data set. However, a deeper dive into the more fine-tuned ecology and micro-habitats of the woodcock (or other species that reside in successional habitats that favor areas with more urban development) is needed to provide enough precision for the prediction model suitable for ornithological research. 
+  
 ## 5. References
 
 

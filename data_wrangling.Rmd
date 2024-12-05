@@ -1,11 +1,15 @@
 ---
-title: "data_wrangling"
+title: "Data Wrangling"
 author: "Xiaoni Xu"
 date: "2024-11-20"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
 ---
 
-```{r, message = FALSE}
+```{r, message = FALSE, warning = FALSE}
 library(auk)
 library(dplyr)
 library(ggplot2)
@@ -16,6 +20,9 @@ library(sf)
 
 ```
 ## Loading the data
+
+The raw data from eBird has 2,276,777 observations for the sampling data (meaning all checklists in New York state from January 2019 to January 2024) and 13,748 woodcock observations in New York state in the same time frame. There are also a large number of categorical data.
+
 ```{r}
 # observation data
 amwo <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt"
@@ -122,9 +129,9 @@ zf_filtered <- zf |>
          number_observers <= 10)
 ```
 
-## Exploratory analysis and visualization
 
-We make a simple map of the observations. This map uses GIS data.
+Here, we will project all the observational and sampling data onto a New York state map using GIS data.
+
 ```{r}
 # load gis data
 ne_land <- read_sf("data/gis-data.gpkg", "ne_land") |> 

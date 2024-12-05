@@ -13,12 +13,12 @@
 
 <meta name="date" content="2024-11-20" />
 
-<title>data_wrangling</title>
+<title>Data Wrangling</title>
 
 <script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -31,7 +31,11 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
@@ -62,6 +66,7 @@ if (window.hljs) {
 
 
 
+<link rel="stylesheet" href="styles.css" type="text/css" />
 
 
 
@@ -220,7 +225,73 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
 
 
 
@@ -230,6 +301,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -250,16 +331,19 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="about.html">About</a>
-</li>
-<li>
   <a href="data_wrangling.html">Data Wrangling</a>
 </li>
 <li>
-  <a href="statistical_analysis.html">Stats</a>
+  <a href="eda.html">EDA</a>
 </li>
 <li>
   <a href="modeling.html">Modeling</a>
+</li>
+<li>
+  <a href="report.html">Report</a>
+</li>
+<li>
+  <a href="about.html">About</a>
 </li>
 <li>
   <a href="mailto:&lt;xx2485@cumc.columbia.edu&gt;">
@@ -280,26 +364,36 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
-<h1 class="title toc-ignore">data_wrangling</h1>
+
+<h1 class="title toc-ignore">Data Wrangling</h1>
 <h4 class="author">Xiaoni Xu</h4>
 <h4 class="date">2024-11-20</h4>
 
 </div>
 
 
-<pre class="r"><code>library(auk)</code></pre>
-<pre><code>## Warning: package &#39;auk&#39; was built under R version 4.4.2</code></pre>
-<pre class="r"><code>library(dplyr)
+<pre class="r"><code>library(auk)
+library(dplyr)
 library(ggplot2)
 library(gridExtra)
 library(lubridate)
 library(readr)
 library(sf)</code></pre>
-<pre><code>## Warning: package &#39;sf&#39; was built under R version 4.4.2</code></pre>
 <div id="loading-the-data" class="section level2">
 <h2>Loading the data</h2>
+<p>The raw data from eBird has 2,276,777 observations for the sampling
+data (meaning all checklists in New York state from January 2019 to
+January 2024) and 13,748 woodcock observations in New York state in the
+same time frame. There are also a large number of categorical data.</p>
 <pre class="r"><code># observation data
 amwo &lt;- &quot;data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt&quot;
 
@@ -500,10 +594,8 @@ zf_filtered &lt;- zf |&gt;
          effort_distance_km &lt;= 10,
          effort_speed_kmph &lt;= 100,
          number_observers &lt;= 10)</code></pre>
-</div>
-<div id="exploratory-analysis-and-visualization" class="section level2">
-<h2>Exploratory analysis and visualization</h2>
-<p>We make a simple map of the observations. This map uses GIS data.</p>
+<p>Here, we will project all the observational and sampling data onto a
+New York state map using GIS data.</p>
 <pre class="r"><code># load gis data
 ne_land &lt;- read_sf(&quot;data/gis-data.gpkg&quot;, &quot;ne_land&quot;) |&gt; 
   st_geometry()
@@ -563,6 +655,8 @@ box()</code></pre>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -594,7 +688,41 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
