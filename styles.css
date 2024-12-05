@@ -7,6 +7,7 @@ body {
     color: #333; /* Dark gray text color for contrast */
     margin: 0;
     padding: 0;
+    text-align: justify; /* Justify all text globally */
 }
 
 /* Heading styles */
@@ -15,6 +16,7 @@ h1, h2, h3, h4, h5, h6 {
     color: #2e4a62; /* Dark blue for headings */
     margin: 0 0 10px;
     font-weight: 600;
+    text-align: left; /* Keep headings left-aligned */
 }
 
 /* Links */
@@ -77,6 +79,7 @@ button:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-bottom: 20px;
+    text-align: justify; /* Justify text inside cards */
 }
 
 /* Tables */
@@ -88,7 +91,7 @@ table {
 
 table th, table td {
     padding: 10px;
-    text-align: left;
+    text-align: left; /* Keep table data left-aligned */
     border-bottom: 1px solid #ddd;
 }
 
@@ -108,6 +111,7 @@ table tr:hover {
     padding: 20px;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: justify; /* Justify text in chart containers */
 }
 
 /* Footer */
