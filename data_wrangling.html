@@ -381,15 +381,13 @@ div.tocify {
 </div>
 
 
-<pre class="r"><code>library(auk)</code></pre>
-<pre><code>## Warning: package &#39;auk&#39; was built under R version 4.4.2</code></pre>
-<pre class="r"><code>library(dplyr)
+<pre class="r"><code>library(auk)
+library(dplyr)
 library(ggplot2)
 library(gridExtra)
 library(lubridate)
 library(readr)
 library(sf)</code></pre>
-<pre><code>## Warning: package &#39;sf&#39; was built under R version 4.4.2</code></pre>
 <div id="loading-the-data" class="section level2">
 <h2>Loading the data</h2>
 <p>The raw data from eBird has 2,276,777 observations for the sampling
@@ -596,10 +594,8 @@ zf_filtered &lt;- zf |&gt;
          effort_distance_km &lt;= 10,
          effort_speed_kmph &lt;= 100,
          number_observers &lt;= 10)</code></pre>
-</div>
-<div id="exploratory-analysis-and-visualization" class="section level2">
-<h2>Exploratory analysis and visualization</h2>
-<p>We make a simple map of the observations. This map uses GIS data.</p>
+<p>Here, we will project all the observational and sampling data onto a
+New York state map using GIS data.</p>
 <pre class="r"><code># load gis data
 ne_land &lt;- read_sf(&quot;data/gis-data.gpkg&quot;, &quot;ne_land&quot;) |&gt; 
   st_geometry()

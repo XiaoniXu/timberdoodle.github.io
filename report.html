@@ -318,8 +318,7 @@ favorite when paired with a wide array of music on social media
 community, policy makers, and the general public for the ecological,
 temporal, and spatial factors that may affect the chances one could
 encounter a woodcock in the wild.</p>
-<p>For this project, we first processed the eBird checklist data into a
-format suitable for further analysis.</p>
+<p>For this project,</p>
 </div>
 <div id="data-methods" class="section level2">
 <h2>2. Data &amp; Methods</h2>
@@ -340,14 +339,41 @@ data of woodcocks. Due to the large file size and limited CPU powers,
 the dataset is limited to observations from January 2019 to January 2024
 in New York State.</p>
 <p>eBird data is then processed using the <code>auk</code> package
-(Strimas-Mackey et al.) for data visualization and processing.</p>
+(Strimas-Mackey et al.) for data visualization and processing. The .txt
+files were loaded into R, and the shared checklists were collapsed to
+eliminate replicated observations. The non-complete checklists were then
+filtered to ensure data cleaniness. The zero-filling method is then used
+to infer non-detections using the sampling data. Some of the variables
+were transformed for modeling: time is converted to a decimal value, and
+a variable for speed is created. Checklists too long or too fast were
+eliminated.</p>
 </div>
 </div>
 <div id="results" class="section level2">
 <h2>3. Results</h2>
+<p>Preliminary exploratory analysis were carried out to answer some
+common questions related to woodcock detection within New York State. By
+creating a <code>season</code> factor and creating a bar chart showing
+the number of checklists per season, we visualized the total amount and
+the difference in number of observations of woodcocks each season. The
+observation counts were also categorized by time of day to see if there
+is any significant pattern in time of the day for detection. Then, a
+chi-squared test is run to test whether the differences between season
+and day times are significant. Also, the number of observations is also
+summarized by county.</p>
+<p>We were able to observe a significant</p>
 </div>
 <div id="conclusion-and-discussion" class="section level2">
 <h2>4. Conclusion and Discussion</h2>
+<p>Overall, we harnessed the power of citizen science data to both
+answer various questions on sightings of a rather secrete question and
+create a comprehensive prediction model using various temporal and
+spatial factors for the abundance in any given place in New York
+state.</p>
+<p>Within the scope of time and the previous background and experience
+in computational and ornithological knowledge, we were able to uncover a
+plethora of results that would otherwise well hidden inside the data
+set.</p>
 </div>
 <div id="references" class="section level2">
 <h2>5. References</h2>

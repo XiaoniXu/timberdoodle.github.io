@@ -11,7 +11,7 @@ output: html_document
   
   Along with its significance of being an umbrella species - a representative of an ecosystem specifically for conservation purposes that protects other species within its ecosystem - the woodcock is also one of the highly sought-after shorebird species among naturalists and birders due to its appearance, behavior, and relatively difficulty of detection. In addition, its 'dance' moves has made it into an internet favorite when paired with a wide array of music on social media (Farley). Thus, it has become a curious inquiry to members of science community, policy makers, and the general public for the ecological, temporal, and spatial factors that may affect the chances one could encounter a woodcock in the wild.
   
-  For this project, we first processed the eBird checklist data into a format suitable for further temporal and spatial analysis.
+  For this project, 
   
 ## 2. Data & Methods
 
@@ -21,12 +21,20 @@ output: html_document
   
   The observational and sampling data in the form of individual checklists on the platform, eBird Basic Dataset (EBD), is publicly available and is downloaded after submitting a request to download the data of woodcocks. Due to the large file size and limited CPU powers, the dataset is limited to observations from January 2019 to January 2024 in New York State.
   
-  eBird data is then processed using the `auk` package (Strimas-Mackey et al.) for data visualization and processing.
+  eBird data is then processed using the `auk` package (Strimas-Mackey et al.) for data visualization and processing. The .txt files were loaded into R, and the shared checklists were collapsed to eliminate replicated observations. The non-complete checklists were then filtered to ensure data cleaniness. The zero-filling method is then used to infer non-detections using the sampling data. Some of the variables were transformed for modeling: time is converted to a decimal value, and a variable for speed is created. Checklists too long or too fast were eliminated.
 
 ## 3. Results
 
+  Preliminary exploratory analysis were carried out to answer some common questions related to woodcock detection within New York State. By creating a `season` factor and creating a bar chart showing the number of checklists per season, we visualized the total amount and the difference in number of observations of woodcocks each season. The observation counts were also categorized by time of day to see if there is any significant pattern in time of the day for detection. Then, a chi-squared test is run to test whether the differences between season and day times are significant. Also, the number of observations is also summarized by county.
+  
+  We were able to observe a significant 
+  
 ## 4. Conclusion and Discussion
-
+  
+  Overall, we harnessed the power of citizen science data to both answer various questions on sightings of a rather secrete question and create a comprehensive prediction model using various temporal and spatial factors for the abundance in any given place in New York state. 
+  
+  Within the scope of time and the previous background and experience in computational and ornithological knowledge, we were able to uncover a plethora of results that would otherwise well hidden inside the data set.
+  
 ## 5. References
 
 

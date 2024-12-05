@@ -9,7 +9,7 @@ output:
     code_folding: hide
 ---
 
-```{r, message = FALSE}
+```{r, message = FALSE, warning = FALSE}
 library(auk)
 library(dplyr)
 library(ggplot2)
@@ -129,9 +129,9 @@ zf_filtered <- zf |>
          number_observers <= 10)
 ```
 
-## Exploratory analysis and visualization
 
-We make a simple map of the observations. This map uses GIS data.
+Here, we will project all the observational and sampling data onto a New York state map using GIS data.
+
 ```{r}
 # load gis data
 ne_land <- read_sf("data/gis-data.gpkg", "ne_land") |> 
