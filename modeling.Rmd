@@ -1,0 +1,222 @@
+---
+title: "Prediction Modeling"
+author: "Wenjie Wu"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(tigris)
+library(sf)
+library(ggplot2)
+library(geosphere)
+library(terra)
+```
+
+<<<<<<< HEAD
+
+# Introduction and Objcetive
+
+The primary goal of this section is to conduct a modeling analysis on the existing dataset. By leveraging environmental variables such as latitude, longitude, temperature, and snowfall, we aim to train regression models and ultimately generate a predictive heatmap highlighting the likelihood of observing American Woodcock in New York State.
+
+# Data preprocessing
+
+The dataset used in this analysis includes eBird data previously collected and augmented with relevant environmental variables. To derive the observation ratio for subsequent modeling, we implemented the following steps:
+
+	1.	Variable Grouping and Flagging:
+	•	The average temperature (t_avg) was grouped at intervals of 1°C.
+	•	Snowfall (snow) was grouped at intervals of 5 units.
+	•	For each grouped range, corresponding flag variables were created.
+	
+	2.	Observation Counting:
+	•	For observations within the same flag (representing similar environmental conditions), we calculated the count of American Woodcock observed.
+	•	This count was divided by the total observations to compute the dependent variable for the regression model, obs_ratio, representing the proportion of observations under the given conditions.
+
+```{r}
+weather_df <- read_csv("data/zf_with_weather_landcover.csv") |>
+   filter(!is.na(t_avg)) |>
+   filter(!is.na(landcover)) |>
+    mutate(t_avg_flag = as.integer((t_avg - min(t_avg, na.rm = TRUE)) / 1)) |>
+    mutate(snow_flag = as.integer((snow - min(snow, na.rm = TRUE)) / 5))
+
+weather_df <-  weather_df |>
+  group_by(t_avg_flag, snow_flag) |>
+  mutate(
+    group_obs_count = n(),  
+    total_obs_count = nrow(weather_df),  
+    obs_ratio = group_obs_count / total_obs_count  
+  ) |>
+  ungroup()
+
+```
+
+# Modeling results 
+
+All predictors (tmax, tmin, prcp, snow, snwd, landcover, lon, and lat) show statistically significant contributions to the model at the 0.001 significance level (p < 0.001), indicated by their respective t-values and small p-values.
+
+Temperature extremes (tmax and tmin) have significant but opposing effects, with higher maximum temperatures increasing the likelihood of observations and lower minimum temperatures reducing it.
+
+Snowfall (snow) and snow depth (snwd) negatively impact observations, aligning with ecological expectations that severe winter conditions limit sightings.
+
+```{r, warning = FALSE}
+lm_model = lm(obs_ratio ~ tmax + tmin + prcp + snow + snwd + landcover + lon + lat, data = weather_df)
+
+summary(lm_model)
+```
+```{r, echo = FALSE, message = FALSE, warning = FALSE, results = "hide"}
+ny_boundary <- tigris::states(cb = TRUE) |>
+  filter(NAME == "New York") |>
+  st_as_sf()
+```
+
+# Griding for NY state
+
+Making boundary for NY state, preparing for ploting heating map. We applied grid operations to the map of New York State, dividing it into grids to more precisely identify bird observation locations and simulate real-world conditions. After multiple adjustments, a grid size of 0.1 was selected as the optimal scale.
+
+```{r}
+ny_boundary <- st_make_valid(ny_boundary)
+
+grid_size <- 0.1  
+
+ny_grid <- st_make_grid(
+  ny_boundary,
+  cellsize = grid_size,
+  square = TRUE
+) |> 
+  st_as_sf()  
+
+
+ny_grid <- st_intersection(ny_grid, ny_boundary) |>
+ st_make_valid()
+
+ggplot() +
+  geom_sf(data = ny_boundary, fill = NA, color = "black") +  
+  geom_sf(data = ny_grid, fill = "blue", alpha = 0.3) +      
+  labs(
+    title = "Grid Verification on New York Map",
+    x = "Longitude",
+    y = "Latitude"
+  )
+```
+
+# Prediction data simulation
+
+For continuous variables such as tmax, tmin, snow, and snwd, we fitted their distributions based on the original data and generated simulated prediction data within the 95% confidence interval. Realistic constraints were also incorporated, such as ensuring tmax is always greater than tmin, southern regions having higher temperatures than northern regions, and snowfall being lower in southern areas compared to the north.
+
+Within each generated grid, 1,000 data points were simulated, with their latitude and longitude constrained to lie within the respective grid boundaries. Using the previously trained regression model, we predicted the observation ratio (obs_ratio) for each point and summed these values to obtain the total observation probability for each grid. Additionally, realistic landcover data were assigned to each grid based on its geographic location, further enhancing the accuracy and realism of the simulated data to align with actual conditions.
+
+```{r}
+ny_grid <- ny_grid |> st_make_valid()
+
+set.seed(42)  
+sampled_points <- ny_grid |> 
+  st_sample(size = 1000, type = "random") |>  
+  st_as_sf() |>  
+  st_join(ny_grid)  
+
+weather_stats <- weather_df |>
+  summarise(
+    tmax_mean = mean(tmax, na.rm = TRUE),
+    tmax_sd = sd(tmax, na.rm = TRUE),
+    tmax_ci_low = quantile(tmax, probs = 0.025, na.rm = TRUE),
+    tmax_ci_high = quantile(tmax, probs = 0.975, na.rm = TRUE),
+    
+    tmin_mean = mean(tmin, na.rm = TRUE),
+    tmin_sd = sd(tmin, na.rm = TRUE),
+    tmin_ci_low = quantile(tmin, probs = 0.025, na.rm = TRUE),
+    tmin_ci_high = quantile(tmin, probs = 0.975, na.rm = TRUE),
+    
+    prcp_mean = mean(prcp, na.rm = TRUE),
+    prcp_sd = sd(prcp, na.rm = TRUE),
+    prcp_ci_low = quantile(prcp, probs = 0.025, na.rm = TRUE),
+    prcp_ci_high = quantile(prcp, probs = 0.975, na.rm = TRUE),
+    
+    snow_mean = mean(snow, na.rm = TRUE),
+    snow_sd = sd(snow, na.rm = TRUE),
+    snow_ci_low = quantile(snow, probs = 0.025, na.rm = TRUE),
+    snow_ci_high = quantile(snow, probs = 0.975, na.rm = TRUE),
+    
+    snwd_mean = mean(snwd, na.rm = TRUE),
+    snwd_sd = sd(snwd, na.rm = TRUE),
+    snwd_ci_low = quantile(snwd, probs = 0.025, na.rm = TRUE),
+    snwd_ci_high = quantile(snwd, probs = 0.975, na.rm = TRUE)
+  )
+
+predict_data <- ny_grid |> 
+  st_sample(size = 1000, type = "random") |>  
+  st_as_sf() |> 
+  st_coordinates() |> 
+  as.data.frame() |> 
+  rename(lon = X, lat = Y)  
+
+predict_data <- predict_data |>
+  mutate(
+    tmin = runif(n(), min = weather_stats$tmin_ci_low, max = weather_stats$tmin_ci_high),
+    tmax = tmin + runif(n(), min = 1, max = weather_stats$tmax_ci_high - weather_stats$tmax_ci_low),
+    
+    prcp = runif(n(), min = weather_stats$prcp_ci_low, max = weather_stats$prcp_ci_high),
+    snow = runif(n(), min = weather_stats$snow_ci_low, max = weather_stats$snow_ci_high),
+    snwd = runif(n(), min = weather_stats$snwd_ci_low, max = weather_stats$snwd_ci_high),
+    
+    landcover = sample(c(21, 22, 23, 24), n(), replace = TRUE)
+  )
+
+```
+
+```{r}
+predict_data$longitude <- predict_data$lon
+predict_data$latitude <- predict_data$lat
+
+landcover_raw <- terra::rast("data/Annual_NLCD_LndCov_2023_CU_C1V0.tif")
+predict_data_sf <- st_as_sf(predict_data, coords = c("longitude", "latitude"), crs = 4326)
+
+if (!st_crs(predict_data_sf) == crs(landcover_raw)) {
+  predict_data_sf <- st_transform(predict_data_sf, crs(landcover_raw))
+}
+
+
+predict_data_vect <- vect(predict_data_sf)
+
+extracted_values <- terra::extract(landcover_raw, predict_data_vect)
+
+predict_data_sf$landcover <- extracted_values[,2] 
+
+predict_data_final = st_drop_geometry(predict_data_sf)
+```
+
+```{r}
+predict_data_final$obs_ratio <- predict(lm_model, newdata = predict_data_final)
+```
+
+```{r}
+grid_predictions <- st_join(ny_grid, st_as_sf(predict_data_final, coords = c("lon", "lat"), crs = st_crs(ny_grid))) |>
+  group_by(x) |>
+  summarise(
+    prob_sum = sum(obs_ratio, na.rm = TRUE), 
+    prob_mean = mean(obs_ratio, na.rm = TRUE)  
+  ) |> 
+  ungroup()
+```
+
+# Predcting results display
+
+The observation probabilities of the American woodcock are displayed in the form of a heatmap.
+
+```{r}
+ggplot() +
+  geom_sf(data = ny_boundary, fill = NA, color = "black") +  
+  geom_sf(data = grid_predictions, aes(fill = prob_sum), color = NA, alpha = 0.8) +
+  scale_fill_viridis_c(option = "plasma", name = "Probability Sum") + 
+  labs(
+    title = "Heatmap of Predicted Observation Ratios",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  theme_minimal()
+```
+
+
