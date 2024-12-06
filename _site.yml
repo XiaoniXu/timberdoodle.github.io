@@ -8,8 +8,6 @@ navbar:
       href: data_wrangling.html
     - text: "EDA"
       href: eda.html
-    - text: "Add Predictor"
-      href: eda.html
     - text: "Data Integration"
       href: data_integration.html
     - text: "Modeling"
