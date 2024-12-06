@@ -397,7 +397,10 @@ ggplot(duration_counts, aes(x = duration_label, y = n)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Tilt x-axis labels for readability
 ```
 
+
 <br>
+
+
 
 - <span style="font-size:18px;">**Effort Distance vs. Duration**</span>
 
