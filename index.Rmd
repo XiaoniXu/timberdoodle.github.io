@@ -5,10 +5,12 @@ output:
     toc: true
     toc_float: true
     code_folding: hide
+    theme: flatly
 ---
 
-> I heard one in the woods behind my apartment early this morning and I’ve never seen one in the wild before. Since all of the leaves on the ground are dead and dried, I’m worried that it’ll be really difficult for me to spot it due to its camouflage. I’m really eager to add it onto my life list so any suggestions on how to find this little fella would be much appreciated!  
-> — r/birdwatching, Reddit
+> <span style="font-size:14px;">I heard one in the woods behind my apartment early this morning and I’ve never seen one in the wild before. Since all of the leaves on the ground are dead and dried, I’m worried that it’ll be really difficult for me to spot it due to its camouflage. I’m really eager to add it onto my life list so any suggestions on how to find this little fella would be much appreciated!  
+> — r/birdwatching, Reddit</span>
+
 
 
 
@@ -17,37 +19,45 @@ output:
   <figcaption style="font-size: 14px; color: #555;">American Woodcock (*Scolopax minor*) at Central Park, Oct 2024, &copy; Xiaoni Xu.</figcaption>
 </figure>
 
+## What is a woodcock?
 
-<div style="display: flex; align-items: center; gap: 20px;">
+The American Woodcock (*Scolopax minor*) is a species of shorebird in eastern United States that is sometimes encountered in urban parks, famous for its unorthodox appearance, its captivating courtship flights at sunset, and its dance move on the internet. It migrates through eastern US in spring and fall, when they are usually found by birders and naturalists. Their distinct 'peent' display call can be easily heard at night coming from the woods.
 
-  <!-- Text Section -->
-  <div style="flex: 1; font-size: 16px; line-height: 1.6;">
-    As elusive as they might be, the American Woodcock (*Scolopax minor*) is famous for its unorthodox appearance, its captivating courtship flights at sunset, and its dance move on the internet. It is a species of shorebird in eastern United States that is sometimes encountered in urban parks.
-  </div>
+The nickname "timberdoodle" is a colloquial name coined in the US in the 1880s; other nicknames of this bird include mudbat, bogsucker, night partridge, and Labrador twister (Tremper).
 
-  <!-- Image Section -->
-  <div style="flex: 1; text-align: center;">
-    <img src="images/amwo_dance.gif" alt="The Woodcock Dance" style="width: 300px;">
-  </div>
+<figure style="text-align: center;">
+  <img src="images/amwo_dance.gif" alt="The Woodcock Dance" style="display: block; margin: auto; max-width: 50%;">
+  <figcaption style="font-size: 14px; color: #555;">The famous "woodcock dance" with two newly hatched chicks.</figcaption>
+</figure>
 
+
+Click this video to listen to the famous display call of the American Woodcock at night:
+<div style="display: flex; justify-content: center; align-items: center; margin: 20px 0;">
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/VrjvO_j73rU" 
+          frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen>
+  </iframe>
 </div>
 
 
+## Why woodcocks?
 
-For this project, we take a look at the observational data of all American Woodcock sightings on eBird, the biggest online public platform for birding observations in the United States. We attempted to visualize the occurrence of this species and build a prediction model to facilitate the process for one to find a woodcock by themselves.
+American woodcock is an early successional habitat specialist whose populations are threatened by habitat loss and degradation. Compared to its most shorebird relatives, woodcocks are more easily stumbled upon in close proximity to human activities: during woodland hikes, county road drives, morning park jogs, or nighttime camps.
+  
+  Along with its significance of being an umbrella species - a representative of an ecosystem specifically for conservation purposes that protects other species within its ecosystem - the woodcock is also one of the highly sought-after shorebird species among naturalists and birders due to its appearance, behavior, and relatively difficulty of detection. In addition, its "dance move" crossing the road has become an internet favorite. Thus, it has become a curious inquiry to members of science community, policy makers, and the general public for the ecological, temporal, and spatial factors that may affect the chances one could encounter a woodcock in the wild.
+  
+## Our project
+
+  For this project, we demonstrated the observational data on [eBird](ebird.org), the biggest online public platform for birding observations in the United States, in various ways in response to scientific questions on detection of woodcocks, along with creating a prediction model using variables both included in the observational data and inferred using latitude and longitude information. Our charts showed the power of citizen science data and the multitude of analyses that the data enables researchers and scientists to explore and answer new questions.
 
 For general information about American Woodcocks, visit its [eBird page](https://ebird.org/species/amewoo). 
 
-
-
-Find more [about us](about.html).
-
+Here is a screen cast for our website:
 
 
 
 
-
-**American Woodcocks Observation in NY**
+Here is a map showing the distribution of American Woodcocks Observation in NY.
 
 ```{r, echo=FALSE, message=FALSE, warning = FALSE}
 library(auk)
@@ -150,3 +160,8 @@ leaflet(data = observations_selected) %>%
     title = "Observation Count",
     opacity = 1
   )
+
+```
+
+
+Find more [about us](about.html).
