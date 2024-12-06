@@ -44,7 +44,7 @@ output:
 
 ### 3.1 Data preporecessing and modeling
 
-  This analysis used eBird data with environmental variables to calculate the observation ratio (obs_ratio) for modeling. Average temperature (t_avg) and snowfall (snow) were grouped into intervals (1°C and 5 units, respectively), with flag variables created for each range. Observations within the same flag were counted and normalized by the total observations, providing the proportion of American Woodcock sightings under specific conditions.
+  This analysis used eBird data with environmental variables to calculate the observation ratio (`obs_ratio`) for modeling. Average temperature (`t_avg`) and snowfall (`snow`) were grouped into intervals (1°C and 5 units, respectively), with flag variables created for each range. Observations within the same flag were counted and normalized by the total observations, providing the proportion of American Woodcock sightings under specific conditions.
   
   After grouping and flagging the data, a linear model was used to fit the data, with environmental variables as the predictors and obs_ratio as the target variable.
 
@@ -52,7 +52,7 @@ output:
 
   For continuous variables such as `tmax`, `tmin`, `snow`, and `snwd`, we fitted their distributions based on the original data and generated simulated prediction data within the 95% confidence interval. Realistic constraints were also incorporated, such as ensuring `tmax` is always greater than `tmin`, southern regions having higher temperatures than northern regions, and snowfall being lower in southern areas compared to the north.
 
-  Within each generated grid, 1,000 data points were simulated, with their latitude and longitude constrained to lie within the respective grid boundaries. Using the previously trained regression model, we predicted the observation ratio (obs_ratio) for each point and summed these values to obtain the total observation probability for each grid. Additionally, realistic landcover data were assigned to each grid based on its geographic location, further enhancing the accuracy and realism of the simulated data to align with actual conditions.
+  Within each generated grid, 1,000 data points were simulated, with their latitude and longitude constrained to lie within the respective grid boundaries. Using the previously trained regression model, we predicted the observation ratio (`obs_ratio`) for each point and summed these values to obtain the total observation probability for each grid. Additionally, realistic landcover data were assigned to each grid based on its geographic location, further enhancing the accuracy and realism of the simulated data to align with actual conditions.
   
 ### 3.3 Model Optimization
 

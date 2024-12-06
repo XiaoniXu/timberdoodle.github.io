@@ -416,12 +416,13 @@ analysis.</p></li>
 <div id="data-preporecessing-and-modeling" class="section level3">
 <h3>3.1 Data preporecessing and modeling</h3>
 <p>This analysis used eBird data with environmental variables to
-calculate the observation ratio (obs_ratio) for modeling. Average
-temperature (t_avg) and snowfall (snow) were grouped into intervals (1°C
-and 5 units, respectively), with flag variables created for each range.
-Observations within the same flag were counted and normalized by the
-total observations, providing the proportion of American Woodcock
-sightings under specific conditions.</p>
+calculate the observation ratio (<code>obs_ratio</code>) for modeling.
+Average temperature (<code>t_avg</code>) and snowfall
+(<code>snow</code>) were grouped into intervals (1°C and 5 units,
+respectively), with flag variables created for each range. Observations
+within the same flag were counted and normalized by the total
+observations, providing the proportion of American Woodcock sightings
+under specific conditions.</p>
 <p>After grouping and flagging the data, a linear model was used to fit
 the data, with environmental variables as the predictors and obs_ratio
 as the target variable.</p>
@@ -439,11 +440,11 @@ areas compared to the north.</p>
 <p>Within each generated grid, 1,000 data points were simulated, with
 their latitude and longitude constrained to lie within the respective
 grid boundaries. Using the previously trained regression model, we
-predicted the observation ratio (obs_ratio) for each point and summed
-these values to obtain the total observation probability for each grid.
-Additionally, realistic landcover data were assigned to each grid based
-on its geographic location, further enhancing the accuracy and realism
-of the simulated data to align with actual conditions.</p>
+predicted the observation ratio (<code>obs_ratio</code>) for each point
+and summed these values to obtain the total observation probability for
+each grid. Additionally, realistic landcover data were assigned to each
+grid based on its geographic location, further enhancing the accuracy
+and realism of the simulated data to align with actual conditions.</p>
 </div>
 <div id="model-optimization" class="section level3">
 <h3>3.3 Model Optimization</h3>
