@@ -26,7 +26,7 @@ output:
   
   eBird data is then processed using the `auk` package (Strimas-Mackey et al.) for data visualization and processing. The .txt files were loaded into R, and the shared checklists were collapsed to eliminate replicated observations. The non-complete checklists were then filtered to ensure data cleaniness. The zero-filling method is then used to infer non-detections using the sampling data. Some of the variables were transformed for modeling: time is converted to a decimal value, and a variable for speed is created. Checklists too long or too fast were eliminated.
   
-### 2.2 Data integration
+### 2.2 Data Integration - Add Environmental Variables
 
   The overall goal of this process is to get the weather information and land cover data at the places where observations occur, as these are hypothetical factors that may influence the distribution of timberdoodles, and will be used in our model. We use weather data from National Oceanic and Atmospheric Administration (NOAA) (see details at **[https://www.noaa.gov/](https://www.noaa.gov/))**, an use land cover data from**[Multi-Resolution Land Characteristics (MRLC) Consortium](https://www.mrlc.gov/)**.
 
