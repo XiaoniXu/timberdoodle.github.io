@@ -1,5 +1,5 @@
 ---
-title: "environment_var"
+title: "Data Integration"
 author: "Yiran Xu"
 date: "2024-11-25"
 output: 
@@ -14,7 +14,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE}
 library(geodata)
 library(dplyr)
 library(parallel)
@@ -25,42 +25,50 @@ library(readr)
 library(tidyverse)
 library(sf)
 library(knitr)
+library(kableExtra)
 ```
 
 # 1. Introduction
 
-The overall goal of this process is to get the weather information and land cover data at the places where observations occur, as these are hypothetical factors that may influence the distribution of timberdoodles. We use NOAA data to get the weather information (see details at **[https://www.noaa.gov/](https://www.noaa.gov/))**, an use land cover data from**[Multi-Resolution Land Characteristics (MRLC) Consortium](https://www.mrlc.gov/)**.
+The overall goal of this process is to get the weather information and land cover data at the places where observations occur, as these are hypothetical factors that may influence the distribution of timberdoodles. We use NOAA data to get the weather information (see details at **[https://www.noaa.gov/](https://www.noaa.gov/))**, an use land cover data from **[Multi-Resolution Land Characteristics (MRLC) Consortium](https://www.mrlc.gov/)**.
 
 However, the weather data are recorded by weather stations, which are not necessarily at the same place with bird observations. Therefore, we assign the nearest weather station within 50km to the places of observation. To realize the goal. We first merge the weather records from each weather station from 2019-2024 with the dataset indicating the location of each weather station by station id. Then we add the weather records from the nearest weather station to the bird observation dataset by date and location (i.e. latitude & longitude).
 
 For land cover data, we use a tif file. To integrate the land cover data from the GeoTIFF raster file into the observation CSV file, the observation dataset was first converted into an sf spatial object using its longitude and latitude columns. Next, the coordinate reference system (CRS) of the sf object was aligned with the CRS of the raster file to ensure compatibility. Then, land cover values were extracted from the raster based on the observation coordinates. Finally, these extracted land cover values were added as a new column to the original dataset, which was then saved as a CSV file for further analysis.
 
-```{r warning=FALSE} 
+# 2. Add weather data
+
+We started from the data like this:
+```{r echo=FALSE, message=FALSE, warning=FALSE} 
 cleaned_raw_data = "data/environmental_var/zf_filtered.csv"
 zf_filtered_df = read_csv(cleaned_raw_data)  # the file will take a while to load
 
 zf_filtered_df = zf_filtered_df |>
   select(-last_edited_date, -country, -country_code, -state_code, -county_code, -iba_code, bcr_code, -locality_id, -locality_type, -time_observations_started, -sampling_event_identifier, -protocol_code, -project_code, -effort_area_ha, -group_identifier, -trip_comments, -scientific_name, -breeding_code, -breeding_category, -behavior_code, -age_sex, -species_observed, year, -day_of_year)
+
+head(zf_filtered_df) |>
+  kable(digits = 3) |>
+  kable_styling(full_width = FALSE) %>%
+  scroll_box(width = "100%", height = "300px")
 ```
 
-# 2. Add weather data
+For weather data, we used two datasets: 
 
- For weather data, we used two datasets: 
-
-* 1) **[Yearly weather records data](https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_year/)**: The daily weather records from each weather station, including tmax (max temperature in degree Celsius), tmin (min temperature in degree Celsius), prcp (precipitation), snow (snow in mm), snwd (snow depth in mm)) from 2019-2024;
+* 1) **[Yearly weather records data](https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_year/)**: The daily weather records from each weather station, including `tmax` (max temperature in degree Celsius), `tmin` (min temperature in degree Celsius), `prcp` (precipitation), `snow` (snow in mm), `snwd` (snow depth in mm)) from 2019-2024;
 
 
-* 2) **[Station location data](https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-stations.txt)**: A dataset match the station ids with locations (latitude, longitude) 
+* 2) **[Station location data](https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-stations.txt)**: A data set match the station ids with locations (latitude, longitude) 
 
-### 1): Merge weather and location 
+### 1) Merge weather and location 
 
 Merge the observation location and the weather information with **[Yearly weather records data](https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_year/)**
 
-#### a): Extract NY stations 
+#### a) Extract NY stations 
 
 We use data from **[Station location data](https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-stations.txt)**
 To reduce the time needed for matching process, we should filter station only in NY state from all stations. 
 
+Part of the data is shown below:
 ```{r warning=FALSE}
 stations_file = "data/environmental_var/ghcnd-stations.txt" 
 stations = read.table(stations_file, 
@@ -77,17 +85,19 @@ ny_stations = stations[, 1:5] |>
          longitude = as.numeric(longitude))
 
 write.csv(ny_stations, "data/environmental_var/ny_stations.csv", row.names = FALSE)
+
+ny_stations |>
+  head() |>
+  kable(digits = 3)
+
 ```
 
-The filtered station location data looks like:
-```{r}
-head(ny_stations)
-```
 
-#### b): Extract NY weather records 
+#### b) Extract NY weather records 
 Extract NY weather records from NY weather stations from **[Yearly weather records data](https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_year/)**
 
-```{r}
+The filtered and combined weather records data looks like this:
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 input_dir = "data/environmental_var/ghcnd_by_year"  
 ny_stations_file = "data/environmental_var/ny_stations.csv"  
 output_file = "data/environmental_var/ghcnd_by_year/filtered_combined_weather_19_24.csv"
@@ -108,14 +118,13 @@ filter_station_data = function(file, station_ids) {
 files = list.files(input_dir, pattern = "\\.csv\\.gz$", full.names = TRUE)
 
 combined_data = purrr::map_df(files, filter_station_data, station_ids = station_ids)
+
+combined_data |>
+  head() |>
+  kable(digits = 3)
 ```
 
-The filtered and combined weather records data looks like:
-```{r}
-head(combined_data)
-```
-
-Data cleaning
+#### c) Data tidying and cleaning: transfer the numbers to their correct units. Then, join location data and weather data
 ```{r}
 combined_data_wider = combined_data |>
   select(-m_flag, -q_flag, -s_flag, -obs_time) |>
@@ -130,18 +139,20 @@ combined_data_wider = combined_data |>
          date = as.Date(as.character(date), format = "%Y%m%d"))
 
 write_csv(combined_data_wider, output_file)
-```
 
-Join location data and weather data
-```{r}
 merged_coor_station = combined_data_wider %>%  
   left_join(ny_stations, by = c("id" = "id")) %>%
   select(id, date, latitude, longitude, tmax, tmin, prcp, snow, snwd, t_avg) 
+
+merged_coor_station |>
+  head() |>
+  kable(digits = 3)
+
 ```
 
-#### c): Quality control
+#### d) Quality control
 
-Not all weather station has records on every single day. Here we first filter out records with more than 1 (included) NA value in 4 weather data we care about: prcp, snow, snwd, t_avg (calculated by average min and max temperature, will be NA if either tmin or tmax is NA)
+Not all weather station has records on every single day. Here we first filter out records with more than 1 (included) NA value in 4 weather data we care about: `prcp`, `snow`, `snwd`, `t_avg` (calculated by average min and max temperature, will be NA if either `tmin` or `tmax` is NA)
 ```{r}
 filtered_coor_station = merged_coor_station %>%
   mutate(
@@ -153,11 +164,12 @@ filtered_coor_station = merged_coor_station %>%
 
 ### 2) Assign nearest station
 
+#### a) Define function
+
 Assign nearest weather stations that have records on that specific day to each observation locations.
 
 As not all observation places have weather station nearby, and the weather is sensitive to location, we won't assign a weather station to the observation places if there is no weather station within 50 km.
 
-Define function
 ```{r}
 find_nearest_station_with_date = function(obs_lat, obs_lon, obs_date, weather_data, max_distance_km) {
   daily_weather = weather_data %>%
@@ -214,7 +226,8 @@ find_nearest_station_with_date = function(obs_lat, obs_lon, obs_date, weather_da
 
 ```
 
-Apply function: This function applies GPU to accelerate the process
+#### b) Apply function 
+This function applies GPU to accelerate the process. Observation records with weather information looks like this:
 ```{r eval=FALSE}
 max_distance_km = 50
 
@@ -252,12 +265,16 @@ stopCluster(cl)
 zf_with_weather = bind_rows(results)
 
 write_csv(zf_with_weather, "data/zf_with_weather.csv")
+
+head(zf_with_weather) |>
+  kable(digits = 3)
 ```
 
 # 3. Add Land Cover Data
 
-The data was retrieved from **Multi-Resolution Land Characteristics (MRLC) Consortium[https://www.mrlc.gov/data?f%5B0%5D=category%3ALand%20Cover]**, data from 2023 was used
+The data was retrieved from **[Multi-Resolution Land Characteristics (MRLC) Consortium](https://www.mrlc.gov/data?f%5B0%5D=category%3ALand%20Cover)**, data from 2023 was used.
 
+Observation records with weather and land cover information looks like this:
 ```{r}
 zf_with_weather = read.csv("data/environmental_var/zf_with_weather.csv")
 zf_with_weather$lon = zf_with_weather$longitude
@@ -279,10 +296,12 @@ extracted_values = terra::extract(landcover_raw, zf_with_weather_vect)
 zf_with_weather_sf$landcover = extracted_values[,2] 
 
 write.csv(st_drop_geometry(zf_with_weather_sf), "data/environmental_var/zf_with_weather_landcover.csv", row.names = FALSE)
+
+head(st_drop_geometry(zf_with_weather_sf)) |>
+  kable(digits = 3)
 ```
 
 Note: the categorical land cover variables are presented as numbers. The detailed classification description is shown below, and the source can be found **[here](https://www.mrlc.gov/data/legends/national-land-cover-database-class-legend-and-description)**: 
-
 ```{r}
 landcover_classes = data.frame(
   Code = c('11', '12', '21', '22', '23', '24', '31', '41', '42', '43', 

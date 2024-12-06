@@ -31,9 +31,14 @@ knitr::opts_chunk$set(
 observations_selected = read_csv("data/observations_selected_clean.csv")
 ```
 
+
+<br><br> 
+
 ## Season
 
 **Does the season affect the activity of woodcocks?**
+
+American woodcocks does not stay the same throughout the year—they migrate, breed, and adapt to their environment depending on the season. Let’s take a closer look at when American Woodcocks make their appearance in New York State. 
 
 
 ```{r}
@@ -107,10 +112,6 @@ ggplot(season_summary, aes(x = season, y = total_observation_count, fill = seaso
        text = element_text(family = "Times", size = 14))
 ```
 
-<br><br>  
-
-The total observation count in Spring in NY is significantly higher than in any other season.
-
 
 :::
   
@@ -132,13 +133,12 @@ season_summary |>
   )
 ```
 
-<br><br> 
-
 
 :::
   
 ::::
   
+Spring stands out with the highest observation count, likely due to their courtship behavior during this season, making them easier to detect. In contrast, observations drop significantly in winter, summer, and fall. 
 
 
 <br><br> 
@@ -152,6 +152,8 @@ season_summary |>
 ## Time of the day
 
 **When do American woodcocks usually appear?**
+
+American Woodcocks have their own rhythm throughout the day, with their activity levels rising and falling depending on the time. Let’s explore how their activity changes across the day in New York State. 
 
 
 ```{r}
@@ -230,11 +232,6 @@ ggplot(time_summary, aes(x = time_of_day, y = total_observation_count, fill = ti
 ```
 
 
-<br><br>  
-
-The total observation count in Morning.....
-
-
 :::
   
 :::{}
@@ -259,22 +256,18 @@ time_summary |>
   )
 ```
 
-<br><br> 
-
-
 :::
   
 ::::
   
 
+The plot and table together reveal clear patterns in the observation counts of American Woodcocks across different times of the day in New York State. Observations are highest in the evening, followed by the morning. This pattern may be linked to their courtship behavior, as they often produce distinctive sounds during the evening, making it easier for observers to locate and identify them during this time.
+
 
 <br><br> 
 
 
-
-
-
-Are the difference significant?
+**Are the difference significant?**
 
 ```{r}
 kruskal_test <- kruskal.test(observation_count ~ time_of_day, data = observations_selected)
@@ -295,15 +288,20 @@ kruskal_result |>
 There is strong evidence that the observation counts differ significantly across the time periods (Morning, Afternoon, Evening, Night).
 
 
+<br><br> 
+
 ## County
 
 **Observation Counts by County**
+
+American Woodcocks are found across New York State, but their activity levels vary by location. Habitat, environment, and observer efforts all play a role in where they are most commonly seen. Let’s look at the plot below to see how they are distributed across the state by county.
+
 
 :::: {style="display: flex;"}
 
 ::: {}
 
-```{r, fig.align='center', fig.width=5, fig.height=4}
+```{r}
 # Summarize the data by county
 county_summary <- observations_selected |> 
   filter(!is.na(county)) |> 
@@ -325,7 +323,8 @@ ggplot(county_summary, aes(x = reorder(county, -total_observation_count), y = to
         plot.title = element_text(size = 10, hjust = 0.5),  # Smaller title, centered
         axis.title.x = element_text(size = 8),  
         axis.title.y = element_text(size = 8),
-        legend.text = element_text(size = 8))
+        legend.text = element_text(size = 7)
+        )
 ```
 
 :::
@@ -334,9 +333,128 @@ ggplot(county_summary, aes(x = reorder(county, -total_observation_count), y = to
 
 
 
+:::
+::::
+
+
+Tompkins County stands out with the highest number of observations, followed by several other counties with moderate counts. Most counties have relatively low observation numbers, indicating that woodcock activity or observation efforts may be concentrated in specific areas. 
+
+
+<br><br> 
+
+## Observer Behavior
+
+The chance of spotting an American Woodcock depends a lot on how the observer behaves. Things like how long they spend looking, how far they travel, the time of day, and the methods they use all make a difference. For example, observers who stay longer in areas where woodcocks live or travel further might have a better chance of seeing one. 
+
+<br>
+
+- <span style="font-size:18px;">**Time of day at which an observation was started**</span>
+
+```{r, warning=FALSE, fig.height=3, fig.width=8}
+observations_selected$start_hour <- as.numeric(format(as.POSIXct(observations_selected$time_observations_started, format = "%H:%M:%S"), "%H"))
+
+hourly_counts <- 
+  observations_selected |>
+  count(start_hour)
+
+ggplot(hourly_counts, aes(x = start_hour, y = n)) +
+  geom_point(size = 2, color = "black") +
+  geom_segment(aes(xend = start_hour, yend = 0), color = "black") +  
+  labs(
+    title = "Distribution of Observation Start Times",
+    x = "Hours since midnight",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+```
+
+<br>
+
+- <span style="font-size:18px;">**Observation duration hours**</span>
+
+```{r, warning=FALSE, fig.height=3, fig.width=8}
+observations_selected$duration_hours <- floor(observations_selected$duration_minutes / 30) * 0.5
+
+# Count the number of observations for each 0.5-hour interval
+duration_counts <- observations_selected |>
+  filter(duration_hours < 7.5) |> 
+  arrange(duration_hours) |> 
+  count(duration_hours) 
+
+# Adjust labels for the x-axis
+duration_counts$duration_label <- ifelse(duration_counts$duration_hours == 0, "<0.5", as.character(duration_counts$duration_hours))
+
+# Create the dot-and-line plot
+ggplot(duration_counts, aes(x = duration_label, y = n)) +
+  geom_point(size = 2, color = "black") +
+  geom_segment(aes(xend = duration_label, yend = 0), color = "black") +  # Vertical lines
+  labs(
+    title = "Distribution of Observations by Duration (Nearest 0.5 Hours)",
+    x = "Duration (Hours)",
+    y = "Frequency"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Tilt x-axis labels for readability
+```
+
+
+<br>
+
+
+
+- <span style="font-size:18px;">**Effort Distance vs. Duration**</span>
+
+To see how effort distance and time spent observing are connected, we created this scatter plot. It shows the relationship between distance and duration, with colors representing different times of the day. This helps highlight patterns in observation efforts.
+
+:::: {style="display: flex;"}
+
+::: {}
+
+```{r, fig.width=20, fig.height=16, message=FALSE}
+
+filtered_data <- observations_selected |> 
+  filter(effort_distance_km <= 30,
+         duration_minutes <= 800)
+ggplot(filtered_data, aes(x = duration_minutes, y = effort_distance_km, color = time_of_day)) +
+  geom_point(alpha = 0.7, size = 5) +  # Points with transparency and size for better readability
+  geom_smooth(method = "lm", color = "red", se = FALSE) +  # Add a linear regression trend line
+  scale_color_manual(
+    values = c(
+      "Morning" = "#FFD700",
+      "Afternoon" = "#FFA500",
+      "Evening" = "#1E90FF",
+      "Night" = "#4B0082"
+    ),
+    name = "Time of Day"
+  ) +
+  labs(
+    title = "Scatter Plot of Effort Distance vs. Duration by Time of Day",
+    y = "Effort Distance (km)",
+    x = "Duration (minutes)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 38),
+    axis.text = element_text(size = 30),
+    axis.title = element_text(size = 30),
+    legend.text = element_text(size = 30),
+    legend.title = element_text(size = 30),
+    legend.position = "bottom"
+  ) +
+  guides(color = guide_legend(override.aes = list(size = 20)))  # Larger points in legend for better visibility
+```
+
+:::
+
+:::{}
+
+Morning and afternoon observations are more common, with a higher density of points at shorter durations and distances. Evening and night efforts are less frequent but show a slightly broader spread in distance and duration. 
 
 :::
 ::::
+
+
+
 
 
 

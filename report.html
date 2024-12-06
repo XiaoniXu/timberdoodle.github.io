@@ -15,10 +15,10 @@
 
 <title>Report</title>
 
-<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -34,8 +34,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -257,6 +257,9 @@ $(document).ready(function () {
   <a href="eda.html">EDA</a>
 </li>
 <li>
+  <a href="data_integration.html">Data Integration</a>
+</li>
+<li>
   <a href="modeling.html">Modeling</a>
 </li>
 <li>
@@ -354,8 +357,57 @@ were transformed for modeling: time is converted to a decimal value, and
 a variable for speed is created. Checklists too long or too fast were
 eliminated.</p>
 </div>
-<div id="environmental-variables" class="section level3">
-<h3>2.2 environmental variables</h3>
+<div id="data-integration---add-environmental-variables"
+class="section level3">
+<h3>2.2 Data Integration - Add Environmental Variables</h3>
+<p>The overall goal of this process is to get the weather information
+and land cover data at the places where observations occur, as these are
+hypothetical factors that may influence the distribution of
+timberdoodles, and will be used in our model. We use weather data from
+National Oceanic and Atmospheric Administration (NOAA) (see details at
+<strong><a
+href="https://www.noaa.gov/">https://www.noaa.gov/</a>)</strong>, an use
+land cover data from<strong><a
+href="https://www.mrlc.gov/">Multi-Resolution Land Characteristics
+(MRLC) Consortium</a></strong>.</p>
+<p>For weather data we used two datasets:</p>
+<ul>
+<li><ol style="list-style-type: decimal">
+<li><strong><a
+href="https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_year/">Yearly
+weather records data</a></strong>: The daily weather records from each
+weather station, including <code>tmax</code> (max temperature in degree
+Celsius), <code>tmin</code> (min temperature in degree Celsius),
+<code>prcp</code> (precipitation), <code>snow</code> (snow in mm),
+<code>snwd</code> (snow depth in mm)) from 2019-2024; Though may other
+kinds of weather information are included, we don’t consider them in our
+model.</li>
+</ol></li>
+<li><ol start="2" style="list-style-type: decimal">
+<li><strong><a
+href="https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-stations.txt">Station
+location data</a></strong>: A dataset match the station ids with
+locations (latitude, longitude)</li>
+</ol>
+<p>However, the weather data are recorded by weather stations, which are
+not necessarily at the same place with bird observations. Therefore, we
+assign the nearest weather station within 50 km to the places of
+observation. To realize the goal. We first merge the weather records
+from each weather station from 2019-2024 with the data set indicating
+the location of each weather station by station id. Then we added the
+weather records from the nearest weather station to the bird observation
+dataset by date and location (i.e. latitude &amp; longitude).</p>
+<p>For land cover data, we use a tif file. To integrate the land cover
+data from the GeoTIFF raster file into the observation CSV file, the
+observation dataset was first converted into an sf spatial object using
+its longitude and latitude columns. Next, the coordinate reference
+system (CRS) of the sf object was aligned with the CRS of the raster
+file to ensure compatibility. Then, land cover values were extracted
+from the raster based on the observation coordinates. Finally, these
+extracted land cover values were added as a new column to the original
+dataset, which was then saved as a CSV file for further
+analysis.</p></li>
+</ul>
 </div>
 </div>
 <div id="modeling" class="section level2">
@@ -375,13 +427,14 @@ as the target variable.</p>
 </div>
 <div id="preiction-data-simulation" class="section level3">
 <h3>3.2 Preiction data simulation</h3>
-<p>For continuous variables such as tmax, tmin, snow, and snwd, we
-fitted their distributions based on the original data and generated
-simulated prediction data within the 95% confidence interval. Realistic
-constraints were also incorporated, such as ensuring tmax is always
-greater than tmin, southern regions having higher temperatures than
-northern regions, and snowfall being lower in southern areas compared to
-the north.</p>
+<p>For continuous variables such as <code>tmax</code>,
+<code>tmin</code>, <code>snow</code>, and <code>snwd</code>, we fitted
+their distributions based on the original data and generated simulated
+prediction data within the 95% confidence interval. Realistic
+constraints were also incorporated, such as ensuring <code>tmax</code>
+is always greater than <code>tmin</code>, southern regions having higher
+temperatures than northern regions, and snowfall being lower in southern
+areas compared to the north.</p>
 <p>Within each generated grid, 1,000 data points were simulated, with
 their latitude and longitude constrained to lie within the respective
 grid boundaries. Using the previously trained regression model, we
@@ -391,8 +444,24 @@ Additionally, realistic landcover data were assigned to each grid based
 on its geographic location, further enhancing the accuracy and realism
 of the simulated data to align with actual conditions.</p>
 </div>
+<div id="model-optimization" class="section level3">
+<h3>3.3 Model Optimization</h3>
+<p>After constructing the full linear model, it was observed that the
+model contained an excessive number of predictors, which could lead to
+potential overfitting. To address this issue and optimize the final
+model, three regularization methods—LASSO, Ridge, and Elastic Net—were
+employed to perform predictor selection.</p>
+<p>Upon identifying the optimized models recommended by each of the
+three methods and comparing the weights assigned to all retained
+predictors, we found that the predictor <em>landcover</em>, while
+initially deemed significant in the summary results of the full linear
+model, was assigned near-zero weights across all three optimization
+methods. This indicates that <em>landcover</em> contributes minimally to
+the model. Therefore, to maintain model simplicity, it is recommended to
+exclude this predictor.</p>
+</div>
 <div id="griding-and-heating-map-ploting" class="section level3">
-<h3>3.3 Griding and heating map ploting</h3>
+<h3>3.4 Griding and heating map ploting</h3>
 <p>We applied grid operations to the map of New York State, dividing it
 into grids to more precisely identify bird observation locations and
 simulate real-world conditions. After multiple adjustments, a grid size
@@ -454,19 +523,11 @@ ornithological research.</p>
 </div>
 <div id="references" class="section level2">
 <h2>5. References</h2>
-<p>Sullivan, B. L., Wood, C. L., Iliff, M. J., Bonney, R. E., Fink, D.,
-&amp; Kelling, S. (2009). <em>eBird: A citizen-based bird observation
-network in the biological sciences.</em> Biological Conservation,
-142(10), 2282–2292. <a
-href="https://doi.org/10.1016/j.biocon.2009.05.006"
-class="uri">https://doi.org/10.1016/j.biocon.2009.05.006</a>. Retrieved
-from [<a
-href="https://www.sciencedirect.com/science/article/pii/S000632070900216X"
-class="uri">https://www.sciencedirect.com/science/article/pii/S000632070900216X</a>].</p>
-<p>Strimas-Mackey, M., Miller, E., &amp; Hochachka, W. (2023). <em>auk:
-eBird Data Extraction and Processing with AWK.</em> Retrieved from [<a
-href="https://cornelllabofornithology.github.io/auk/"
-class="uri">https://cornelllabofornithology.github.io/auk/</a>].</p>
+<p>Berigan, L. A. (2024). <em>Full Annual Cycle Analysis of American
+Woodcock (Scolopax minor) Distribution, Habitat Use, and Migration
+Ecology.</em> (PhD thesis). The University of Maine. Retrieved from [<a
+href="https://digitalcommons.library.umaine.edu/etd/3941"
+class="uri">https://digitalcommons.library.umaine.edu/etd/3941</a>].</p>
 <p>Farley, K. E. (2022). <em>Habitat selection and consequences for
 American woodcock in urban landscapes.</em> (PhD thesis). Rutgers
 University - Graduate School - Newark. <a
@@ -474,11 +535,6 @@ href="https://doi.org/10.7282/t3-n223-pn60"
 class="uri">https://doi.org/10.7282/t3-n223-pn60</a>. Retrieved from [<a
 href="https://rucore.libraries.rutgers.edu/rutgers-lib/67482/"
 class="uri">https://rucore.libraries.rutgers.edu/rutgers-lib/67482/</a>].</p>
-<p>Berigan, L. A. (2024). <em>Full Annual Cycle Analysis of American
-Woodcock (Scolopax minor) Distribution, Habitat Use, and Migration
-Ecology.</em> (PhD thesis). The University of Maine. Retrieved from [<a
-href="https://digitalcommons.library.umaine.edu/etd/3941"
-class="uri">https://digitalcommons.library.umaine.edu/etd/3941</a>].</p>
 <p>McAuley, D. G., Keppie, D. M., &amp; Whiting Jr., R. M. (2020).
 <em>American Woodcock (Scolopax minor).</em> In S. M. Billerman, B. K.
 Keeney, P. G. Rodewald, &amp; T. S. Schulenberg (Eds.), <em>Birds of the
@@ -488,6 +544,29 @@ class="uri">https://doi.org/10.2173/bow.amewoo.01</a>. Retrieved from
 [<a
 href="https://birdsoftheworld.org/bow/species/amewoo/1.0/introduction"
 class="uri">https://birdsoftheworld.org/bow/species/amewoo/1.0/introduction</a>].</p>
+<p>National Centers for Environmental Information. (2024). <em>Global
+Historical Climatology Network (GHCN).</em> National Centers for
+Environmental Information. Retrieved from [<a
+href="https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_year/"
+class="uri">https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_year/</a>].</p>
+<p>Strimas-Mackey, M., Miller, E., &amp; Hochachka, W. (2023). <em>auk:
+eBird Data Extraction and Processing with AWK.</em> Retrieved from [<a
+href="https://cornelllabofornithology.github.io/auk/"
+class="uri">https://cornelllabofornithology.github.io/auk/</a>].</p>
+<p>Sullivan, B. L., Wood, C. L., Iliff, M. J., Bonney, R. E., Fink, D.,
+&amp; Kelling, S. (2009). <em>eBird: A citizen-based bird observation
+network in the biological sciences.</em> Biological Conservation,
+142(10), 2282–2292. <a
+href="https://doi.org/10.1016/j.biocon.2009.05.006"
+class="uri">https://doi.org/10.1016/j.biocon.2009.05.006</a>. Retrieved
+from [<a
+href="https://www.sciencedirect.com/science/article/pii/S000632070900216X"
+class="uri">https://www.sciencedirect.com/science/article/pii/S000632070900216X</a>].</p>
+<p>U.S. Geological Survey. (2023). <em>National Land Cover Database
+(NLCD) 2023.</em> Multi-Resolution Land Characteristics Consortium.
+Retrieved from [<a
+href="https://www.mrlc.gov/data?f%5B0%5D=category%3ALand%20Cover"
+class="uri">https://www.mrlc.gov/data?f%5B0%5D=category%3ALand%20Cover</a>].</p>
 <div style="text-align: center;">
 <p><img src="images/amwo_dance.gif" alt="The Woodcock Dance" style="width:300px;"></p>
 </div>
