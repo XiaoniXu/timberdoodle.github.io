@@ -1,5 +1,5 @@
 ---
-title: "environment_var"
+title: "Data Integration"
 author: "Yiran Xu"
 date: "2024-11-25"
 output: 
@@ -14,7 +14,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE}
 library(geodata)
 library(dplyr)
 library(parallel)

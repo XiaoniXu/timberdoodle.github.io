@@ -13,7 +13,7 @@
 
 <meta name="date" content="2024-11-25" />
 
-<title>environment_var</title>
+<title>Data Integration</title>
 
 <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -66,6 +66,7 @@ if (window.hljs) {
 
 
 
+<link rel="stylesheet" href="styles.css" type="text/css" />
 
 
 
@@ -330,10 +331,25 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="about.html">About</a>
+  <a href="data_wrangling.html">Data Wrangling</a>
 </li>
 <li>
-  <a href="data_wrangling.html">Data Wrangling</a>
+  <a href="eda.html">EDA</a>
+</li>
+<li>
+  <a href="eda.html">Add Predictor</a>
+</li>
+<li>
+  <a href="data_integration.html">Data Integration</a>
+</li>
+<li>
+  <a href="modeling.html">Modeling</a>
+</li>
+<li>
+  <a href="report.html">Report</a>
+</li>
+<li>
+  <a href="about.html">About</a>
 </li>
 <li>
   <a href="mailto:&lt;xx2485@cumc.columbia.edu&gt;">
@@ -364,52 +380,13 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">environment_var</h1>
+<h1 class="title toc-ignore">Data Integration</h1>
 <h4 class="author">Yiran Xu</h4>
 <h4 class="date">2024-11-25</h4>
 
 </div>
 
 
-<pre><code>## Loading required package: terra</code></pre>
-<pre><code>## terra 1.7.78</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:terra&#39;:
-## 
-##     intersect, union</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre><code>## 
-## Attaching package: &#39;lubridate&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:terra&#39;:
-## 
-##     intersect, union</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     date, intersect, setdiff, union</code></pre>
-<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ forcats 1.0.0     ✔ stringr 1.5.1
-## ✔ ggplot2 3.5.1     ✔ tibble  3.2.1
-## ✔ purrr   1.0.2     ✔ tidyr   1.3.1
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ tidyr::extract() masks terra::extract()
-## ✖ dplyr::filter()  masks stats::filter()
-## ✖ dplyr::lag()     masks stats::lag()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
-## Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE
-## 
-## 
-## Attaching package: &#39;knitr&#39;
-## 
-## 
-## The following object is masked from &#39;package:terra&#39;:
-## 
-##     spin</code></pre>
 <div id="introduction" class="section level1">
 <h1>1. Introduction</h1>
 <p>The overall goal of this process is to get the weather information
