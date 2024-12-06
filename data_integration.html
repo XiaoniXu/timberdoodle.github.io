@@ -888,14 +888,15 @@ TRUE
 <li><strong><a
 href="https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_year/">Yearly
 weather records data</a></strong>: The daily weather records from each
-weather station, including tmax (max temperature in degree Celsius),
-tmin (min temperature in degree Celsius), prcp (precipitation), snow
-(snow in mm), snwd (snow depth in mm)) from 2019-2024;</li>
+weather station, including <code>tmax</code> (max temperature in degree
+Celsius), <code>tmin</code> (min temperature in degree Celsius),
+<code>prcp</code> (precipitation), <code>snow</code> (snow in mm),
+<code>snwd</code> (snow depth in mm)) from 2019-2024;</li>
 </ol></li>
 <li><ol start="2" style="list-style-type: decimal">
 <li><strong><a
 href="https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-stations.txt">Station
-location data</a></strong>: A dataset match the station ids with
+location data</a></strong>: A data set match the station ids with
 locations (latitude, longitude)</li>
 </ol></li>
 </ul>
@@ -994,10 +995,6 @@ ny_stations |&gt;
 href="https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_year/">Yearly
 weather records data</a></strong></p>
 <p>The filtered and combined weather records data looks like this:</p>
-<pre><code>## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat &lt;- vroom(...)
-##   problems(dat)</code></pre>
 <table style="width:100%;">
 <colgroup>
 <col width="18%" />
@@ -1218,9 +1215,10 @@ merged_coor_station |&gt;
 <h4>d) Quality control</h4>
 <p>Not all weather station has records on every single day. Here we
 first filter out records with more than 1 (included) NA value in 4
-weather data we care about: prcp, snow, snwd, t_avg (calculated by
-average min and max temperature, will be NA if either tmin or tmax is
-NA)</p>
+weather data we care about: <code>prcp</code>, <code>snow</code>,
+<code>snwd</code>, <code>t_avg</code> (calculated by average min and max
+temperature, will be NA if either <code>tmin</code> or <code>tmax</code>
+is NA)</p>
 <pre class="r"><code>filtered_coor_station = merged_coor_station %&gt;%
   mutate(
     na_count = rowSums(is.na(across(c(prcp, snow, snwd, t_avg)))) 

@@ -376,9 +376,10 @@ href="https://www.mrlc.gov/">Multi-Resolution Land Characteristics
 <li><strong><a
 href="https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_year/">Yearly
 weather records data</a></strong>: The daily weather records from each
-weather station, including tmax (max temperature in degree Celsius),
-tmin (min temperature in degree Celsius), prcp (precipitation), snow
-(snow in mm), snwd (snow depth in mm)) from 2019-2024; Though may other
+weather station, including <code>tmax</code> (max temperature in degree
+Celsius), <code>tmin</code> (min temperature in degree Celsius),
+<code>prcp</code> (precipitation), <code>snow</code> (snow in mm),
+<code>snwd</code> (snow depth in mm)) from 2019-2024; Though may other
 kinds of weather information are included, we don’t consider them in our
 model.</li>
 </ol></li>
@@ -392,8 +393,8 @@ locations (latitude, longitude)</li>
 not necessarily at the same place with bird observations. Therefore, we
 assign the nearest weather station within 50 km to the places of
 observation. To realize the goal. We first merge the weather records
-from each weather station from 2019-2024 with the dataset indicating the
-location of each weather station by station id. Then we added the
+from each weather station from 2019-2024 with the data set indicating
+the location of each weather station by station id. Then we added the
 weather records from the nearest weather station to the bird observation
 dataset by date and location (i.e. latitude &amp; longitude).</p>
 <p>For land cover data, we use a tif file. To integrate the land cover
@@ -426,13 +427,14 @@ as the target variable.</p>
 </div>
 <div id="preiction-data-simulation" class="section level3">
 <h3>3.2 Preiction data simulation</h3>
-<p>For continuous variables such as tmax, tmin, snow, and snwd, we
-fitted their distributions based on the original data and generated
-simulated prediction data within the 95% confidence interval. Realistic
-constraints were also incorporated, such as ensuring tmax is always
-greater than tmin, southern regions having higher temperatures than
-northern regions, and snowfall being lower in southern areas compared to
-the north.</p>
+<p>For continuous variables such as <code>tmax</code>,
+<code>tmin</code>, <code>snow</code>, and <code>snwd</code>, we fitted
+their distributions based on the original data and generated simulated
+prediction data within the 95% confidence interval. Realistic
+constraints were also incorporated, such as ensuring <code>tmax</code>
+is always greater than <code>tmin</code>, southern regions having higher
+temperatures than northern regions, and snowfall being lower in southern
+areas compared to the north.</p>
 <p>Within each generated grid, 1,000 data points were simulated, with
 their latitude and longitude constrained to lie within the respective
 grid boundaries. Using the previously trained regression model, we
