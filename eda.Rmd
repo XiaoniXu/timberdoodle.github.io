@@ -350,7 +350,7 @@ The chance of spotting an American Woodcock depends a lot on how the observer be
 
 - <span style="font-size:18px;">**Time of day at which an observation was started**</span>
 
-```{r, warning=FALSE, fig.height=2, fig.width=8}
+```{r, warning=FALSE, fig.height=3, fig.width=8}
 observations_selected$start_hour <- as.numeric(format(as.POSIXct(observations_selected$time_observations_started, format = "%H:%M:%S"), "%H"))
 
 hourly_counts <- 
@@ -368,6 +368,38 @@ ggplot(hourly_counts, aes(x = start_hour, y = n)) +
   theme_minimal()
 ```
 
+<br>
+
+- <span style="font-size:18px;">**Observation duration hours**</span>
+
+```{r, warning=FALSE, fig.height=3, fig.width=8}
+observations_selected$duration_hours <- floor(observations_selected$duration_minutes / 30) * 0.5
+
+# Count the number of observations for each 0.5-hour interval
+duration_counts <- observations_selected |>
+  filter(duration_hours < 7.5) |> 
+  arrange(duration_hours) |> 
+  count(duration_hours) 
+
+# Adjust labels for the x-axis
+duration_counts$duration_label <- ifelse(duration_counts$duration_hours == 0, "<0.5", as.character(duration_counts$duration_hours))
+
+# Create the dot-and-line plot
+ggplot(duration_counts, aes(x = duration_label, y = n)) +
+  geom_point(size = 2, color = "black") +
+  geom_segment(aes(xend = duration_label, yend = 0), color = "black") +  # Vertical lines
+  labs(
+    title = "Distribution of Observations by Duration (Nearest 0.5 Hours)",
+    x = "Duration (Hours)",
+    y = "Frequency"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Tilt x-axis labels for readability
+```
+
+<br>
+
+- <span style="font-size:18px;">**Effort Distance vs. Duration**</span>
 
 To see how effort distance and time spent observing are connected, we created this scatter plot. It shows the relationship between distance and duration, with colors representing different times of the day. This helps highlight patterns in observation efforts.
 
