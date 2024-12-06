@@ -16,8 +16,10 @@ output:
 
 <figure style="text-align: center;">
   <img src="images/amwo1.jpg" style="display: block; margin: auto; width: 75%;">
-  <figcaption style="font-size: 14px; color: #555;">American Woodcock (*Scolopax minor*) at Central Park, Oct 2024, &copy; Xiaoni Xu.</figcaption>
+  <figcaption style="font-size: 14px; color: #555;">American Woodcock (*Scolopax minor*) at Central Park, Oct 2024, &copy; Xiaoni Xu</figcaption>
 </figure>
+
+
 
 ## What is a woodcock?
 

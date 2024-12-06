@@ -6,7 +6,7 @@ navbar:
     
     - text: "Data Wrangling"
       href: data_wrangling.html
-    - text: "EDA"
+    - text: "Data Visualization"
       href: eda.html
     - text: "Data Integration"
       href: data_integration.html

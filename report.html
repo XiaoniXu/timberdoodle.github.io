@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Xiaoni Xu / Wenjie Wu / Boxiang Tang / Yiran Xu / Zhenyong Chen" />
+<meta name="author" content="Xiaoni Xu, Wenjie Wu, Boxiang Tang, Yiran Xu, and Zhenyong Chen" />
 
 <meta name="date" content="2024-12-04" />
 
@@ -254,7 +254,7 @@ $(document).ready(function () {
   <a href="data_wrangling.html">Data Wrangling</a>
 </li>
 <li>
-  <a href="eda.html">EDA</a>
+  <a href="eda.html">Data Visualization</a>
 </li>
 <li>
   <a href="data_integration.html">Data Integration</a>
@@ -290,7 +290,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Report</h1>
-<h4 class="author">Xiaoni Xu / Wenjie Wu / Boxiang Tang / Yiran Xu /
+<h4 class="author">Xiaoni Xu, Wenjie Wu, Boxiang Tang, Yiran Xu, and
 Zhenyong Chen</h4>
 <h4 class="date">2024-12-04</h4>
 
@@ -299,18 +299,19 @@ Zhenyong Chen</h4>
 
 <div id="introduction" class="section level2">
 <h2>1. Introduction</h2>
-<p>American woodcock (<em>Scolopax minor</em>; hereinafter woodcock),
+<p>American woodcock (<em>Scolopax minor</em>; hereinafter woodcock) is
 one of the most common species of shorebirds in eastern North America
-(McAuley et al.), is an early successional habitat specialist whose
-populations are declining throughout their range (Bergian). Because it
-is one of the only shorebird species in North America that reside in
-habitats not adjacent to water during migration, the land mass of
-potential suitable habitats for this species is far greater than other
-water-dependent birds in Order Charadriiformes such as dunlin
-(<em>Calidris alpina</em>) or semipalmated plover (<em>Charadrius
-semipalmatus</em>). As a result, woodcocks are more easily stumbled upon
-in close proximity to human activities: during woodland hikes, county
-road drives, morning park jogs, or nighttime camps.</p>
+(McAuley et al.), and it is an early successional habitat specialist
+whose populations are declining throughout their range (Bergian). Due to
+its distinct ecological niche of being one of the only shorebird species
+in North America that reside in habitats not adjacent to water during
+migration, the land mass of potential suitable habitats for this species
+is far greater than other water-dependent birds in Order Charadriiformes
+such as dunlin (<em>Calidris alpina</em>) or semipalmated plover
+(<em>Charadrius semipalmatus</em>). As a result, woodcocks are more
+easily stumbled upon in close proximity to human activities: during
+woodland hikes, county road drives, morning park jogs, or nighttime
+camps.</p>
 <p>Along with its significance of being an umbrella species - a
 representative of an ecosystem specifically for conservation purposes
 that protects other species within its ecosystem - the woodcock is also
@@ -358,37 +359,31 @@ were transformed for modeling: time is converted to a decimal value, and
 a variable for speed is created. Checklists too long or too fast were
 eliminated.</p>
 </div>
-<div id="data-integration---add-environmental-variables"
-class="section level3">
-<h3>2.2 Data Integration - Add Environmental Variables</h3>
-<p>The overall goal of this process is to get the weather information
+<div id="environmental-variables" class="section level3">
+<h3>2.2 Environmental variables</h3>
+<p>The overall goal of this process is to access the weather information
 and land cover data at the places where observations occur, as these are
 hypothetical factors that may influence the distribution of
 timberdoodles, and will be used in our model. We use weather data from
 National Oceanic and Atmospheric Administration (NOAA) (see details at
-<strong><a
-href="https://www.noaa.gov/">https://www.noaa.gov/</a>)</strong>, an use
-land cover data from<strong><a
-href="https://www.mrlc.gov/">Multi-Resolution Land Characteristics
-(MRLC) Consortium</a></strong>.</p>
-<p>For weather data we used two datasets:</p>
-<ul>
-<li><ol style="list-style-type: decimal">
-<li><strong><a
+<a href="https://www.noaa.gov/">https://www.noaa.gov/</a>), an use land
+cover data from <a href="https://www.mrlc.gov/">Multi-Resolution Land
+Characteristics (MRLC) Consortium</a>.</p>
+<p>Two data sets were used for weather data for the analysis:</p>
+<ol style="list-style-type: decimal">
+<li><p><a
 href="https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_year/">Yearly
-weather records data</a></strong>: The daily weather records from each
-weather station, including <code>tmax</code> (max temperature in degree
+weather records data</a>: The daily weather records from each weather
+station, including <code>tmax</code> (max temperature in degree
 Celsius), <code>tmin</code> (min temperature in degree Celsius),
 <code>prcp</code> (precipitation), <code>snow</code> (snow in mm),
 <code>snwd</code> (snow depth in mm)) from 2019-2024; Though may other
 kinds of weather information are included, we don’t consider them in our
-model.</li>
-</ol></li>
-<li><ol start="2" style="list-style-type: decimal">
-<li><strong><a
+model.</p></li>
+<li><p><a
 href="https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-stations.txt">Station
-location data</a></strong>: A dataset match the station ids with
-locations (latitude, longitude)</li>
+location data</a>: A data set match the station ids with locations
+(latitude, longitude)</p></li>
 </ol>
 <p>However, the weather data are recorded by weather stations, which are
 not necessarily at the same place with bird observations. Therefore, we
@@ -397,24 +392,19 @@ observation. To realize the goal. We first merge the weather records
 from each weather station from 2019-2024 with the data set indicating
 the location of each weather station by station id. Then we added the
 weather records from the nearest weather station to the bird observation
-dataset by date and location (i.e. latitude &amp; longitude).</p>
-<p>For land cover data, we use a tif file. To integrate the land cover
+data set by date and location (i.e. latitude &amp; longitude).</p>
+<p>For land cover data, we use a .tif file. To integrate the land cover
 data from the GeoTIFF raster file into the observation CSV file, the
-observation dataset was first converted into an sf spatial object using
+observation data set was first converted into an sf spatial object using
 its longitude and latitude columns. Next, the coordinate reference
 system (CRS) of the sf object was aligned with the CRS of the raster
 file to ensure compatibility. Then, land cover values were extracted
 from the raster based on the observation coordinates. Finally, these
 extracted land cover values were added as a new column to the original
-dataset, which was then saved as a CSV file for further
-analysis.</p></li>
-</ul>
+data set, which was then saved as a CSV file for further analysis.</p>
 </div>
-</div>
-<div id="modeling" class="section level2">
-<h2>3. Modeling</h2>
-<div id="data-preporecessing-and-modeling" class="section level3">
-<h3>3.1 Data preporecessing and modeling</h3>
+<div id="data-pre-processing-and-modeling" class="section level3">
+<h3>2.3 Data pre-processing and modeling</h3>
 <p>This analysis used eBird data with environmental variables to
 calculate the observation ratio (<code>obs_ratio</code>) for modeling.
 Average temperature (<code>t_avg</code>) and snowfall
@@ -427,8 +417,8 @@ under specific conditions.</p>
 the data, with environmental variables as the predictors and obs_ratio
 as the target variable.</p>
 </div>
-<div id="preiction-data-simulation" class="section level3">
-<h3>3.2 Preiction data simulation</h3>
+<div id="predictatory-data-simulation" class="section level3">
+<h3>2.4 Predictatory data simulation</h3>
 <p>For continuous variables such as <code>tmax</code>,
 <code>tmin</code>, <code>snow</code>, and <code>snwd</code>, we fitted
 their distributions based on the original data and generated simulated
@@ -447,7 +437,7 @@ grid based on its geographic location, further enhancing the accuracy
 and realism of the simulated data to align with actual conditions.</p>
 </div>
 <div id="model-optimization" class="section level3">
-<h3>3.3 Model Optimization</h3>
+<h3>2.5 Model optimization</h3>
 <p>After constructing the full linear model, it was observed that the
 model contained an excessive number of predictors, which could lead to
 potential overfitting. To address this issue and optimize the final
@@ -463,7 +453,7 @@ the model. Therefore, to maintain model simplicity, it is recommended to
 exclude this predictor.</p>
 </div>
 <div id="griding-and-heating-map-ploting" class="section level3">
-<h3>3.4 Griding and heating map ploting</h3>
+<h3>2.6 Griding and heating map ploting</h3>
 <p>We applied grid operations to the map of New York State, dividing it
 into grids to more precisely identify bird observation locations and
 simulate real-world conditions. After multiple adjustments, a grid size
@@ -473,7 +463,7 @@ heatmap.</p>
 </div>
 </div>
 <div id="results" class="section level2">
-<h2>4. Results</h2>
+<h2>3. Results</h2>
 <p>Preliminary exploratory analysis were carried out to answer some
 common questions related to woodcock detection within New York State. By
 creating a <code>season</code> factor and creating a bar chart showing
@@ -487,7 +477,7 @@ summarized by county.</p>
 <p>We were able to observe a significant</p>
 </div>
 <div id="conclusion-and-discussion" class="section level2">
-<h2>5. Conclusion and Discussion</h2>
+<h2>4. Conclusion and Discussion</h2>
 <p>Overall, we harnessed the power of citizen science data to both
 answer various questions on sightings of a rather secrete question and
 create a comprehensive prediction model using various temporal and

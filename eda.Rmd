@@ -38,7 +38,7 @@ observations_selected = read_csv("data/observations_selected_clean.csv")
 
 **Does the season affect the activity of woodcocks?**
 
-American woodcocks does not stay the same throughout the year—they migrate, breed, and adapt to their environment depending on the season. Let’s take a closer look at when American Woodcocks make their appearance in New York State. 
+American woodcock is a migratory species in the eastern United States, so the chances of seeing them throughout the year vary. We will now look at the observations of woodcocks for each season.
 
 
 ```{r}
@@ -138,11 +138,10 @@ season_summary |>
   
 ::::
   
-Spring stands out with the highest observation count, likely due to their courtship behavior during this season, making them easier to detect. In contrast, observations drop significantly in winter, summer, and fall. 
+Spring stands out with the highest observation count, likely due to their breeding behavior during this season, making them easier to detect by call. In contrast, observations are significantly fewer in winter, summer, and fall. 
 
 
 <br><br> 
-
 
 
 
@@ -153,7 +152,7 @@ Spring stands out with the highest observation count, likely due to their courts
 
 **When do American woodcocks usually appear?**
 
-American Woodcocks have their own rhythm throughout the day, with their activity levels rising and falling depending on the time. Let’s explore how their activity changes across the day in New York State. 
+Let us explore how the number of observations of woodcocks changes across the day in New York state. 
 
 
 ```{r}
@@ -261,7 +260,7 @@ time_summary |>
 ::::
   
 
-The plot and table together reveal clear patterns in the observation counts of American Woodcocks across different times of the day in New York State. Observations are highest in the evening, followed by the morning. This pattern may be linked to their courtship behavior, as they often produce distinctive sounds during the evening, making it easier for observers to locate and identify them during this time.
+The graphs demonstrate clear patterns in the observation counts of American woodcocks across different times of the day in New York state: highest in the evening, followed by the morning. This pattern may be linked to their mating calls, which takes place right after sunset, making it easier for birders to encounter them during this time.
 
 
 <br><br> 
@@ -294,7 +293,7 @@ There is strong evidence that the observation counts differ significantly across
 
 **Observation Counts by County**
 
-American Woodcocks are found across New York State, but their activity levels vary by location. Habitat, environment, and observer efforts all play a role in where they are most commonly seen. Let’s look at the plot below to see how they are distributed across the state by county.
+American Woodcocks are found across New York State, but their activity levels vary by location. Habitat, environment, and observer efforts all play a role in where they are most commonly seen. Let us look at the plot below to see how they are distributed across the state by county.
 
 
 :::: {style="display: flex;"}
@@ -337,14 +336,14 @@ ggplot(county_summary, aes(x = reorder(county, -total_observation_count), y = to
 ::::
 
 
-Tompkins County stands out with the highest number of observations, followed by several other counties with moderate counts. Most counties have relatively low observation numbers, indicating that woodcock activity or observation efforts may be concentrated in specific areas. 
+Tompkins County stands out with the highest number of observations, followed by several other counties with moderate counts. Most counties have relatively low observation numbers, indicating that woodcock activity or observation efforts may be concentrated in specific areas. Tompkins County hosts a huge eBird user population, as it is where Cornell Lab of Ornithology, the developing team of eBird, is located. It is worth noting that Tompkins County is the checklist leader of all counties in New York despite being 28th within the state by population and 46th by land area. Thus, the large number of observations in the county is more attributed to the number of observers rather than a high concentration of woodcocks.
 
 
 <br><br> 
 
 ## Observer Behavior
 
-The chance of spotting an American Woodcock depends a lot on how the observer behaves. Things like how long they spend looking, how far they travel, the time of day, and the methods they use all make a difference. For example, observers who stay longer in areas where woodcocks live or travel further might have a better chance of seeing one. 
+The probability of spotting an American Woodcock differs across observers. Factors such as how long they spend looking, how far they travel, the time of day, and the methods they use all influence such probability. For example, observers who spend more time in areas where woodcocks are present are expected to have a better chance of seeing one. 
 
 <br>
 
