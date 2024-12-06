@@ -338,6 +338,61 @@ ggplot(county_summary, aes(x = reorder(county, -total_observation_count), y = to
 :::
 ::::
 
+## Observer Behavior
+
+The chance of spotting an American Woodcock depends a lot on how the observer behaves. Things like how long they spend looking, how far they travel, the time of day, and the methods they use all make a difference. For example, observers who stay longer in areas where woodcocks live or travel further might have a better chance of seeing one. 
+
+To see how effort distance and time spent observing are connected, we created this scatter plot. It shows the relationship between distance and duration, with colors representing different times of the day. This helps highlight patterns in observation efforts.
+
+
+
+:::: {style="display: flex;"}
+
+::: {}
+
+```{r, fig.width=20, fig.height=16, message=FALSE}
+
+filtered_data <- observations_selected |> 
+  filter(effort_distance_km <= 30,
+         duration_minutes <= 800)
+ggplot(filtered_data, aes(x = duration_minutes, y = effort_distance_km, color = time_of_day)) +
+  geom_point(alpha = 0.7, size = 5) +  # Points with transparency and size for better readability
+  geom_smooth(method = "lm", color = "red", se = FALSE) +  # Add a linear regression trend line
+  scale_color_manual(
+    values = c(
+      "Morning" = "#FFD700",
+      "Afternoon" = "#FFA500",
+      "Evening" = "#1E90FF",
+      "Night" = "#4B0082"
+    ),
+    name = "Time of Day"
+  ) +
+  labs(
+    title = "Scatter Plot of Effort Distance vs. Duration by Time of Day",
+    y = "Effort Distance (km)",
+    x = "Duration (minutes)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 38),
+    axis.text = element_text(size = 30),
+    axis.title = element_text(size = 30),
+    legend.text = element_text(size = 30),
+    legend.title = element_text(size = 30),
+    legend.position = "bottom"
+  ) +
+  guides(color = guide_legend(override.aes = list(size = 20)))  # Larger points in legend for better visibility
+```
+
+:::
+
+:::{}
+
+Morning and afternoon observations are more common, with a higher density of points at shorter durations and distances. Evening and night efforts are less frequent but show a slightly broader spread in distance and duration. 
+
+:::
+::::
+
 
 
 
