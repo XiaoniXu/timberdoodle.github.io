@@ -31,6 +31,9 @@ knitr::opts_chunk$set(
 observations_selected = read_csv("data/observations_selected_clean.csv")
 ```
 
+
+<br><br> 
+
 ## Season
 
 **Does the season affect the activity of woodcocks?**
@@ -109,10 +112,6 @@ ggplot(season_summary, aes(x = season, y = total_observation_count, fill = seaso
        text = element_text(family = "Times", size = 14))
 ```
 
-<br><br>  
-
-The total observation count in Spring in NY is significantly higher than in any other season.
-
 
 :::
   
@@ -134,13 +133,12 @@ season_summary |>
   )
 ```
 
-<br><br> 
-
 
 :::
   
 ::::
   
+Spring stands out with the highest observation count, likely due to their courtship behavior during this season, making them easier to detect. In contrast, observations drop significantly in winter, summer, and fall. 
 
 
 <br><br> 
@@ -234,11 +232,6 @@ ggplot(time_summary, aes(x = time_of_day, y = total_observation_count, fill = ti
 ```
 
 
-<br><br>  
-
-The plot and table together reveal clear patterns in the observation counts of American Woodcocks across different times of the day in New York State. Observations are highest in the evening, followed by the morning. This pattern may be linked to their courtship behavior, as they often produce distinctive sounds during the evening, making it easier for observers to locate and identify them during this time.
-
-
 :::
   
 :::{}
@@ -263,13 +256,12 @@ time_summary |>
   )
 ```
 
-<br><br> 
-
-
 :::
   
 ::::
   
+
+The plot and table together reveal clear patterns in the observation counts of American Woodcocks across different times of the day in New York State. Observations are highest in the evening, followed by the morning. This pattern may be linked to their courtship behavior, as they often produce distinctive sounds during the evening, making it easier for observers to locate and identify them during this time.
 
 
 <br><br> 
@@ -295,6 +287,8 @@ kruskal_result |>
 
 There is strong evidence that the observation counts differ significantly across the time periods (Morning, Afternoon, Evening, Night).
 
+
+<br><br> 
 
 ## County
 
@@ -329,7 +323,8 @@ ggplot(county_summary, aes(x = reorder(county, -total_observation_count), y = to
         plot.title = element_text(size = 10, hjust = 0.5),  # Smaller title, centered
         axis.title.x = element_text(size = 8),  
         axis.title.y = element_text(size = 8),
-        legend.text = element_text(size = 8))
+        legend.text = element_text(size = 7)
+        )
 ```
 
 :::
@@ -344,6 +339,8 @@ ggplot(county_summary, aes(x = reorder(county, -total_observation_count), y = to
 
 Tompkins County stands out with the highest number of observations, followed by several other counties with moderate counts. Most counties have relatively low observation numbers, indicating that woodcock activity or observation efforts may be concentrated in specific areas. 
 
+
+<br><br> 
 
 ## Observer Behavior
 
@@ -399,6 +396,9 @@ Morning and afternoon observations are more common, with a higher density of poi
 
 :::
 ::::
+
+
+
 
 
 
