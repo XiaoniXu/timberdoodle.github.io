@@ -346,9 +346,30 @@ Tompkins County stands out with the highest number of observations, followed by 
 
 The chance of spotting an American Woodcock depends a lot on how the observer behaves. Things like how long they spend looking, how far they travel, the time of day, and the methods they use all make a difference. For example, observers who stay longer in areas where woodcocks live or travel further might have a better chance of seeing one. 
 
+<br>
+
+- <span style="font-size:18px;">**Time of day at which an observation was started**</span>
+
+```{r, warning=FALSE, fig.height=2, fig.width=8}
+observations_selected$start_hour <- as.numeric(format(as.POSIXct(observations_selected$time_observations_started, format = "%H:%M:%S"), "%H"))
+
+hourly_counts <- 
+  observations_selected |>
+  count(start_hour)
+
+ggplot(hourly_counts, aes(x = start_hour, y = n)) +
+  geom_point(size = 2, color = "black") +
+  geom_segment(aes(xend = start_hour, yend = 0), color = "black") +  
+  labs(
+    title = "Distribution of Observation Start Times",
+    x = "Hours since midnight",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+```
+
+
 To see how effort distance and time spent observing are connected, we created this scatter plot. It shows the relationship between distance and duration, with colors representing different times of the day. This helps highlight patterns in observation efforts.
-
-
 
 :::: {style="display: flex;"}
 
