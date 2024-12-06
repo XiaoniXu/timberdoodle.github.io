@@ -2,8 +2,9 @@
 title: "Report"
 author: "Xiaoni Xu"
 date: "2024-12-04"
-output: html_document
-theme: flatly
+output: 
+  html_document:
+    theme: flatly
 
 ---
 
@@ -25,9 +26,20 @@ theme: flatly
   
   eBird data is then processed using the `auk` package (Strimas-Mackey et al.) for data visualization and processing. The .txt files were loaded into R, and the shared checklists were collapsed to eliminate replicated observations. The non-complete checklists were then filtered to ensure data cleaniness. The zero-filling method is then used to infer non-detections using the sampling data. Some of the variables were transformed for modeling: time is converted to a decimal value, and a variable for speed is created. Checklists too long or too fast were eliminated.
   
-### 2.2 environmental variables
+### 2.2 Data integration
 
+  The overall goal of this process is to get the weather information and land cover data at the places where observations occur, as these are hypothetical factors that may influence the distribution of timberdoodles, and will be used in our model. We use weather data from National Oceanic and Atmospheric Administration (NOAA) (see details at **[https://www.noaa.gov/](https://www.noaa.gov/))**, an use land cover data from**[Multi-Resolution Land Characteristics (MRLC) Consortium](https://www.mrlc.gov/)**.
 
+  For weather data we used two datasets: 
+
+* 1) **[Yearly weather records data](https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_year/)**: The daily weather records from each weather station, including tmax (max temperature in degree Celsius), tmin (min temperature in degree Celsius), prcp (precipitation), snow (snow in mm), snwd (snow depth in mm)) from 2019-2024; Though may other kinds of weather information are included, we don't consider them in our model.
+
+* 2) **[Station location data](https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-stations.txt)**: A dataset match the station ids with locations (latitude, longitude) 
+
+  However, the weather data are recorded by weather stations, which are not necessarily at the same place with bird observations. Therefore, we assign the nearest weather station within 50 km to the places of observation. To realize the goal. We first merge the weather records from each weather station from 2019-2024 with the dataset indicating the location of each weather station by station id. Then we added the weather records from the nearest weather station to the bird observation dataset by date and location (i.e. latitude & longitude).
+
+  For land cover data, we use a tif file. To integrate the land cover data from the GeoTIFF raster file into the observation CSV file, the observation dataset was first converted into an sf spatial object using its longitude and latitude columns. Next, the coordinate reference system (CRS) of the sf object was aligned with the CRS of the raster file to ensure compatibility. Then, land cover values were extracted from the raster based on the observation coordinates. Finally, these extracted land cover values were added as a new column to the original dataset, which was then saved as a CSV file for further analysis.
+  
 ## 3. Modeling
 
 ### 3.1 Data preporecessing and modeling
@@ -42,7 +54,13 @@ theme: flatly
 
   Within each generated grid, 1,000 data points were simulated, with their latitude and longitude constrained to lie within the respective grid boundaries. Using the previously trained regression model, we predicted the observation ratio (obs_ratio) for each point and summed these values to obtain the total observation probability for each grid. Additionally, realistic landcover data were assigned to each grid based on its geographic location, further enhancing the accuracy and realism of the simulated data to align with actual conditions.
   
-### 3.3 Griding and heating map ploting
+### 3.3 Model Optimization
+
+After constructing the full linear model, it was observed that the model contained an excessive number of predictors, which could lead to potential overfitting. To address this issue and optimize the final model, three regularization methods—LASSO, Ridge, and Elastic Net—were employed to perform predictor selection.
+
+Upon identifying the optimized models recommended by each of the three methods and comparing the weights assigned to all retained predictors, we found that the predictor *landcover*, while initially deemed significant in the summary results of the full linear model, was assigned near-zero weights across all three optimization methods. This indicates that *landcover* contributes minimally to the model. Therefore, to maintain model simplicity, it is recommended to exclude this predictor.
+  
+### 3.4 Griding and heating map ploting
 
   We applied grid operations to the map of New York State, dividing it into grids to more precisely identify bird observation locations and simulate real-world conditions. After multiple adjustments, a grid size of 0.1 was selected as the optimal scale.The final observation probabilities of the American woodcock are displayed in the form of a heatmap.
   
@@ -77,16 +95,19 @@ theme: flatly
   
 ## 5. References
 
-
-Sullivan, B. L., Wood, C. L., Iliff, M. J., Bonney, R. E., Fink, D., & Kelling, S. (2009). *eBird: A citizen-based bird observation network in the biological sciences.* Biological Conservation, 142(10), 2282–2292. https://doi.org/10.1016/j.biocon.2009.05.006. Retrieved from [https://www.sciencedirect.com/science/article/pii/S000632070900216X].
-
-Strimas-Mackey, M., Miller, E., & Hochachka, W. (2023). *auk: eBird Data Extraction and Processing with AWK.* Retrieved from [https://cornelllabofornithology.github.io/auk/].
+Berigan, L. A. (2024). *Full Annual Cycle Analysis of American Woodcock (Scolopax minor) Distribution, Habitat Use, and Migration Ecology.* (PhD thesis). The University of Maine. Retrieved from [https://digitalcommons.library.umaine.edu/etd/3941].
 
 Farley, K. E. (2022). *Habitat selection and consequences for American woodcock in urban landscapes.* (PhD thesis). Rutgers University - Graduate School - Newark. https://doi.org/10.7282/t3-n223-pn60. Retrieved from [https://rucore.libraries.rutgers.edu/rutgers-lib/67482/].
 
-Berigan, L. A. (2024). *Full Annual Cycle Analysis of American Woodcock (Scolopax minor) Distribution, Habitat Use, and Migration Ecology.* (PhD thesis). The University of Maine. Retrieved from [https://digitalcommons.library.umaine.edu/etd/3941].
-
 McAuley, D. G., Keppie, D. M., & Whiting Jr., R. M. (2020). *American Woodcock (Scolopax minor).* In S. M. Billerman, B. K. Keeney, P. G. Rodewald, & T. S. Schulenberg (Eds.), *Birds of the World.* Cornell Lab of Ornithology. https://doi.org/10.2173/bow.amewoo.01. Retrieved from [https://birdsoftheworld.org/bow/species/amewoo/1.0/introduction].
+
+National Centers for Environmental Information. (2024). *Global Historical Climatology Network (GHCN).* National Centers for Environmental Information. Retrieved from [https://www.ncei.noaa.gov/pub/data/ghcn/daily/by_year/].
+
+Strimas-Mackey, M., Miller, E., & Hochachka, W. (2023). *auk: eBird Data Extraction and Processing with AWK.* Retrieved from [https://cornelllabofornithology.github.io/auk/].
+
+Sullivan, B. L., Wood, C. L., Iliff, M. J., Bonney, R. E., Fink, D., & Kelling, S. (2009). *eBird: A citizen-based bird observation network in the biological sciences.* Biological Conservation, 142(10), 2282–2292. https://doi.org/10.1016/j.biocon.2009.05.006. Retrieved from [https://www.sciencedirect.com/science/article/pii/S000632070900216X].
+
+U.S. Geological Survey. (2023). *National Land Cover Database (NLCD) 2023.* Multi-Resolution Land Characteristics Consortium. Retrieved from [https://www.mrlc.gov/data?f%5B0%5D=category%3ALand%20Cover].
 
 
 <div style="text-align: center;">
