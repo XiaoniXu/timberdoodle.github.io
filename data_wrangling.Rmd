@@ -130,6 +130,8 @@ zf_filtered <- zf |>
 ```
 
 
+## Checklist visualization
+
 Here, we will project all the observational and sampling data onto a New York state map using GIS data.
 
 ```{r}
