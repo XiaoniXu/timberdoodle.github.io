@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Wenjie Wu" />
+<meta name="author" content="Wenjie Wu / Boxiang Tang" />
 
 
 <title>Prediction Modeling</title>
@@ -336,6 +336,9 @@ div.tocify {
   <a href="eda.html">EDA</a>
 </li>
 <li>
+  <a href="data_integration.html">Data Integration</a>
+</li>
+<li>
   <a href="modeling.html">Modeling</a>
 </li>
 <li>
@@ -374,12 +377,11 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Prediction Modeling</h1>
-<h4 class="author">Wenjie Wu</h4>
+<h4 class="author">Wenjie Wu / Boxiang Tang</h4>
 
 </div>
 
 
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
 <div id="introduction-and-objcetive" class="section level1">
 <h1>Introduction and Objcetive</h1>
 <p>The primary goal of this section is to conduct a modeling analysis on
@@ -396,17 +398,19 @@ collected and augmented with relevant environmental variables. To derive
 the observation ratio for subsequent modeling, we implemented the
 following steps:</p>
 <ol style="list-style-type: decimal">
-<li><p>Variable Grouping and Flagging: • The average temperature (t_avg)
-was grouped at intervals of 1°C.</p>
-<p>• Snowfall (snow) was grouped at intervals of 5 units.</p>
+<li><p>Variable Grouping and Flagging: • The average temperature
+(<code>t_avg</code>) was grouped at intervals of 1°C.</p>
+<p>• Snowfall (<code>snow</code>) was grouped at intervals of 5
+units.</p>
 <p>• For each grouped range, corresponding flag variables were
 created.</p></li>
 <li><p>Observation Counting: • For observations within the same flag
 (representing similar environmental conditions), we calculated the count
 of American Woodcock observed.</p>
 <p>• This count was divided by the total observations to compute the
-dependent variable for the regression model, obs_ratio, representing the
-proportion of observations under the given conditions.</p></li>
+dependent variable for the regression model, <code>obs_ratio</code>,
+representing the proportion of observations under the given
+conditions.</p></li>
 </ol>
 <pre class="r"><code>weather_df &lt;- read_csv(&quot;data/zf_with_weather_landcover.csv&quot;) |&gt;
    filter(!is.na(t_avg)) |&gt;
@@ -434,16 +438,19 @@ proportion of observations under the given conditions.</p></li>
 </div>
 <div id="modeling-results" class="section level1">
 <h1>Modeling results</h1>
-<p>All predictors (tmax, tmin, prcp, snow, snwd, landcover, lon, and
-lat) show statistically significant contributions to the model at the
-0.001 significance level (p &lt; 0.001), indicated by their respective
+<p>All predictors (<code>tmax</code>, <code>tmin</code>,
+<code>prcp</code>, <code>snow</code>, <code>snwd</code>,
+<code>landcover</code>, <code>lon</code>, and <code>lat</code>) show
+statistically significant contributions to the model at the 0.001
+significance level (p &lt; 0.001), indicated by their respective
 t-values and small p-values.</p>
-<p>Temperature extremes (tmax and tmin) have significant but opposing
-effects, with higher maximum temperatures increasing the likelihood of
-observations and lower minimum temperatures reducing it.</p>
-<p>Snowfall (snow) and snow depth (snwd) negatively impact observations,
-aligning with ecological expectations that severe winter conditions
-limit sightings.</p>
+<p>Temperature extremes (<code>tmax</code> and <code>tmin</code>) have
+significant but opposing effects, with higher maximum temperatures
+increasing the likelihood of observations and lower minimum temperatures
+reducing it.</p>
+<p>Snowfall (<code>snow</code>) and snow depth (<code>snwd</code>)
+negatively impact observations, aligning with ecological expectations
+that severe winter conditions limit sightings.</p>
 <pre class="r"><code>lm_model = lm(obs_ratio ~ tmax + tmin + prcp + snow + snwd + landcover + lon + lat, data = weather_df)
 
 summary(lm_model)</code></pre>
@@ -510,21 +517,22 @@ ny_grid &lt;- st_intersection(ny_grid, ny_boundary) |&gt;
 </div>
 <div id="prediction-data-simulation" class="section level1">
 <h1>Prediction data simulation</h1>
-<p>For continuous variables such as tmax, tmin, snow, and snwd, we
-fitted their distributions based on the original data and generated
-simulated prediction data within the 95% confidence interval. Realistic
-constraints were also incorporated, such as ensuring tmax is always
-greater than tmin, southern regions having higher temperatures than
-northern regions, and snowfall being lower in southern areas compared to
-the north.</p>
+<p>For continuous variables such as <code>tmax</code>,
+<code>tmin</code>, <code>snow</code>, and <code>snwd</code>, we fitted
+their distributions based on the original data and generated simulated
+prediction data within the 95% confidence interval. Realistic
+constraints were also incorporated, such as ensuring <code>tmax</code>
+is always greater than <code>tmin</code>, southern regions having higher
+temperatures than northern regions, and snowfall being lower in southern
+areas compared to the north.</p>
 <p>Within each generated grid, 1,000 data points were simulated, with
 their latitude and longitude constrained to lie within the respective
 grid boundaries. Using the previously trained regression model, we
-predicted the observation ratio (obs_ratio) for each point and summed
-these values to obtain the total observation probability for each grid.
-Additionally, realistic landcover data were assigned to each grid based
-on its geographic location, further enhancing the accuracy and realism
-of the simulated data to align with actual conditions.</p>
+predicted the observation ratio (<code>obs_ratio</code>) for each point
+and summed these values to obtain the total observation probability for
+each grid. Additionally, realistic landcover data were assigned to each
+grid based on its geographic location, further enhancing the accuracy
+and realism of the simulated data to align with actual conditions.</p>
 <pre class="r"><code>ny_grid &lt;- ny_grid |&gt; st_make_valid()
 
 set.seed(42)  
@@ -628,16 +636,18 @@ in the form of a heatmap.</p>
 <h2>Lasso Regression</h2>
 <p><em>LASSO (Least Absolute Shrinkage and Selection Operator)</em> is a
 regression method that performs variable selection and regularization to
-enhance prediction accuracy. It adds a penalty term $ _{j=1}^{p} |_j| $
-to the regression model, encouraging some coefficients to shrink to
-exactly zero. The optimization problem can be summarized as:</p>
+enhance prediction accuracy. It adds a penalty term <span
+class="math inline">\(\lambda \sum_{j=1}^{p} |\beta_j|\)</span> to the
+regression model, encouraging some coefficients to shrink to exactly
+zero. The optimization problem can be summarized as:</p>
 <p><span class="math display">\[
 \frac{1}{2n} \sum_{i=1}^{n} \left( y_i - \beta_0 - \sum_{j=1}^{p} x_{ij}
 \beta_j \right)^2 + \lambda \sum_{j=1}^{p} |\beta_j|
 \]</span></p>
-<p>where $ $ is the tuning parameter that controls the trade-off between
-model complexity and accuracy. As $ $ increases, more coefficients are
-penalized and shrink toward zero.</p>
+<p>where <span class="math inline">\(\lambda\)</span> is the tuning
+parameter that controls the trade-off between model complexity and
+accuracy. As <span class="math inline">\(\lambda\)</span> increases,
+more coefficients are penalized and shrink toward zero.</p>
 <pre class="r"><code># Preparing &amp; checking data for the lasso
 sum(is.na(weather_df$obs_ratio)) 
 sum(is.na(weather_df$tmax))
@@ -701,15 +711,21 @@ cv_lasso %&gt;%
 <ul>
 <li><p><strong>How to Read:</strong></p>
 <ul>
-<li>Each line shows how a predictor’s coefficient changes as $ () $
-varies. The vertical dashed line indicates the optimal $ $.</li>
+<li>Each line shows how a predictor’s coefficient changes as <span
+class="math inline">\(\log(\lambda)\)</span> varies. The vertical dashed
+line indicates the optimal <span
+class="math inline">\(\lambda\)</span>.</li>
 </ul></li>
 <li><p><strong>Key Patterns:</strong></p>
 <ul>
-<li>As $ $ increases, most coefficients shrink to zero.</li>
-<li>Predictors like tmax and snow retain larger coefficients over a
-wider range of $ $, indicating their importance.</li>
-<li>Less significant variables like landcover are penalized early.</li>
+<li>As <span class="math inline">\(\lambda\)</span> increases, most
+coefficients shrink to zero.</li>
+<li>Predictors like <code>tmax</code> and <code>snow</code> retain
+larger coefficients over a wider range of <span
+class="math inline">\(\lambda\)</span>, indicating their
+importance.</li>
+<li>Less significant variables like <code>landcover</code> are penalized
+early.</li>
 </ul></li>
 </ul>
 <hr />
@@ -720,14 +736,16 @@ class="section level3">
 <ul>
 <li><p><strong>How to Read:</strong></p>
 <ul>
-<li>Each dot represents a coefficient value at a specific $ () $.</li>
+<li>Each dot represents a coefficient value at a specific <span
+class="math inline">\(\log(\lambda)\)</span>.</li>
 </ul></li>
 <li><p><strong>Key Patterns:</strong></p>
 <ul>
-<li>At higher regularization (low $ () $), coefficients are close to
+<li>At higher regularization (low <span
+class="math inline">\(\log(\lambda)\)</span>), coefficients are close to
 zero.</li>
-<li>Significant predictors like tmax and snow dominate as $ $
-decreases.</li>
+<li>Significant predictors like <code>tmax</code> and <code>snow</code>
+dominate as <span class="math inline">\(\lambda\)</span> decreases.</li>
 </ul></li>
 </ul>
 <hr />
@@ -737,18 +755,20 @@ decreases.</li>
 <h2>Rdige Regression</h2>
 <p>Similar to Lasso, Ridge Regression is a regression method that
 introduces a penalty term to reduce overfitting and improve model
-generalization. It adds a $ L_2 $ (not $ L_1 $) penalty term $
-_{j=1}^{p} _j^2 $ to the regression model, which shrinks all
-coefficients proportionally but does not force them to zero. The
-optimization problem is given by:</p>
+generalization. It adds a <span class="math inline">\(L_2\)</span> (not
+<span class="math inline">\(L_1\)</span>) penalty term <span
+class="math inline">\(\lambda \sum_{j=1}^{p} \beta_j^2\)</span> to the
+regression model, which shrinks all coefficients proportionally but does
+not force them to zero. The optimization problem is given by:</p>
 <p><span class="math display">\[
 \frac{1}{2n} \sum_{i=1}^{n} \left( y_i - \beta_0 - \sum_{j=1}^{p} x_{ij}
 \beta_j \right)^2 + \lambda \sum_{j=1}^{p} \beta_j^2
 \]</span></p>
-<p>where $ $ is the tuning parameter controlling the regularization
-strength. Higher $ $ values reduce the model complexity by shrinking
-coefficients closer to zero, but no coefficients are entirely
-eliminated.</p>
+<p>where <span class="math inline">\(\lambda\)</span> is the tuning
+parameter controlling the regularization strength. Higher <span
+class="math inline">\(\lambda\)</span> values reduce the model
+complexity by shrinking coefficients closer to zero, but no coefficients
+are entirely eliminated.</p>
 <hr />
 <p><strong>Comparison of Ridge and LASSO:</strong></p>
 <ul>
@@ -757,13 +777,15 @@ eliminated.</p>
 <li>Both use regularization to prevent overfitting and reduce model
 complexity.</li>
 <li>Both introduce a penalty term to the loss function and require
-tuning of $ $ to control regularization strength.</li>
+tuning of <span class="math inline">\(\lambda\)</span> to control
+regularization strength.</li>
 </ul></li>
 <li><p><strong>Differences:</strong></p>
 <ul>
-<li>Ridge uses $ L_2 $ regularization, penalizing the sum of squared
-coefficients, while LASSO uses $ L_1 $ regularization, penalizing the
-sum of absolute coefficients.</li>
+<li>Ridge uses <span class="math inline">\(L_2\)</span> regularization,
+penalizing the sum of squared coefficients, while LASSO uses <span
+class="math inline">\(L_1\)</span> regularization, penalizing the sum of
+absolute coefficients.</li>
 <li>Ridge does not force coefficients to zero, meaning all variables
 remain in the model, whereas LASSO can shrink some coefficients to
 exactly zero, performing variable selection.</li>
@@ -801,15 +823,18 @@ ggplot(ridge_df, aes(x = log_lambda, y = estimate, color = term)) +
 <ul>
 <li><p><strong>How to Read:</strong></p>
 <ul>
-<li>Each line represents how a predictor’s coefficient changes as $ () $
-varies. The dashed blue line marks the optimal $ $ determined by
-cross-validation.</li>
+<li>Each line represents how a predictor’s coefficient changes as <span
+class="math inline">\(\log(\lambda)\)</span> varies. The dashed blue
+line marks the optimal <span class="math inline">\(\lambda\)</span>
+determined by cross-validation.</li>
 </ul></li>
 <li><p><strong>Key Patterns:</strong></p>
 <ul>
-<li>As $ $ increases (lower $ () $), all coefficients shrink closer to
-zero but never exactly zero. Strong predictors like tmax and tmin retain
-larger coefficients even at high regularization levels.</li>
+<li>As <span class="math inline">\(\lambda\)</span> increases (lower
+<span class="math inline">\(\log(\lambda)\)</span>), all coefficients
+shrink closer to zero but never exactly zero.</li>
+<li>Strong predictors like <code>tmax</code> and <code>tmin</code>
+retain larger coefficients even at high regularization levels.</li>
 <li>Ridge regression retains all predictors in the model, contrasting
 LASSO, where less significant predictors are eliminated.</li>
 </ul></li>
@@ -821,8 +846,9 @@ LASSO, where less significant predictors are eliminated.</li>
 <h2>Elastic net</h2>
 <p>Elastic Net is a regularization method that combines the properties
 of both Ridge and LASSO regression. It adds a penalty term that is a
-weighted combination of $ L_1 $ (LASSO) and $ L_2 $ (Ridge) penalties.
-The optimization problem is formulated as:</p>
+weighted combination of <span class="math inline">\(L_1\)</span> (LASSO)
+and <span class="math inline">\(L_2\)</span> (Ridge) penalties. The
+optimization problem is formulated as:</p>
 <p><span class="math display">\[
 \frac{1}{2n} \sum_{i=1}^{n} \left( y_i - \beta_0 - \sum_{j=1}^{p} x_{ij}
 \beta_j \right)^2
@@ -831,13 +857,18 @@ The optimization problem is formulated as:</p>
 \]</span></p>
 <p>where:</p>
 <ul>
-<li>$ $ is the regularization strength.</li>
-<li>$ $ controls the balance between the $ L_1 $ and $ L_2 $ penalties
-($ = 1 $ is equivalent to LASSO, $ = 0 $ is equivalent to Ridge, for
-this analysis I have seted $ $ to be 0.5, thus could balance between
-Lasso and Ridge). Elastic Net is particularly useful when there are
-correlated predictors, as it combines the variable selection feature of
-LASSO with Ridge’s ability to handle multicollinearity.</li>
+<li><span class="math inline">\(\lambda\)</span> is the regularization
+strength.</li>
+<li><span class="math inline">\(\alpha\)</span> controls the balance
+between the <span class="math inline">\(L_1\)</span> and <span
+class="math inline">\(L_2\)</span> penalties (<span
+class="math inline">\(\alpha = 1\)</span> is equivalent to LASSO, <span
+class="math inline">\(\alpha = 0\)</span> is equivalent to Ridge, for
+this analysis I have seted <span class="math inline">\(\alpha\)</span>
+to be 0.5, thus could balance between Lasso and Ridge). Elastic Net is
+particularly useful when there are correlated predictors, as it combines
+the variable selection feature of LASSO with Ridge’s ability to handle
+multicollinearity.</li>
 </ul>
 <hr />
 <p><strong>Comparison of Elastic Net, LASSO, and Ridge:</strong></p>
@@ -846,13 +877,16 @@ LASSO with Ridge’s ability to handle multicollinearity.</li>
 <ul>
 <li>All are regularization techniques to prevent overfitting and improve
 model generalization.</li>
-<li>All require tuning of the $ $ parameter to control regularization
-strength.</li>
+<li>All require tuning of the <span
+class="math inline">\(\lambda\)</span> parameter to control
+regularization strength.</li>
 </ul></li>
 <li><p><strong>Differences:</strong></p>
 <ul>
-<li>Elastic Net combines $ L_1 $ and $ L_2 $ penalties, while LASSO uses
-only $ L_1 $ and Ridge uses only $ L_2 $.</li>
+<li>Elastic Net combines <span class="math inline">\(L_1\)</span> and
+<span class="math inline">\(L_2\)</span> penalties, while LASSO uses
+only <span class="math inline">\(L_1\)</span> and Ridge uses only <span
+class="math inline">\(L_2\)</span>.</li>
 <li>Elastic Net is more robust in scenarios with correlated predictors
 compared to LASSO and Ridge.</li>
 </ul></li>
@@ -897,15 +931,17 @@ ggplot(elastic_path_df, aes(x = log_lambda, y = estimate, color = term)) +
 <ul>
 <li><p><strong>How to Read:</strong></p>
 <ul>
-<li>Each line represents how a predictor’s coefficient changes as $ () $
-varies.</li>
+<li>Each line represents how a predictor’s coefficient changes as <span
+class="math inline">\(\log(\lambda)\)</span> varies.</li>
 </ul></li>
 <li><p><strong>Key Patterns:</strong></p>
 <ul>
-<li>Strong predictors like tmax and tmin grow larger as $ () $
-decreases, indicating higher importance.</li>
-<li>Weak predictors like landcover and prcp remain near zero across most
-$ () $ values.</li>
+<li>Strong predictors like <code>tmax</code> and <code>tmin</code> grow
+larger as <span class="math inline">\(\log(\lambda)\)</span> decreases,
+indicating higher importance.</li>
+<li>Weak predictors like <code>landcover</code> and <code>prcp</code>
+remain near zero across most <span
+class="math inline">\(\log(\lambda)\)</span> values.</li>
 <li>Elastic Net balances variable selection and coefficient shrinkage,
 retaining weaker predictors without fully eliminating them.</li>
 </ul></li>
@@ -1014,10 +1050,17 @@ impact across all models.</li>
 <li>landcover, while statistically significant in the linear model, has
 minimal or negligible contributions in the optimized models.</li>
 </ul></li>
-<li><p><strong>Conclusion:</strong></p>
+<li><p><strong>Conclusion:</strong></p></li>
+<li><p><strong>Removing <code>landcover</code> simplifies the model
+without affecting accuracy or interpretability.</strong></p>
 <ul>
-<li>Removing landcover simplifies the model without affecting accuracy
-or interpretability.</li>
+<li>By excluding <code>landcover</code>, the model focuses on dynamic,
+measurable predictors such as temperature and snow for improving model
+robustness and ecological relevance, which are not only more
+ecologically relevant but also exhibit stronger predictive power. This
+approach enhances model efficiency while maintaining its ability to
+capture critical environmental influences on American woodcock
+activity.</li>
 </ul></li>
 </ul>
 </div>

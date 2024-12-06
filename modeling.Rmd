@@ -1,6 +1,6 @@
 ---
 title: "Prediction Modeling"
-author: "Wenjie Wu"
+author: "Wenjie Wu / Boxiang Tang"
 output: 
   html_document:
     toc: true
@@ -20,7 +20,6 @@ library(glmnet)
 library(broom)  
 ```
 
-<<<<<<< HEAD
 
 # Introduction and Objcetive
 
@@ -31,16 +30,16 @@ The primary goal of this section is to conduct a modeling analysis on the existi
 The dataset used in this analysis includes eBird data previously collected and augmented with relevant environmental variables. To derive the observation ratio for subsequent modeling, we implemented the following steps:
 
 1.	Variable Grouping and Flagging:
-	•	The average temperature (t_avg) was grouped at intervals of 1°C.
+	•	The average temperature (`t_avg`) was grouped at intervals of 1°C.
 	
-	•	Snowfall (snow) was grouped at intervals of 5 units.
+	•	Snowfall (`snow`) was grouped at intervals of 5 units.
 	
 	•	For each grouped range, corresponding flag variables were created.
 	
 2.	Observation Counting:
 	•	For observations within the same flag (representing similar environmental conditions), we calculated the count of American Woodcock observed.
 	
-	•	This count was divided by the total observations to compute the dependent variable for the regression model, obs_ratio, representing the proportion of observations under the given conditions.
+	•	This count was divided by the total observations to compute the dependent variable for the regression model, `obs_ratio`, representing the proportion of observations under the given conditions.
 
 ```{r}
 weather_df <- read_csv("data/zf_with_weather_landcover.csv") |>
@@ -62,11 +61,11 @@ weather_df <-  weather_df |>
 
 # Modeling results 
 
-All predictors (tmax, tmin, prcp, snow, snwd, landcover, lon, and lat) show statistically significant contributions to the model at the 0.001 significance level (p < 0.001), indicated by their respective t-values and small p-values.
+All predictors (`tmax`, `tmin`, `prcp`, `snow`, `snwd`, `landcover`, `lon`, and `lat`) show statistically significant contributions to the model at the 0.001 significance level (p < 0.001), indicated by their respective t-values and small p-values.
 
-Temperature extremes (tmax and tmin) have significant but opposing effects, with higher maximum temperatures increasing the likelihood of observations and lower minimum temperatures reducing it.
+Temperature extremes (`tmax` and `tmin`) have significant but opposing effects, with higher maximum temperatures increasing the likelihood of observations and lower minimum temperatures reducing it.
 
-Snowfall (snow) and snow depth (snwd) negatively impact observations, aligning with ecological expectations that severe winter conditions limit sightings.
+Snowfall (`snow`) and snow depth (`snwd`) negatively impact observations, aligning with ecological expectations that severe winter conditions limit sightings.
 
 ```{r, warning = FALSE}
 lm_model = lm(obs_ratio ~ tmax + tmin + prcp + snow + snwd + landcover + lon + lat, data = weather_df)
@@ -111,9 +110,9 @@ ggplot() +
 
 # Prediction data simulation
 
-For continuous variables such as tmax, tmin, snow, and snwd, we fitted their distributions based on the original data and generated simulated prediction data within the 95% confidence interval. Realistic constraints were also incorporated, such as ensuring tmax is always greater than tmin, southern regions having higher temperatures than northern regions, and snowfall being lower in southern areas compared to the north.
+For continuous variables such as `tmax`, `tmin`, `snow`, and `snwd`, we fitted their distributions based on the original data and generated simulated prediction data within the 95% confidence interval. Realistic constraints were also incorporated, such as ensuring `tmax` is always greater than `tmin`, southern regions having higher temperatures than northern regions, and snowfall being lower in southern areas compared to the north.
 
-Within each generated grid, 1,000 data points were simulated, with their latitude and longitude constrained to lie within the respective grid boundaries. Using the previously trained regression model, we predicted the observation ratio (obs_ratio) for each point and summed these values to obtain the total observation probability for each grid. Additionally, realistic landcover data were assigned to each grid based on its geographic location, further enhancing the accuracy and realism of the simulated data to align with actual conditions.
+Within each generated grid, 1,000 data points were simulated, with their latitude and longitude constrained to lie within the respective grid boundaries. Using the previously trained regression model, we predicted the observation ratio (`obs_ratio`) for each point and summed these values to obtain the total observation probability for each grid. Additionally, realistic landcover data were assigned to each grid based on its geographic location, further enhancing the accuracy and realism of the simulated data to align with actual conditions.
 
 ```{r}
 ny_grid <- ny_grid |> st_make_valid()
@@ -229,13 +228,13 @@ ggplot() +
 
 ## Lasso Regression
 
-*LASSO (Least Absolute Shrinkage and Selection Operator)* is a regression method that performs variable selection and regularization to enhance prediction accuracy. It adds a penalty term $ \lambda \sum_{j=1}^{p} |\beta_j| $ to the regression model, encouraging some coefficients to shrink to exactly zero. The optimization problem can be summarized as:
+*LASSO (Least Absolute Shrinkage and Selection Operator)* is a regression method that performs variable selection and regularization to enhance prediction accuracy. It adds a penalty term $\lambda \sum_{j=1}^{p} |\beta_j|$ to the regression model, encouraging some coefficients to shrink to exactly zero. The optimization problem can be summarized as:
 
 $$
 \frac{1}{2n} \sum_{i=1}^{n} \left( y_i - \beta_0 - \sum_{j=1}^{p} x_{ij} \beta_j \right)^2 + \lambda \sum_{j=1}^{p} |\beta_j|
 $$
 
-where $ \lambda $ is the tuning parameter that controls the trade-off between model complexity and accuracy. As $ \lambda $ increases, more coefficients are penalized and shrink toward zero.
+where $\lambda$ is the tuning parameter that controls the trade-off between model complexity and accuracy. As $\lambda$ increases, more coefficients are penalized and shrink toward zero.
 
 
 ```{r,message=FALSE, warning=FALSE,results="hide"}
@@ -309,25 +308,25 @@ cv_lasso %>%
 ### 1. Lasso Regression Path Plot:
 
 * **How to Read:**
-    - Each line shows how a predictor's coefficient changes as $ \log(\lambda) $ varies. The vertical dashed line indicates the optimal $ \lambda $.
+    - Each line shows how a predictor's coefficient changes as $\log(\lambda)$ varies. The vertical dashed line indicates the optimal $\lambda$.
 
 * **Key Patterns:**
 
-    - As $ \lambda $ increases, most coefficients shrink to zero.
-    - Predictors like tmax and snow retain larger coefficients over a wider range of $ \lambda $, indicating their importance.
-    - Less significant variables like landcover are penalized early.
+    - As $\lambda$ increases, most coefficients shrink to zero.
+    - Predictors like `tmax` and `snow` retain larger coefficients over a wider range of $\lambda$, indicating their importance.
+    - Less significant variables like `landcover` are penalized early.
 
 ---
 
 ### 2. Lasso Coefficient Estimates Scatter Plot:
 
 * **How to Read:**
-  - Each dot represents a coefficient value at a specific $ \log(\lambda) $.
+  - Each dot represents a coefficient value at a specific $\log(\lambda)$.
 
 * **Key Patterns:**
 
-  - At higher regularization (low $ \log(\lambda) $), coefficients are close to zero.
-  - Significant predictors like tmax and snow dominate as $ \lambda $ decreases.
+  - At higher regularization (low $\log(\lambda)$), coefficients are close to zero.
+  - Significant predictors like `tmax` and `snow` dominate as $\lambda$ decreases.
 
 
 ---
@@ -337,14 +336,14 @@ cv_lasso %>%
 
 ## Rdige Regression
 
-Similar to Lasso, Ridge Regression is a regression method that introduces a penalty term to reduce overfitting and improve model generalization. It adds a $ L_2 $ (not $ L_1 $) penalty term $ \lambda \sum_{j=1}^{p} \beta_j^2 $ to the regression model, which shrinks all coefficients proportionally but does not force them to zero. The optimization problem is given by:
+Similar to Lasso, Ridge Regression is a regression method that introduces a penalty term to reduce overfitting and improve model generalization. It adds a $L_2$ (not $L_1$) penalty term $\lambda \sum_{j=1}^{p} \beta_j^2$ to the regression model, which shrinks all coefficients proportionally but does not force them to zero. The optimization problem is given by:
 
 $$
 \frac{1}{2n} \sum_{i=1}^{n} \left( y_i - \beta_0 - \sum_{j=1}^{p} x_{ij} \beta_j \right)^2 + \lambda \sum_{j=1}^{p} \beta_j^2
 $$
 
 
-where $ \lambda $ is the tuning parameter controlling the regularization strength. Higher $ \lambda $ values reduce the model complexity by shrinking coefficients closer to zero, but no coefficients are entirely eliminated.
+where $\lambda$ is the tuning parameter controlling the regularization strength. Higher $\lambda$ values reduce the model complexity by shrinking coefficients closer to zero, but no coefficients are entirely eliminated.
 
 ---
 
@@ -353,11 +352,11 @@ where $ \lambda $ is the tuning parameter controlling the regularization strengt
 * **Similarities:**
 
     - Both use regularization to prevent overfitting and reduce model complexity.
-    - Both introduce a penalty term to the loss function and require tuning of $ \lambda $ to control regularization strength.
+    - Both introduce a penalty term to the loss function and require tuning of $\lambda$ to control regularization strength.
 
 * **Differences:**
 
-    - Ridge uses $ L_2 $ regularization, penalizing the sum of squared coefficients, while LASSO uses $ L_1 $ regularization, penalizing the sum of absolute coefficients.
+    - Ridge uses $L_2$ regularization, penalizing the sum of squared coefficients, while LASSO uses $L_1$ regularization, penalizing the sum of absolute coefficients.
     - Ridge does not force coefficients to zero, meaning all variables remain in the model, whereas LASSO can shrink some coefficients to exactly zero, performing variable selection.
     
 ```{r,message=FALSE, warning=FALSE}
@@ -395,13 +394,14 @@ ggplot(ridge_df, aes(x = log_lambda, y = estimate, color = term)) +
 
 * **How to Read:**
 
-    - Each line represents how a predictor's coefficient changes as $ \log(\lambda) $ varies. The dashed blue line marks the optimal $ \lambda $ determined by cross-validation.
+    - Each line represents how a predictor's coefficient changes as $\log(\lambda)$ varies. The dashed blue line marks the optimal $\lambda$ determined by cross-validation.
 
 * **Key Patterns:**
 
-    - As $ \lambda $ increases (lower $ \log(\lambda) $), all coefficients shrink closer to zero but never exactly zero.
-Strong predictors like tmax and tmin retain larger coefficients even at high regularization levels.
+    - As $\lambda$ increases (lower $\log(\lambda)$), all coefficients shrink closer to zero but never exactly zero.
+    - Strong predictors like `tmax` and `tmin` retain larger coefficients even at high regularization levels.
     - Ridge regression retains all predictors in the model, contrasting LASSO, where less significant predictors are eliminated.
+
 
 
 ---
@@ -410,7 +410,7 @@ Strong predictors like tmax and tmin retain larger coefficients even at high reg
 
 
 ## Elastic net
-Elastic Net is a regularization method that combines the properties of both Ridge and LASSO regression. It adds a penalty term that is a weighted combination of $ L_1 $ (LASSO) and $ L_2 $ (Ridge) penalties. The optimization problem is formulated as:
+Elastic Net is a regularization method that combines the properties of both Ridge and LASSO regression. It adds a penalty term that is a weighted combination of $L_1$ (LASSO) and $L_2$ (Ridge) penalties. The optimization problem is formulated as:
 
 $$
 \frac{1}{2n} \sum_{i=1}^{n} \left( y_i - \beta_0 - \sum_{j=1}^{p} x_{ij} \beta_j \right)^2 
@@ -419,9 +419,10 @@ $$
 
 where:
 
-  - $ \lambda $ is the regularization strength.
-  - $ \alpha $ controls the balance between the $ L_1 $ and $ L_2 $ penalties ($ \alpha = 1 $ is equivalent to LASSO, $ \alpha = 0 $ is equivalent to Ridge, for this analysis I have seted $ \alpha$ to be 0.5, thus could balance between Lasso and Ridge).
+  - $\lambda$ is the regularization strength.
+  - $\alpha$ controls the balance between the $L_1$ and $L_2$ penalties ($\alpha = 1$ is equivalent to LASSO, $\alpha = 0$ is equivalent to Ridge, for this analysis I have seted $\alpha$ to be 0.5, thus could balance between Lasso and Ridge).
 Elastic Net is particularly useful when there are correlated predictors, as it combines the variable selection feature of LASSO with Ridge’s ability to handle multicollinearity.
+
 
 ---
 
@@ -430,11 +431,11 @@ Elastic Net is particularly useful when there are correlated predictors, as it c
 * **Similarities:**
 
   - All are regularization techniques to prevent overfitting and improve model generalization.
-  - All require tuning of the $ \lambda $ parameter to control regularization strength.
+  - All require tuning of the $\lambda$ parameter to control regularization strength.
 
 * **Differences:**
 
-  - Elastic Net combines $ L_1 $ and $ L_2 $ penalties, while LASSO uses only $ L_1 $ and Ridge uses only $ L_2 $.
+  - Elastic Net combines $L_1$ and $L_2$ penalties, while LASSO uses only $L_1$ and Ridge uses only $L_2$.
   - Elastic Net is more robust in scenarios with correlated predictors compared to LASSO and Ridge.
 
 ```{r,message=FALSE, warning=FALSE}
@@ -478,12 +479,12 @@ ggplot(elastic_path_df, aes(x = log_lambda, y = estimate, color = term)) +
 
 * **How to Read:**
 
-  - Each line represents how a predictor’s coefficient changes as $ \log(\lambda) $ varies.
+  - Each line represents how a predictor’s coefficient changes as $\log(\lambda)$ varies.
 
 * **Key Patterns:**
 
-  - Strong predictors like tmax and tmin grow larger as $ \log(\lambda) $ decreases, indicating higher importance.
-  - Weak predictors like landcover and prcp remain near zero across most $ \log(\lambda) $ values.
+  - Strong predictors like `tmax` and `tmin` grow larger as $\log(\lambda)$ decreases, indicating higher importance.
+  - Weak predictors like `landcover` and `prcp` remain near zero across most $\log(\lambda)$ values.
   - Elastic Net balances variable selection and coefficient shrinkage, retaining weaker predictors without fully eliminating them.
 
 
@@ -536,8 +537,9 @@ From the previous table, we may summary the three optimal models suggested by ea
   - landcover, while statistically significant in the linear model, has minimal or negligible contributions in the optimized models.
 
 * **Conclusion:**
-  - Removing landcover simplifies the model without affecting accuracy or interpretability.
-  
+ - **Removing `landcover` simplifies the model without affecting accuracy or interpretability.**  
+    - By excluding `landcover`, the model focuses on dynamic, measurable predictors such as temperature and snow for improving model robustness and ecological relevance, which are not only more ecologically relevant but also exhibit stronger predictive power. This approach enhances model efficiency while maintaining its ability to capture critical environmental influences on American woodcock activity.
+
 # Final results
   
 ```{r}
