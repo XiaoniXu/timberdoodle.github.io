@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Wenjie Wu" />
+<meta name="author" content="Wenjie Wu / Boxiang Tang" />
 
 
 <title>Prediction Modeling</title>
@@ -17,7 +17,7 @@
 <script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -330,16 +330,22 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="about.html">About</a>
-</li>
-<li>
   <a href="data_wrangling.html">Data Wrangling</a>
 </li>
 <li>
   <a href="eda.html">EDA</a>
 </li>
 <li>
+  <a href="data_integration.html">Data Integration</a>
+</li>
+<li>
   <a href="modeling.html">Modeling</a>
+</li>
+<li>
+  <a href="report.html">Report</a>
+</li>
+<li>
+  <a href="about.html">About</a>
 </li>
 <li>
   <a href="mailto:&lt;xx2485@cumc.columbia.edu&gt;">
@@ -371,18 +377,57 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Prediction Modeling</h1>
-<h4 class="author">Wenjie Wu</h4>
+<h4 class="author">Wenjie Wu / Boxiang Tang</h4>
 
 </div>
 
 
+<div id="introduction-and-objcetive" class="section level1">
+<h1>Introduction and Objcetive</h1>
+<p>The primary goal of this section is to conduct a modeling analysis on
+the existing dataset. By leveraging environmental variables such as
+latitude, longitude, temperature, and snowfall, we aim to train
+regression models and ultimately generate a predictive heatmap
+highlighting the likelihood of observing American Woodcock in New York
+State.</p>
+</div>
+<div id="data-preprocessing" class="section level1">
+<h1>Data preprocessing</h1>
+<p>The dataset used in this analysis includes eBird data previously
+collected and augmented with relevant environmental variables. To derive
+the observation ratio for subsequent modeling, we implemented the
+following steps:</p>
+<ol style="list-style-type: decimal">
+<li><p>Variable Grouping and Flagging: • The average temperature
+(<code>t_avg</code>) was grouped at intervals of 1°C.</p>
+<p>• Snowfall (<code>snow</code>) was grouped at intervals of 5
+units.</p>
+<p>• For each grouped range, corresponding flag variables were
+created.</p></li>
+<li><p>Observation Counting: • For observations within the same flag
+(representing similar environmental conditions), we calculated the count
+of American Woodcock observed.</p>
+<p>• This count was divided by the total observations to compute the
+dependent variable for the regression model, <code>obs_ratio</code>,
+representing the proportion of observations under the given
+conditions.</p></li>
+</ol>
 <pre class="r"><code>weather_df &lt;- read_csv(&quot;data/zf_with_weather_landcover.csv&quot;) |&gt;
    filter(!is.na(t_avg)) |&gt;
    filter(!is.na(landcover)) |&gt;
     mutate(t_avg_flag = as.integer((t_avg - min(t_avg, na.rm = TRUE)) / 1)) |&gt;
-    mutate(snow_flag = as.integer((snow - min(snow, na.rm = TRUE)) / 5))
-
-weather_df &lt;-  weather_df |&gt;
+    mutate(snow_flag = as.integer((snow - min(snow, na.rm = TRUE)) / 5))</code></pre>
+<pre><code>## Rows: 1699258 Columns: 31
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (10): checklist_id, state, county, usfws_code, atlas_block, locality, o...
+## dbl  (19): bcr_code, duration_minutes, effort_distance_km, number_observers,...
+## lgl   (1): all_species_reported
+## date  (1): observation_date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>weather_df &lt;-  weather_df |&gt;
   group_by(t_avg_flag, snow_flag) |&gt;
   mutate(
     group_obs_count = n(),  
@@ -390,6 +435,22 @@ weather_df &lt;-  weather_df |&gt;
     obs_ratio = group_obs_count / total_obs_count  
   ) |&gt;
   ungroup()</code></pre>
+</div>
+<div id="modeling-results" class="section level1">
+<h1>Modeling results</h1>
+<p>All predictors (<code>tmax</code>, <code>tmin</code>,
+<code>prcp</code>, <code>snow</code>, <code>snwd</code>,
+<code>landcover</code>, <code>lon</code>, and <code>lat</code>) show
+statistically significant contributions to the model at the 0.001
+significance level (p &lt; 0.001), indicated by their respective
+t-values and small p-values.</p>
+<p>Temperature extremes (<code>tmax</code> and <code>tmin</code>) have
+significant but opposing effects, with higher maximum temperatures
+increasing the likelihood of observations and lower minimum temperatures
+reducing it.</p>
+<p>Snowfall (<code>snow</code>) and snow depth (<code>snwd</code>)
+negatively impact observations, aligning with ecological expectations
+that severe winter conditions limit sightings.</p>
 <pre class="r"><code>lm_model = lm(obs_ratio ~ tmax + tmin + prcp + snow + snwd + landcover + lon + lat, data = weather_df)
 
 summary(lm_model)</code></pre>
@@ -420,6 +481,14 @@ summary(lm_model)</code></pre>
 ##   (17023 observations deleted due to missingness)
 ## Multiple R-squared:  0.3359, Adjusted R-squared:  0.3359 
 ## F-statistic: 4.236e+04 on 8 and 669934 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div id="griding-for-ny-state" class="section level1">
+<h1>Griding for NY state</h1>
+<p>Making boundary for NY state, preparing for ploting heating map. We
+applied grid operations to the map of New York State, dividing it into
+grids to more precisely identify bird observation locations and simulate
+real-world conditions. After multiple adjustments, a grid size of 0.1
+was selected as the optimal scale.</p>
 <pre class="r"><code>ny_boundary &lt;- st_make_valid(ny_boundary)
 
 grid_size &lt;- 0.1  
@@ -433,9 +502,10 @@ ny_grid &lt;- st_make_grid(
 
 
 ny_grid &lt;- st_intersection(ny_grid, ny_boundary) |&gt;
- st_make_valid()
-
-ggplot() +
+ st_make_valid()</code></pre>
+<pre><code>## Warning: attribute variables are assumed to be spatially constant throughout
+## all geometries</code></pre>
+<pre class="r"><code>ggplot() +
   geom_sf(data = ny_boundary, fill = NA, color = &quot;black&quot;) +  
   geom_sf(data = ny_grid, fill = &quot;blue&quot;, alpha = 0.3) +      
   labs(
@@ -444,6 +514,25 @@ ggplot() +
     y = &quot;Latitude&quot;
   )</code></pre>
 <p><img src="modeling_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="prediction-data-simulation" class="section level1">
+<h1>Prediction data simulation</h1>
+<p>For continuous variables such as <code>tmax</code>,
+<code>tmin</code>, <code>snow</code>, and <code>snwd</code>, we fitted
+their distributions based on the original data and generated simulated
+prediction data within the 95% confidence interval. Realistic
+constraints were also incorporated, such as ensuring <code>tmax</code>
+is always greater than <code>tmin</code>, southern regions having higher
+temperatures than northern regions, and snowfall being lower in southern
+areas compared to the north.</p>
+<p>Within each generated grid, 1,000 data points were simulated, with
+their latitude and longitude constrained to lie within the respective
+grid boundaries. Using the previously trained regression model, we
+predicted the observation ratio (<code>obs_ratio</code>) for each point
+and summed these values to obtain the total observation probability for
+each grid. Additionally, realistic landcover data were assigned to each
+grid based on its geographic location, further enhancing the accuracy
+and realism of the simulated data to align with actual conditions.</p>
 <pre class="r"><code>ny_grid &lt;- ny_grid |&gt; st_make_valid()
 
 set.seed(42)  
@@ -497,16 +586,38 @@ predict_data &lt;- predict_data |&gt;
     snwd = runif(n(), min = weather_stats$snwd_ci_low, max = weather_stats$snwd_ci_high),
     
     landcover = sample(c(21, 22, 23, 24), n(), replace = TRUE)
-  )
+  )</code></pre>
+<pre class="r"><code>predict_data$longitude &lt;- predict_data$lon
+predict_data$latitude &lt;- predict_data$lat
 
-predict_data$obs_ratio &lt;- predict(lm_model, newdata = predict_data)</code></pre>
-<pre class="r"><code>grid_predictions &lt;- st_join(ny_grid, st_as_sf(predict_data, coords = c(&quot;lon&quot;, &quot;lat&quot;), crs = st_crs(ny_grid))) |&gt;
+landcover_raw &lt;- terra::rast(&quot;data/Annual_NLCD_LndCov_2023_CU_C1V0.tif&quot;)
+predict_data_sf &lt;- st_as_sf(predict_data, coords = c(&quot;longitude&quot;, &quot;latitude&quot;), crs = 4326)
+
+if (!st_crs(predict_data_sf) == crs(landcover_raw)) {
+  predict_data_sf &lt;- st_transform(predict_data_sf, crs(landcover_raw))
+}
+
+
+predict_data_vect &lt;- vect(predict_data_sf)
+
+extracted_values &lt;- terra::extract(landcover_raw, predict_data_vect)
+
+predict_data_sf$landcover &lt;- extracted_values[,2] 
+
+predict_data_final = st_drop_geometry(predict_data_sf)</code></pre>
+<pre class="r"><code>predict_data_final$obs_ratio &lt;- predict(lm_model, newdata = predict_data_final)</code></pre>
+<pre class="r"><code>grid_predictions &lt;- st_join(ny_grid, st_as_sf(predict_data_final, coords = c(&quot;lon&quot;, &quot;lat&quot;), crs = st_crs(ny_grid))) |&gt;
   group_by(x) |&gt;
   summarise(
     prob_sum = sum(obs_ratio, na.rm = TRUE), 
     prob_mean = mean(obs_ratio, na.rm = TRUE)  
   ) |&gt; 
   ungroup()</code></pre>
+</div>
+<div id="predcting-results-display" class="section level1">
+<h1>Predcting results display</h1>
+<p>The observation probabilities of the American woodcock are displayed
+in the form of a heatmap.</p>
 <pre class="r"><code>ggplot() +
   geom_sf(data = ny_boundary, fill = NA, color = &quot;black&quot;) +  
   geom_sf(data = grid_predictions, aes(fill = prob_sum), color = NA, alpha = 0.8) +
@@ -517,7 +628,467 @@ predict_data$obs_ratio &lt;- predict(lm_model, newdata = predict_data)</code></p
     y = &quot;Latitude&quot;
   ) +
   theme_minimal()</code></pre>
-<p><img src="modeling_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="modeling_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="model-optimization" class="section level1">
+<h1>Model Optimization</h1>
+<div id="lasso-regression" class="section level2">
+<h2>Lasso Regression</h2>
+<p><em>LASSO (Least Absolute Shrinkage and Selection Operator)</em> is a
+regression method that performs variable selection and regularization to
+enhance prediction accuracy. It adds a penalty term <span
+class="math inline">\(\lambda \sum_{j=1}^{p} |\beta_j|\)</span> to the
+regression model, encouraging some coefficients to shrink to exactly
+zero. The optimization problem can be summarized as:</p>
+<p><span class="math display">\[
+\frac{1}{2n} \sum_{i=1}^{n} \left( y_i - \beta_0 - \sum_{j=1}^{p} x_{ij}
+\beta_j \right)^2 + \lambda \sum_{j=1}^{p} |\beta_j|
+\]</span></p>
+<p>where <span class="math inline">\(\lambda\)</span> is the tuning
+parameter that controls the trade-off between model complexity and
+accuracy. As <span class="math inline">\(\lambda\)</span> increases,
+more coefficients are penalized and shrink toward zero.</p>
+<pre class="r"><code># Preparing &amp; checking data for the lasso
+sum(is.na(weather_df$obs_ratio)) 
+sum(is.na(weather_df$tmax))
+sum(is.na(weather_df$tmin))
+sum(is.na(weather_df$prcp))
+sum(is.na(weather_df$snow))
+sum(is.na(weather_df$snwd))
+sum(is.na(weather_df$landcover))
+
+weather_df &lt;- weather_df |&gt; drop_na(obs_ratio, tmax, tmin, prcp, snow, snwd, landcover)
+x &lt;- model.matrix(obs_ratio ~ tmax + tmin + prcp + snow + snwd + landcover, data = weather_df)[, -1]
+y &lt;- weather_df$obs_ratio
+
+nrow(x) == length(y) </code></pre>
+<pre class="r"><code># Prepare the dataset
+# Convert the predictor variables into a matrix and remove intercept
+x &lt;- model.matrix(obs_ratio ~ tmax + tmin + prcp + snow + snwd + landcover, data = weather_df)[, -1]
+
+# Extract the response variable
+y &lt;- weather_df$obs_ratio
+
+# Fit the Lasso regression model
+lasso_fit &lt;- glmnet(x, y, alpha = 1)
+
+# Perform cross-validation to find the optimal lambda
+cv_lasso &lt;- cv.glmnet(x, y, alpha = 1)
+best_lambda &lt;- cv_lasso$lambda.min  # The optimal lambda value
+
+
+# Visualize the Lasso regression path
+# Prepare data for visualization of coefficient paths
+lasso_df &lt;- broom::tidy(lasso_fit) %&gt;%
+  filter(term != &quot;(Intercept)&quot;) %&gt;%  # Remove intercept from visualization
+  mutate(log_lambda = log(lambda, base = 10))  # Log-transform lambda for plotting
+
+# Plot Lasso regression path
+ggplot(lasso_df, aes(x = log_lambda, y = estimate, color = term)) +
+  geom_line() +
+  geom_vline(xintercept = log(best_lambda, base = 10), linetype = &quot;dashed&quot;, color = &quot;blue&quot;) +
+  labs(
+    title = &quot;Lasso Regression Path&quot;,
+    x = &quot;log(lambda)&quot;,
+    y = &quot;Coefficient Estimate&quot;
+  ) +
+  theme_minimal()</code></pre>
+<p><img src="modeling_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code># Additional plot similar to the provided example
+cv_lasso %&gt;%
+  broom::tidy() %&gt;%
+  ggplot(aes(x = log(lambda, 10), y = estimate)) +
+  geom_point() +
+  labs(
+    title = &quot;Lasso Coefficient Estimates vs Lambda&quot;,
+    x = &quot;log(lambda)&quot;,
+    y = &quot;Coefficient Estimate&quot;
+  ) +
+  theme_minimal()</code></pre>
+<p><img src="modeling_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
+<div id="lasso-regression-path-plot" class="section level3">
+<h3>1. Lasso Regression Path Plot:</h3>
+<ul>
+<li><p><strong>How to Read:</strong></p>
+<ul>
+<li>Each line shows how a predictor’s coefficient changes as <span
+class="math inline">\(\log(\lambda)\)</span> varies. The vertical dashed
+line indicates the optimal <span
+class="math inline">\(\lambda\)</span>.</li>
+</ul></li>
+<li><p><strong>Key Patterns:</strong></p>
+<ul>
+<li>As <span class="math inline">\(\lambda\)</span> increases, most
+coefficients shrink to zero.</li>
+<li>Predictors like <code>tmax</code> and <code>snow</code> retain
+larger coefficients over a wider range of <span
+class="math inline">\(\lambda\)</span>, indicating their
+importance.</li>
+<li>Less significant variables like <code>landcover</code> are penalized
+early.</li>
+</ul></li>
+</ul>
+<hr />
+</div>
+<div id="lasso-coefficient-estimates-scatter-plot"
+class="section level3">
+<h3>2. Lasso Coefficient Estimates Scatter Plot:</h3>
+<ul>
+<li><p><strong>How to Read:</strong></p>
+<ul>
+<li>Each dot represents a coefficient value at a specific <span
+class="math inline">\(\log(\lambda)\)</span>.</li>
+</ul></li>
+<li><p><strong>Key Patterns:</strong></p>
+<ul>
+<li>At higher regularization (low <span
+class="math inline">\(\log(\lambda)\)</span>), coefficients are close to
+zero.</li>
+<li>Significant predictors like <code>tmax</code> and <code>snow</code>
+dominate as <span class="math inline">\(\lambda\)</span> decreases.</li>
+</ul></li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="rdige-regression" class="section level2">
+<h2>Rdige Regression</h2>
+<p>Similar to Lasso, Ridge Regression is a regression method that
+introduces a penalty term to reduce overfitting and improve model
+generalization. It adds a <span class="math inline">\(L_2\)</span> (not
+<span class="math inline">\(L_1\)</span>) penalty term <span
+class="math inline">\(\lambda \sum_{j=1}^{p} \beta_j^2\)</span> to the
+regression model, which shrinks all coefficients proportionally but does
+not force them to zero. The optimization problem is given by:</p>
+<p><span class="math display">\[
+\frac{1}{2n} \sum_{i=1}^{n} \left( y_i - \beta_0 - \sum_{j=1}^{p} x_{ij}
+\beta_j \right)^2 + \lambda \sum_{j=1}^{p} \beta_j^2
+\]</span></p>
+<p>where <span class="math inline">\(\lambda\)</span> is the tuning
+parameter controlling the regularization strength. Higher <span
+class="math inline">\(\lambda\)</span> values reduce the model
+complexity by shrinking coefficients closer to zero, but no coefficients
+are entirely eliminated.</p>
+<hr />
+<p><strong>Comparison of Ridge and LASSO:</strong></p>
+<ul>
+<li><p><strong>Similarities:</strong></p>
+<ul>
+<li>Both use regularization to prevent overfitting and reduce model
+complexity.</li>
+<li>Both introduce a penalty term to the loss function and require
+tuning of <span class="math inline">\(\lambda\)</span> to control
+regularization strength.</li>
+</ul></li>
+<li><p><strong>Differences:</strong></p>
+<ul>
+<li>Ridge uses <span class="math inline">\(L_2\)</span> regularization,
+penalizing the sum of squared coefficients, while LASSO uses <span
+class="math inline">\(L_1\)</span> regularization, penalizing the sum of
+absolute coefficients.</li>
+<li>Ridge does not force coefficients to zero, meaning all variables
+remain in the model, whereas LASSO can shrink some coefficients to
+exactly zero, performing variable selection.</li>
+</ul></li>
+</ul>
+<pre class="r"><code># Prepare the dataset
+x &lt;- model.matrix(obs_ratio ~ tmax + tmin + prcp + snow + snwd + landcover, data = weather_df)[, -1]
+y &lt;- weather_df$obs_ratio
+
+# Fit the Ridge regression model (alpha = 0 for Ridge)
+ridge_fit &lt;- glmnet(x, y, alpha = 0)
+
+# Perform cross-validation to find the optimal lambda
+cv_ridge &lt;- cv.glmnet(x, y, alpha = 0)
+best_lambda_ridge &lt;- cv_ridge$lambda.min  # Optimal lambda for Ridge
+
+
+# Visualize Ridge regression path
+ridge_df &lt;- broom::tidy(ridge_fit) %&gt;%
+  filter(term != &quot;(Intercept)&quot;) %&gt;%
+  mutate(log_lambda = log(lambda, base = 10))
+
+ggplot(ridge_df, aes(x = log_lambda, y = estimate, color = term)) +
+  geom_line() +
+  geom_vline(xintercept = log(best_lambda_ridge, base = 10), linetype = &quot;dashed&quot;, color = &quot;blue&quot;) +
+  labs(
+    title = &quot;Ridge Regression Path&quot;,
+    x = &quot;log(lambda)&quot;,
+    y = &quot;Coefficient Estimate&quot;
+  ) +
+  theme_minimal()</code></pre>
+<p><img src="modeling_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<div id="ridge-regression-path-plot" class="section level3">
+<h3>Ridge Regression Path Plot:</h3>
+<ul>
+<li><p><strong>How to Read:</strong></p>
+<ul>
+<li>Each line represents how a predictor’s coefficient changes as <span
+class="math inline">\(\log(\lambda)\)</span> varies. The dashed blue
+line marks the optimal <span class="math inline">\(\lambda\)</span>
+determined by cross-validation.</li>
+</ul></li>
+<li><p><strong>Key Patterns:</strong></p>
+<ul>
+<li>As <span class="math inline">\(\lambda\)</span> increases (lower
+<span class="math inline">\(\log(\lambda)\)</span>), all coefficients
+shrink closer to zero but never exactly zero.</li>
+<li>Strong predictors like <code>tmax</code> and <code>tmin</code>
+retain larger coefficients even at high regularization levels.</li>
+<li>Ridge regression retains all predictors in the model, contrasting
+LASSO, where less significant predictors are eliminated.</li>
+</ul></li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="elastic-net" class="section level2">
+<h2>Elastic net</h2>
+<p>Elastic Net is a regularization method that combines the properties
+of both Ridge and LASSO regression. It adds a penalty term that is a
+weighted combination of <span class="math inline">\(L_1\)</span> (LASSO)
+and <span class="math inline">\(L_2\)</span> (Ridge) penalties. The
+optimization problem is formulated as:</p>
+<p><span class="math display">\[
+\frac{1}{2n} \sum_{i=1}^{n} \left( y_i - \beta_0 - \sum_{j=1}^{p} x_{ij}
+\beta_j \right)^2
++ \lambda \left( \alpha \sum_{j=1}^{p} |\beta_j| + \frac{1 - \alpha}{2}
+\sum_{j=1}^{p} \beta_j^2 \right)
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(\lambda\)</span> is the regularization
+strength.</li>
+<li><span class="math inline">\(\alpha\)</span> controls the balance
+between the <span class="math inline">\(L_1\)</span> and <span
+class="math inline">\(L_2\)</span> penalties (<span
+class="math inline">\(\alpha = 1\)</span> is equivalent to LASSO, <span
+class="math inline">\(\alpha = 0\)</span> is equivalent to Ridge, for
+this analysis I have seted <span class="math inline">\(\alpha\)</span>
+to be 0.5, thus could balance between Lasso and Ridge). Elastic Net is
+particularly useful when there are correlated predictors, as it combines
+the variable selection feature of LASSO with Ridge’s ability to handle
+multicollinearity.</li>
+</ul>
+<hr />
+<p><strong>Comparison of Elastic Net, LASSO, and Ridge:</strong></p>
+<ul>
+<li><p><strong>Similarities:</strong></p>
+<ul>
+<li>All are regularization techniques to prevent overfitting and improve
+model generalization.</li>
+<li>All require tuning of the <span
+class="math inline">\(\lambda\)</span> parameter to control
+regularization strength.</li>
+</ul></li>
+<li><p><strong>Differences:</strong></p>
+<ul>
+<li>Elastic Net combines <span class="math inline">\(L_1\)</span> and
+<span class="math inline">\(L_2\)</span> penalties, while LASSO uses
+only <span class="math inline">\(L_1\)</span> and Ridge uses only <span
+class="math inline">\(L_2\)</span>.</li>
+<li>Elastic Net is more robust in scenarios with correlated predictors
+compared to LASSO and Ridge.</li>
+</ul></li>
+</ul>
+<pre class="r"><code># Standardize the data to ensure all variables are on the same scale
+x &lt;- scale(x)  # Standardize predictor variables
+y &lt;- scale(y)  # Standardize response variable
+
+# Fit Elastic Net model with a custom lambda range
+lambda &lt;- 10^seq(3, -2, length = 100)  # Define a wide range of lambda values
+elastic_fit &lt;- glmnet(x, y, alpha = 0.5, lambda = lambda)  # Fit Elastic Net model with alpha = 0.5
+
+# Perform cross-validation to find the optimal lambda
+cv_elastic &lt;- cv.glmnet(x, y, alpha = 0.5)  # Perform cross-validation
+best_lambda_elastic &lt;- cv_elastic$lambda.min  # Extract the optimal lambda value
+
+# Predict and evaluate Elastic Net with the optimal lambda
+elastic_predictions &lt;- predict(cv_elastic, s = &quot;lambda.min&quot;, newx = x)  # Predict using the optimal lambda
+elastic_mse &lt;- mean((y - elastic_predictions)^2)  # Calculate mean squared error (MSE)
+
+
+# Extract Elastic Net coefficients across the lambda path
+elastic_path_df &lt;- as.data.frame(as.matrix(elastic_fit$beta)) %&gt;%
+  rownames_to_column(var = &quot;term&quot;) %&gt;%  # Extract variable names from rownames
+  pivot_longer(-term, names_to = &quot;lambda&quot;, values_to = &quot;estimate&quot;) %&gt;%  # Convert wide to long format
+  mutate(lambda = as.numeric(gsub(&quot;s&quot;, &quot;&quot;, lambda)),  # Remove &quot;s&quot; prefix from lambda names
+         log_lambda = log(lambda, base = 10))        # Compute log(lambda)
+
+# Plot Elastic Net regularization path
+ggplot(elastic_path_df, aes(x = log_lambda, y = estimate, color = term)) +
+  geom_line() +  # Add lines for each coefficient&#39;s path
+  scale_x_reverse() +  # Reverse the x-axis to display lambda from large to small
+  labs(
+    title = &quot;Elastic Net Regularization Path&quot;,  # Title of the plot
+    x = &quot;log(lambda)&quot;,  # X-axis label
+    y = &quot;Coefficient Estimate&quot;  # Y-axis label
+  ) +
+  theme_minimal()  # Apply a minimal theme to the plot</code></pre>
+<p><img src="modeling_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<div id="elastic-net-regularization-path-plot" class="section level3">
+<h3>Elastic Net Regularization Path Plot</h3>
+<ul>
+<li><p><strong>How to Read:</strong></p>
+<ul>
+<li>Each line represents how a predictor’s coefficient changes as <span
+class="math inline">\(\log(\lambda)\)</span> varies.</li>
+</ul></li>
+<li><p><strong>Key Patterns:</strong></p>
+<ul>
+<li>Strong predictors like <code>tmax</code> and <code>tmin</code> grow
+larger as <span class="math inline">\(\log(\lambda)\)</span> decreases,
+indicating higher importance.</li>
+<li>Weak predictors like <code>landcover</code> and <code>prcp</code>
+remain near zero across most <span
+class="math inline">\(\log(\lambda)\)</span> values.</li>
+<li>Elastic Net balances variable selection and coefficient shrinkage,
+retaining weaker predictors without fully eliminating them.</li>
+</ul></li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="models-representations-conclusion" class="section level2">
+<h2>Models representations &amp; Conclusion</h2>
+<pre class="r"><code># Extract coefficients for each model and convert them to data frames
+lasso_coeff_df &lt;- as.data.frame(as.matrix(coef(cv_lasso, s = &quot;lambda.min&quot;))) %&gt;%
+  rownames_to_column(var = &quot;term&quot;) %&gt;%
+  rename(lasso_coeff = 2)
+
+ridge_coeff_df &lt;- as.data.frame(as.matrix(coef(cv_ridge, s = &quot;lambda.min&quot;))) %&gt;%
+  rownames_to_column(var = &quot;term&quot;) %&gt;%
+  rename(ridge_coeff = 2)
+
+elastic_coeff_df &lt;- as.data.frame(as.matrix(coef(cv_elastic, s = &quot;lambda.min&quot;))) %&gt;%
+  rownames_to_column(var = &quot;term&quot;) %&gt;%
+  rename(elastic_net_coeff = 2)
+
+# Merge the three data frames by the &quot;term&quot; column to create a comparison table
+comparison_df &lt;- lasso_coeff_df %&gt;%
+  full_join(ridge_coeff_df, by = &quot;term&quot;) %&gt;%
+  full_join(elastic_coeff_df, by = &quot;term&quot;)
+
+# Print the comparison table
+print(comparison_df)</code></pre>
+<pre><code>##          term   lasso_coeff   ridge_coeff elastic_net_coeff
+## 1 (Intercept)  2.276174e-02  2.359230e-02      2.204726e-12
+## 2        tmax  4.893500e-04  4.002705e-04      4.031869e-01
+## 3        tmin -6.200271e-05  2.877056e-05     -4.672853e-02
+## 4        prcp  4.614017e-05  3.790017e-05      2.935173e-02
+## 5        snow -1.556586e-04 -1.533098e-04     -1.762796e-01
+## 6        snwd -4.810781e-05 -4.643720e-05     -2.276618e-01
+## 7   landcover  3.960780e-06  5.503963e-06      8.052730e-03</code></pre>
+<pre class="r"><code># Display the comparison table in a nicely formatted way (optional)
+comparison_df %&gt;% 
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">lasso_coeff</th>
+<th align="right">ridge_coeff</th>
+<th align="right">elastic_net_coeff</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.0227617</td>
+<td align="right">0.0235923</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">tmax</td>
+<td align="right">0.0004894</td>
+<td align="right">0.0004003</td>
+<td align="right">0.4031869</td>
+</tr>
+<tr class="odd">
+<td align="left">tmin</td>
+<td align="right">-0.0000620</td>
+<td align="right">0.0000288</td>
+<td align="right">-0.0467285</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="right">0.0000461</td>
+<td align="right">0.0000379</td>
+<td align="right">0.0293517</td>
+</tr>
+<tr class="odd">
+<td align="left">snow</td>
+<td align="right">-0.0001557</td>
+<td align="right">-0.0001533</td>
+<td align="right">-0.1762796</td>
+</tr>
+<tr class="even">
+<td align="left">snwd</td>
+<td align="right">-0.0000481</td>
+<td align="right">-0.0000464</td>
+<td align="right">-0.2276618</td>
+</tr>
+<tr class="odd">
+<td align="left">landcover</td>
+<td align="right">0.0000040</td>
+<td align="right">0.0000055</td>
+<td align="right">0.0080527</td>
+</tr>
+</tbody>
+</table>
+<p>From the previous table, we may summary the three optimal models
+suggested by each algorithms:</p>
+<hr />
+<div id="general-summary" class="section level3">
+<h3>General Summary:</h3>
+<ul>
+<li><p><strong>Key Observations:</strong></p>
+<ul>
+<li>tmax is the most important predictor with the largest positive
+impact across all models.</li>
+<li>tmin and snow consistently show moderate negative impacts.</li>
+<li>landcover, while statistically significant in the linear model, has
+minimal or negligible contributions in the optimized models.</li>
+</ul></li>
+<li><p><strong>Conclusion:</strong></p></li>
+<li><p><strong>Removing <code>landcover</code> simplifies the model
+without affecting accuracy or interpretability.</strong></p>
+<ul>
+<li>By excluding <code>landcover</code>, the model focuses on dynamic,
+measurable predictors such as temperature and snow for improving model
+robustness and ecological relevance, which are not only more
+ecologically relevant but also exhibit stronger predictive power. This
+approach enhances model efficiency while maintaining its ability to
+capture critical environmental influences on American woodcock
+activity.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="final-results" class="section level1">
+<h1>Final results</h1>
+<pre class="r"><code>predict_data_opt &lt;- predict_data_final |&gt; select(-landcover)
+predict_data_opt$obs_ratio &lt;- predict(lm_model, newdata = predict_data_final)</code></pre>
+<pre class="r"><code>grid_predictions_final &lt;- st_join(ny_grid, st_as_sf(predict_data_opt, coords = c(&quot;lon&quot;, &quot;lat&quot;), crs = st_crs(ny_grid))) |&gt;
+  group_by(x) |&gt;
+  summarise(
+    prob_sum = sum(obs_ratio, na.rm = TRUE), 
+    prob_mean = mean(obs_ratio, na.rm = TRUE)  
+  ) |&gt; 
+  ungroup()</code></pre>
+<pre class="r"><code>ggplot() +
+  geom_sf(data = ny_boundary, fill = NA, color = &quot;black&quot;) +  
+  geom_sf(data = grid_predictions_final, aes(fill = prob_sum), color = NA, alpha = 0.8) +
+  scale_fill_viridis_c(option = &quot;plasma&quot;, name = &quot;Probability Sum&quot;) + 
+  labs(
+    title = &quot;Heatmap of Predicted Observation Ratios&quot;,
+    x = &quot;Longitude&quot;,
+    y = &quot;Latitude&quot;
+  ) +
+  theme_minimal()</code></pre>
+<p><img src="modeling_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+</div>
 
 
 

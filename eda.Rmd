@@ -5,6 +5,7 @@ output:
     toc: true
     toc_float: true
     code_folding: hide
+    theme: flatly
 ---
 
 ```{r setup, include=FALSE, message=FALSE}
@@ -30,67 +31,64 @@ knitr::opts_chunk$set(
 observations_selected = read_csv("data/observations_selected_clean.csv")
 ```
 
-We make a simple map of the observations. This map uses GIS data.
-```{r}
-# load gis data
-ne_land <- read_sf("data/gis-data.gpkg", "ne_land") |> 
-  st_geometry()
-ne_country_lines <- read_sf("data/gis-data.gpkg", "ne_country_lines") |> 
-  st_geometry()
-ne_state_lines <- read_sf("data/gis-data.gpkg", "ne_state_lines") |> 
-  st_geometry()
-study_region <- read_sf("data/gis-data.gpkg", "ne_states") |> 
-  filter(state_code == "US-NY") |> 
-  st_geometry()
 
-# prepare ebird data for mapping
+<br><br> 
 
-checklists <- zf_filtered |> 
-  select(checklist_id, observer_id, 
-         observation_count, species_observed, 
-         state_code, locality_id, latitude, longitude,
-         protocol_type, all_species_reported,
-         observation_date, year, day_of_year,
-         hours_of_day, 
-         effort_hours, effort_distance_km, effort_speed_kmph,
-         number_observers)
-
-checklists_sf <- checklists |> 
-  # convert to spatial points
-  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) |> 
-  select(species_observed)
-
-# map
-par(mar = c(0.25, 0.25, 4, 0.25))
-# set up plot area
-plot(st_geometry(checklists_sf), 
-     main = "American Woodcock eBird Observations 2019-2024",
-     col = NA, border = NA)
-# contextual gis data
-plot(ne_land, col = "#cfcfcf", border = "#888888", lwd = 0.5, add = TRUE)
-plot(study_region, col = "#e6e6e6", border = NA, add = TRUE)
-plot(ne_state_lines, col = "#ffffff", lwd = 0.75, add = TRUE)
-plot(ne_country_lines, col = "#ffffff", lwd = 1.5, add = TRUE)
-# ebird observations
-# not observed
-plot(filter(checklists_sf, !species_observed),
-     pch = 19, cex = 0.1, col = alpha("#555555", 0.25),
-     add = TRUE)
-# observed
-plot(filter(checklists_sf, species_observed),
-     pch = 19, cex = 0.3, col = alpha("#4daf4a", 1),
-     add = TRUE)
-# legend
-legend("bottomright", bty = "n",
-       col = c("#555555", "#4daf4a"),
-       legend = c("eBird checklist", "American Woodcock sighting"),
-       pch = 19)
-box()
-```
+## Season
 
 **Does the season affect the activity of woodcocks?**
 
+American woodcocks does not stay the same throughout the year—they migrate, breed, and adapt to their environment depending on the season. Let’s take a closer look at when American Woodcocks make their appearance in New York State. 
+
+
 ```{r}
+# Define colors for the seasons
+season_colors <- c(
+  "Winter" = "#56B4E9", 
+  "Spring" = "#009E73",  
+  "Summer" = "#F0E442",  
+  "Fall" = "#E69F00"
+)
+
+# Function to assign colors based on seasons
+season_color <- function(season) {
+  unname(season_colors[as.character(season)])  # Use color specific to the season
+}
+
+# Render the interactive map
+leaflet(data = observations_selected) %>%
+  addTiles() %>%  # Add default OpenStreetMap tiles
+  addCircleMarkers(
+    ~longitude, ~latitude,  # Longitude and Latitude
+    radius = 3,            # Marker size
+    fillColor = ~season_color(season),  # Apply season colors
+    color = "grey",        # Grey outline for all markers
+    fillOpacity = 0.6,     # Set fill opacity for transparency
+    stroke = TRUE,         # Add borders to markers
+    weight = 0.5,          # Border thickness
+    popup = ~paste("Season:", season, "<br>",
+                   "Observation Count:", observation_count, "<br>",
+                   "Time:", substr(time_observations_started, 1, 5), "<br>",  # Extract HH:MM
+                   "Date:", observation_date)  # Add popup information
+  ) %>%
+  addLegend(
+    position = "bottomright",
+    colors = unname(season_colors),  # Colors for the legend
+    labels = names(season_colors),  # Labels for the seasons
+    title = "Season",
+    opacity = 1
+  )
+```
+
+
+
+
+
+:::: {style="display: flex;"}
+
+::: {}
+
+```{r, fig.align='center', fig.width=6.5, fig.height=4}
 observations_selected <- observations_selected |> 
   mutate(season = factor(season, levels = c("Winter", "Spring", "Summer", "Fall")))
 
@@ -110,16 +108,103 @@ ggplot(season_summary, aes(x = season, y = total_observation_count, fill = seaso
     y = "Total Observation Count"
   ) +
   theme_minimal() +
-  theme(legend.position = "none")
+  theme(legend.position = "none",
+       text = element_text(family = "Times", size = 14))
 ```
 
 
+:::
+  
+:::{}
 
-The total observation count in Spring in NY is significantly higher than in any other season...
+```{r, fig.align='center', fig.width=6.5, fig.height=4}
+observations_selected <- observations_selected |> 
+  mutate(season = factor(season, levels = c("Winter", "Spring", "Summer", "Fall")))
+
+season_summary <- observations_selected |> 
+  group_by(season) |> 
+  summarise(total_observation_count = sum(observation_count, na.rm = TRUE))
+
+# Create a table using kable for display
+season_summary |> 
+  kable(
+    col.names = c("Season", "Total Observation Count"),
+    caption = "Table: Total observation count of woodcocks by season in NY"
+  )
+```
+
+
+:::
+  
+::::
+  
+Spring stands out with the highest observation count, likely due to their courtship behavior during this season, making them easier to detect. In contrast, observations drop significantly in winter, summer, and fall. 
+
+
+<br><br> 
+
+
+
+
+
+
+
+## Time of the day
 
 **When do American woodcocks usually appear?**
 
+American Woodcocks have their own rhythm throughout the day, with their activity levels rising and falling depending on the time. Let’s explore how their activity changes across the day in New York State. 
+
+
 ```{r}
+# map
+
+# Define colors for the times of day
+time_colors <- c(
+  "Morning" = "#FFD700",    # Gold for Morning
+  "Afternoon" = "#FFA500",  # Orange for Afternoon
+  "Evening" = "#1E90FF",    # Dodger Blue for Evening
+  "Night" = "#4B0082"       # Indigo for Night
+)
+
+# Function to assign colors based on time of day
+time_color <- function(time_of_day) {
+  unname(time_colors[as.character(time_of_day)])  # Use color specific to the time of day
+}
+
+# Render the interactive map
+leaflet(data = observations_selected) %>%
+  addTiles() %>%  # Add default OpenStreetMap tiles
+  addCircleMarkers(
+    ~longitude, ~latitude,  # Longitude and Latitude
+    radius = 3,            # Marker size
+    fillColor = ~time_color(time_of_day),  # Apply time of day colors
+    color = "grey",        # Grey outline for all markers
+    fillOpacity = 0.6,     # Set fill opacity for transparency
+    stroke = TRUE,         # Add borders to markers
+    weight = 0.5,          # Border thickness
+    popup = ~paste("Time of Day:", time_of_day, "<br>",
+                   "Observation Count:", observation_count, "<br>",
+                   "Time:", substr(time_observations_started, 1, 5), "<br>",  # Extract HH:MM
+                   "Date:", observation_date)  # Add popup information
+  ) %>%
+  addLegend(
+    position = "bottomright",
+    colors = unname(time_colors),  # Colors for the legend
+    labels = names(time_colors),  # Labels for the times of day
+    title = "Time of Day",
+    opacity = 1
+  )
+```
+
+
+:::: {style="display: flex;"}
+
+::: {}
+
+
+```{r, fig.align='center', fig.width=6.5, fig.height=4}
+
 observations_selected <- observations_selected |> 
   mutate(time_of_day = factor(time_of_day, levels = c("Morning", "Afternoon", "Evening", "Night")))
 
@@ -146,7 +231,43 @@ ggplot(time_summary, aes(x = time_of_day, y = total_observation_count, fill = ti
   theme(legend.position = "none")
 ```
 
-Are the difference significant?
+
+:::
+  
+:::{}
+
+
+```{r, fig.align='center', fig.width=6.5, fig.height=4}
+# table
+# Ensure 'time_of_day' is a factor with a specific order
+observations_selected <- observations_selected |> 
+  mutate(time_of_day = factor(time_of_day, levels = c("Morning", "Afternoon", "Evening", "Night")))
+
+# Summarize total observation count by time of day
+time_summary <- observations_selected |> 
+  group_by(time_of_day) |> 
+  summarise(total_observation_count = sum(observation_count, na.rm = TRUE))
+
+# Create a table using kable for display
+time_summary |> 
+  kable(
+    col.names = c("Time of Day", "Total Observation Count"),
+    caption = "Table: Total observation count of woodcocks by time of day in NY"
+  )
+```
+
+:::
+  
+::::
+  
+
+The plot and table together reveal clear patterns in the observation counts of American Woodcocks across different times of the day in New York State. Observations are highest in the evening, followed by the morning. This pattern may be linked to their courtship behavior, as they often produce distinctive sounds during the evening, making it easier for observers to locate and identify them during this time.
+
+
+<br><br> 
+
+
+**Are the difference significant?**
 
 ```{r}
 kruskal_test <- kruskal.test(observation_count ~ time_of_day, data = observations_selected)
@@ -167,7 +288,18 @@ kruskal_result |>
 There is strong evidence that the observation counts differ significantly across the time periods (Morning, Afternoon, Evening, Night).
 
 
+<br><br> 
+
+## County
+
 **Observation Counts by County**
+
+American Woodcocks are found across New York State, but their activity levels vary by location. Habitat, environment, and observer efforts all play a role in where they are most commonly seen. Let’s look at the plot below to see how they are distributed across the state by county.
+
+
+:::: {style="display: flex;"}
+
+::: {}
 
 ```{r}
 # Summarize the data by county
@@ -179,15 +311,151 @@ county_summary <- observations_selected |>
 # Create a bar plot
 ggplot(county_summary, aes(x = reorder(county, -total_observation_count), y = total_observation_count, fill = total_observation_count)) +
   geom_bar(stat = "identity") +
-  scale_fill_gradient(low = "#4daf4a", high = "#163315", name = "Count") +
+  scale_fill_gradient(low = "lightblue", high = "darkblue", name = "Count") +
   labs(
     title = "Observation Counts by County",
     x = "County",
     y = "Total Observation Count"
   ) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1),
-        legend.position = "bottom")
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 6),
+        legend.position = "right",
+        plot.title = element_text(size = 10, hjust = 0.5),  # Smaller title, centered
+        axis.title.x = element_text(size = 8),  
+        axis.title.y = element_text(size = 8),
+        legend.text = element_text(size = 7)
+        )
 ```
+
+:::
+
+:::{}
+
+
+
+:::
+::::
+
+
+Tompkins County stands out with the highest number of observations, followed by several other counties with moderate counts. Most counties have relatively low observation numbers, indicating that woodcock activity or observation efforts may be concentrated in specific areas. 
+
+
+<br><br> 
+
+## Observer Behavior
+
+The chance of spotting an American Woodcock depends a lot on how the observer behaves. Things like how long they spend looking, how far they travel, the time of day, and the methods they use all make a difference. For example, observers who stay longer in areas where woodcocks live or travel further might have a better chance of seeing one. 
+
+<br>
+
+- <span style="font-size:18px;">**Time of day at which an observation was started**</span>
+
+```{r, warning=FALSE, fig.height=3, fig.width=8}
+observations_selected$start_hour <- as.numeric(format(as.POSIXct(observations_selected$time_observations_started, format = "%H:%M:%S"), "%H"))
+
+hourly_counts <- 
+  observations_selected |>
+  count(start_hour)
+
+ggplot(hourly_counts, aes(x = start_hour, y = n)) +
+  geom_point(size = 2, color = "black") +
+  geom_segment(aes(xend = start_hour, yend = 0), color = "black") +  
+  labs(
+    title = "Distribution of Observation Start Times",
+    x = "Hours since midnight",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+```
+
+<br>
+
+- <span style="font-size:18px;">**Observation duration hours**</span>
+
+```{r, warning=FALSE, fig.height=3, fig.width=8}
+observations_selected$duration_hours <- floor(observations_selected$duration_minutes / 30) * 0.5
+
+# Count the number of observations for each 0.5-hour interval
+duration_counts <- observations_selected |>
+  filter(duration_hours < 7.5) |> 
+  arrange(duration_hours) |> 
+  count(duration_hours) 
+
+# Adjust labels for the x-axis
+duration_counts$duration_label <- ifelse(duration_counts$duration_hours == 0, "<0.5", as.character(duration_counts$duration_hours))
+
+# Create the dot-and-line plot
+ggplot(duration_counts, aes(x = duration_label, y = n)) +
+  geom_point(size = 2, color = "black") +
+  geom_segment(aes(xend = duration_label, yend = 0), color = "black") +  # Vertical lines
+  labs(
+    title = "Distribution of Observations by Duration (Nearest 0.5 Hours)",
+    x = "Duration (Hours)",
+    y = "Frequency"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Tilt x-axis labels for readability
+```
+
+
+<br>
+
+
+
+- <span style="font-size:18px;">**Effort Distance vs. Duration**</span>
+
+To see how effort distance and time spent observing are connected, we created this scatter plot. It shows the relationship between distance and duration, with colors representing different times of the day. This helps highlight patterns in observation efforts.
+
+:::: {style="display: flex;"}
+
+::: {}
+
+```{r, fig.width=20, fig.height=16, message=FALSE}
+
+filtered_data <- observations_selected |> 
+  filter(effort_distance_km <= 30,
+         duration_minutes <= 800)
+ggplot(filtered_data, aes(x = duration_minutes, y = effort_distance_km, color = time_of_day)) +
+  geom_point(alpha = 0.7, size = 5) +  # Points with transparency and size for better readability
+  geom_smooth(method = "lm", color = "red", se = FALSE) +  # Add a linear regression trend line
+  scale_color_manual(
+    values = c(
+      "Morning" = "#FFD700",
+      "Afternoon" = "#FFA500",
+      "Evening" = "#1E90FF",
+      "Night" = "#4B0082"
+    ),
+    name = "Time of Day"
+  ) +
+  labs(
+    title = "Scatter Plot of Effort Distance vs. Duration by Time of Day",
+    y = "Effort Distance (km)",
+    x = "Duration (minutes)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 38),
+    axis.text = element_text(size = 30),
+    axis.title = element_text(size = 30),
+    legend.text = element_text(size = 30),
+    legend.title = element_text(size = 30),
+    legend.position = "bottom"
+  ) +
+  guides(color = guide_legend(override.aes = list(size = 20)))  # Larger points in legend for better visibility
+```
+
+:::
+
+:::{}
+
+Morning and afternoon observations are more common, with a higher density of points at shorter durations and distances. Evening and night efforts are less frequent but show a slightly broader spread in distance and duration. 
+
+:::
+::::
+
+
+
+
+
 
 
