@@ -1,6 +1,6 @@
 ---
 title: "Prediction Modeling"
-author: "Wenjie Wu / Boxiang Tang"
+author: "Wenjie Wu & Boxiang Tang"
 output: 
   html_document:
     toc: true

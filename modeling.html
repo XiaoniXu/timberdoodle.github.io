@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Wenjie Wu / Boxiang Tang" />
+<meta name="author" content="Wenjie Wu &amp; Boxiang Tang" />
 
 
 <title>Prediction Modeling</title>
@@ -333,7 +333,7 @@ div.tocify {
   <a href="data_wrangling.html">Data Wrangling</a>
 </li>
 <li>
-  <a href="eda.html">EDA</a>
+  <a href="eda.html">Data Visualization</a>
 </li>
 <li>
   <a href="data_integration.html">Data Integration</a>
@@ -377,7 +377,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Prediction Modeling</h1>
-<h4 class="author">Wenjie Wu / Boxiang Tang</h4>
+<h4 class="author">Wenjie Wu &amp; Boxiang Tang</h4>
 
 </div>
 
@@ -539,9 +539,14 @@ set.seed(42)
 sampled_points &lt;- ny_grid |&gt; 
   st_sample(size = 1000, type = &quot;random&quot;) |&gt;  
   st_as_sf() |&gt;  
-  st_join(ny_grid)  
-
-weather_stats &lt;- weather_df |&gt;
+  st_join(ny_grid)  </code></pre>
+<pre><code>## Warning in st_poly_sample(x, size = size, ..., type = type, by_polygon =
+## by_polygon, : coordinate ranges not computed along great circles; install
+## package lwgeom to get rid of this warning
+## Warning in st_poly_sample(x, size = size, ..., type = type, by_polygon =
+## by_polygon, : coordinate ranges not computed along great circles; install
+## package lwgeom to get rid of this warning</code></pre>
+<pre class="r"><code>weather_stats &lt;- weather_df |&gt;
   summarise(
     tmax_mean = mean(tmax, na.rm = TRUE),
     tmax_sd = sd(tmax, na.rm = TRUE),
@@ -574,9 +579,14 @@ predict_data &lt;- ny_grid |&gt;
   st_as_sf() |&gt; 
   st_coordinates() |&gt; 
   as.data.frame() |&gt; 
-  rename(lon = X, lat = Y)  
-
-predict_data &lt;- predict_data |&gt;
+  rename(lon = X, lat = Y)  </code></pre>
+<pre><code>## Warning in st_poly_sample(x, size = size, ..., type = type, by_polygon =
+## by_polygon, : coordinate ranges not computed along great circles; install
+## package lwgeom to get rid of this warning
+## Warning in st_poly_sample(x, size = size, ..., type = type, by_polygon =
+## by_polygon, : coordinate ranges not computed along great circles; install
+## package lwgeom to get rid of this warning</code></pre>
+<pre class="r"><code>predict_data &lt;- predict_data |&gt;
   mutate(
     tmin = runif(n(), min = weather_stats$tmin_ci_low, max = weather_stats$tmin_ci_high),
     tmax = tmin + runif(n(), min = 1, max = weather_stats$tmax_ci_high - weather_stats$tmax_ci_low),
@@ -972,7 +982,7 @@ comparison_df &lt;- lasso_coeff_df %&gt;%
 # Print the comparison table
 print(comparison_df)</code></pre>
 <pre><code>##          term   lasso_coeff   ridge_coeff elastic_net_coeff
-## 1 (Intercept)  2.276174e-02  2.359230e-02      2.204726e-12
+## 1 (Intercept)  2.276174e-02  2.359230e-02      6.412453e-16
 ## 2        tmax  4.893500e-04  4.002705e-04      4.031869e-01
 ## 3        tmin -6.200271e-05  2.877056e-05     -4.672853e-02
 ## 4        prcp  4.614017e-05  3.790017e-05      2.935173e-02

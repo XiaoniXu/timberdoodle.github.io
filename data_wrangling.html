@@ -493,6 +493,126 @@ glimpse(observations)</code></pre>
 ## $ reason                    &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
 ## $ trip_comments             &lt;chr&gt; NA, NA, &quot;Warm and calm. 59F. A few scattered…
 ## $ species_comments          &lt;chr&gt; NA, NA, NA, NA, &quot;South end of Snakeroot Trai…</code></pre>
+<div id="variable-summary-ebird-basic-dataset" class="section level3">
+<h3>Variable Summary: eBird Basic Dataset</h3>
+<p>The eBird Basic Dataset contains the following variables:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>GLOBAL UNIQUE IDENTIFIER</strong>:<br />
+A unique alphanumeric code assigned to each record that persists through
+database revisions, updates, and edits.</p></li>
+<li><p><strong>LAST EDITED DATE</strong>:<br />
+The date and time of the most recent edit to the observation, useful for
+determining whether updates are necessary for locally stored
+data.</p></li>
+<li><p><strong>TAXONOMIC ORDER</strong>:<br />
+A numeric value used to arrange species in the latest taxonomic sequence
+as per the eBird/Clements taxonomy.</p></li>
+<li><p><strong>CATEGORY</strong>:<br />
+The taxonomic category (e.g., species, hybrid, slash) assigned to the
+taxon.</p></li>
+<li><p><strong>COMMON NAME</strong>:<br />
+The primary English common name of the taxon.</p></li>
+<li><p><strong>SCIENTIFIC NAME</strong>:<br />
+The scientific name of the taxon.</p></li>
+<li><p><strong>SUBSPECIES COMMON NAME</strong>:<br />
+Common name of the subspecies or subspecies group, including
+intergrades, forms, and domestics.</p></li>
+<li><p><strong>SUBSPECIES SCIENTIFIC NAME</strong>:<br />
+Scientific name of the subspecies or subspecies group.</p></li>
+<li><p><strong>OBSERVATION COUNT</strong>:<br />
+The count of individuals observed. An ‘X’ indicates presence if no count
+was made.</p></li>
+<li><p><strong>BREEDING BIRD ATLAS CODE</strong>:<br />
+The highest level of breeding information reported for the species on a
+given checklist.</p></li>
+<li><p><strong>BREEDING BIRD ATLAS CATEGORY</strong>:<br />
+Breeding status categories (e.g., C1 – Observed, C4 – Confirmed) based
+on atlas codes.</p></li>
+<li><p><strong>AGE/SEX</strong>:<br />
+Counts for combinations of age (adult, immature, juvenile) and sex
+(male, female, unknown).</p></li>
+<li><p><strong>COUNTRY</strong>:<br />
+The country where the observation was made.</p></li>
+<li><p><strong>COUNTRY CODE</strong>:<br />
+Abbreviation for the country name (ISO 3166-2).</p></li>
+<li><p><strong>STATE</strong>:<br />
+The state or province where the observation was made.</p></li>
+<li><p><strong>STATE CODE</strong>:<br />
+Abbreviation for the state or province name (ISO 3166-2).</p></li>
+<li><p><strong>COUNTY</strong>:<br />
+The county where the observation was made.</p></li>
+<li><p><strong>COUNTY CODE</strong>:<br />
+Alphanumeric code representing the county in
+<code>COUNTRY-STATE-COUNTY</code> format.</p></li>
+<li><p><strong>IBA CODE</strong>:<br />
+Code for Important Bird Areas (IBAs) if the observation falls within
+such an area.</p></li>
+<li><p><strong>BCR CODE</strong>:<br />
+Code for Bird Conservation Regions (BCRs).</p></li>
+<li><p><strong>USFWS CODE</strong>:<br />
+Code for United States Fish and Wildlife Service land holdings.</p></li>
+<li><p><strong>ATLAS BLOCK</strong>:<br />
+A code indicating the block used for specific atlas projects, based on
+7.5-minute USGS topographic maps.</p></li>
+<li><p><strong>LOCALITY</strong>:<br />
+The location name for the observation (e.g., eBird Hotspots).</p></li>
+<li><p><strong>LOCALITY ID</strong>:<br />
+A unique alphanumeric code for the location.</p></li>
+<li><p><strong>LOCALITY TYPE</strong>:<br />
+The type of location (e.g., Personal, Hotspot, County).</p></li>
+<li><p><strong>LATITUDE</strong>:<br />
+Latitude of the observation in decimal degrees.</p></li>
+<li><p><strong>LONGITUDE</strong>:<br />
+Longitude of the observation in decimal degrees.</p></li>
+<li><p><strong>OBSERVATION DATE</strong>:<br />
+The date of the observation in <code>YYYY-MM-DD</code> format.</p></li>
+<li><p><strong>TIME OBSERVATIONS STARTED</strong>:<br />
+The time when observations began (24-hour clock format).</p></li>
+<li><p><strong>OBSERVER ID</strong>:<br />
+A unique identifier for the observer.</p></li>
+<li><p><strong>SAMPLING EVENT IDENTIFIER</strong>:<br />
+A unique code for the sampling event (eBird checklist).</p></li>
+<li><p><strong>PROTOCOL TYPE</strong>:<br />
+The type of survey conducted (e.g., Traveling Count, Stationary
+Count).</p></li>
+<li><p><strong>PROTOCOL CODE</strong>:<br />
+Short alphanumeric code identifying the protocol.</p></li>
+<li><p><strong>PROJECT CODE</strong>:<br />
+Portal or project through which the data was collected (e.g., eBird
+Chile, Wisconsin Breeding Bird Atlas).</p></li>
+<li><p><strong>DURATION MINUTES</strong>:<br />
+Duration of the sampling event in minutes.</p></li>
+<li><p><strong>EFFORT DISTANCE KM</strong>:<br />
+Distance traveled during the sampling event (kilometers).</p></li>
+<li><p><strong>EFFORT AREA HA</strong>:<br />
+Area covered during the sampling event (hectares).</p></li>
+<li><p><strong>NUMBER OBSERVERS</strong>:<br />
+Total number of observers participating in the event.</p></li>
+<li><p><strong>ALL SPECIES REPORTED</strong>:<br />
+Indicates if all species detected were reported (1 = yes, 0 =
+no).</p></li>
+<li><p><strong>GROUP IDENTIFIER</strong>:<br />
+Unique ID for shared checklists among multiple observers.</p></li>
+<li><p><strong>HAS MEDIA</strong>:<br />
+Indicates whether the observation includes media (photos, audio, or
+video).</p></li>
+<li><p><strong>APPROVED</strong>:<br />
+Status of the record within the eBird data quality process (Approved/Not
+Approved).</p></li>
+<li><p><strong>REVIEWED</strong>:<br />
+Indicates whether the record was reviewed by a regional editor (1 = yes,
+0 = no).</p></li>
+<li><p><strong>REASON</strong>:<br />
+Reason for a record being “Not Approved” (e.g.,
+Species—Introduced/Exotic).</p></li>
+<li><p><strong>TRIP COMMENTS</strong>:<br />
+Comments about the sampling event (checklist) provided by the
+observer.</p></li>
+<li><p><strong>SPECIES COMMENTS</strong>:<br />
+Comments about the specific species observation provided by the
+observer.</p></li>
+</ol>
+</div>
 </div>
 <div id="collapsing-shared-checklists" class="section level2">
 <h2>Collapsing shared checklists</h2>

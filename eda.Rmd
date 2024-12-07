@@ -1,5 +1,5 @@
 ---
-title: "EDA"
+title: "Data Visualization"
 output: 
   html_document:
     toc: true
@@ -88,7 +88,7 @@ leaflet(data = observations_selected) %>%
 
 ::: {}
 
-```{r, fig.align='center', fig.width=6.5, fig.height=4}
+```{r, fig.align='center', fig.width=6.5, fig.height=4, warning = FALSE}
 observations_selected <- observations_selected |> 
   mutate(season = factor(season, levels = c("Winter", "Spring", "Summer", "Fall")))
 

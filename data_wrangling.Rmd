@@ -22,9 +22,9 @@ library(sf)
 ```
 ## Loading the data
 
-The raw data from eBird has 2,276,777 observations for the sampling data (meaning all checklists in New York state from January 2019 to January 2024) and 13,748 woodcock observations in New York state in the same time frame. There are also a large number of categorical data.
+The raw data from eBird has 2,276,777 observations for the sampling data (meaning all checklists in New York state from January 2019 to January 2024) and 13,748 woodcock observations in New York state in the same time frame. 
 
-```{r}
+```{r, message = FALSE}
 # observation data
 amwo <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt"
 
@@ -35,13 +35,157 @@ amwo_samp <- "data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024_sampling.txt"
 # add the .txt file into your local ./data folder
 
 checklists <- read_sampling(amwo_samp) # the 600MB file will take a while to load
-glimpse(checklists)
 
 observations <- read_ebd(amwo)
-glimpse(observations)
-
 
 ```
+
+### Variable Summary: eBird Basic Dataset
+
+- `checklist_id`  
+  Identification tag for each checklist, composed of unique alphanumeric codes.
+
+- `global_unique_identifier`  
+  A unique alphanumeric code assigned to each record that persists through database revisions, updates, and edits.
+
+- `last_edited_date`  
+  The date and time of the most recent edit to the observation, useful for determining whether updates are necessary for locally stored data.
+
+- `taxonomic_order`  
+  A numeric value used to arrange species in the latest taxonomic sequence as per the eBird/Clements taxonomy.
+
+- `category`  
+  The taxonomic category (e.g., species, hybrid, slash) assigned to the taxon.
+
+- `taxon_concept_id`  
+  A unique identifier for the taxonomic concept in external databases like Avibase.
+
+- `common_name`  
+  The primary English common name of the taxon.
+
+- `scientific_name`  
+  The scientific name of the taxon.
+
+- `exotic_code`  
+  Indicates whether the taxon is exotic or introduced in the region.
+
+- `observation_count`  
+  The count of individuals observed. An 'X' indicates presence if no count was made.
+
+- `breeding_code`  
+  The highest level of breeding information reported for the species on a given checklist.
+
+- `breeding_category`  
+  Breeding status categories (e.g., C1 – Observed, C4 – Confirmed) based on atlas codes.
+
+- `behavior_code`  
+  Behavioral observations recorded for the species (e.g., displaying courtship, carrying food).
+
+- `age_sex`  
+  Counts for combinations of age (adult, immature, juvenile) and sex (male, female, unknown).
+
+- `country`  
+  The country where the observation was made.
+
+- `country_code`  
+  Abbreviation for the country name (ISO 3166-2).
+
+- `state`  
+  The state or province where the observation was made.
+
+- `state_code`  
+  Abbreviation for the state or province name (ISO 3166-2).
+
+- `county`  
+  The county where the observation was made.
+
+- `county_code`  
+  Alphanumeric code representing the county in `COUNTRY-STATE-COUNTY` format.
+
+- `iba_code`  
+  Code for Important Bird Areas (IBAs) if the observation falls within such an area.
+
+- `bcr_code`  
+  Code for Bird Conservation Regions (BCRs).
+
+- `usfws_code`  
+  Code for United States Fish and Wildlife Service land holdings.
+
+- `atlas_block`  
+  A code indicating the block used for specific atlas projects, based on 7.5-minute USGS topographic maps.
+
+- `locality`  
+  The location name for the observation (e.g., eBird Hotspots).
+
+- `locality_id`  
+  A unique alphanumeric code for the location.
+
+- `locality_type`  
+  The type of location (e.g., Personal, Hotspot, County).
+
+- `latitude`  
+  Latitude of the observation in decimal degrees.
+
+- `longitude`  
+  Longitude of the observation in decimal degrees.
+
+- `observation_date`  
+  The date of the observation in `YYYY-MM-DD` format.
+
+- `time_observations_started`  
+  The time when observations began (24-hour clock format).
+
+- `observer_id`  
+  A unique identifier for the observer or group of observers.
+
+- `sampling_event_identifier`  
+  A unique code for the sampling event (eBird checklist).
+
+- `protocol_type`  
+  The type of survey conducted (e.g., Traveling Count, Stationary Count).
+
+- `protocol_code`  
+  Short alphanumeric code identifying the protocol.
+
+- `project_code`  
+  Portal or project through which the data was collected (e.g., eBird Chile, Wisconsin Breeding Bird Atlas).
+
+- `duration_minutes`  
+  Duration of the sampling event in minutes.
+
+- `effort_distance_km`  
+  Distance traveled during the sampling event (kilometers).
+
+- `effort_area_ha`  
+  Area covered during the sampling event (hectares).
+
+- `number_observers`  
+  Total number of observers participating in the event.
+
+- `all_species_reported`  
+  Indicates if all species detected were reported (1 = yes, 0 = no).
+
+- `group_identifier`  
+  Unique ID for shared checklists among multiple observers.
+
+- `has_media`  
+  Indicates whether the observation includes media (photos, audio, or video).
+
+- `approved`  
+  Status of the record within the eBird data quality process (Approved/Not Approved).
+
+- `reviewed`  
+  Indicates whether the record was reviewed by a regional editor (1 = yes, 0 = no).
+
+- `reason`  
+  Reason for a record being "Not Approved" (e.g., Species—Introduced/Exotic).
+
+- `trip_comments`  
+  Comments about the sampling event (checklist) provided by the observer.
+
+- `species_comments`  
+  Comments about the specific species observation provided by the observer.
+
 
 
 ## Collapsing shared checklists
@@ -57,8 +201,7 @@ checklists_shared |>
 
 checklists_unique <- auk_unique(checklists_shared, checklists_only = TRUE)
 
-nrow(checklists_shared)
-nrow(checklists_unique)
+
 ```
 A new variable, `checklist_id`, was created that is set to group_identifier for shared checklists and sampling_event_identifier for non-shared checklists.
 
@@ -67,7 +210,7 @@ A new variable, `checklist_id`, was created that is set to group_identifier for 
 
 ## Filtering non-complete checklists
 
-Exclude non-complete checklists:
+Non-complete checklists were excluded for better data quality.
 ```{r}
 checklists <- checklists |> 
   filter(all_species_reported)
