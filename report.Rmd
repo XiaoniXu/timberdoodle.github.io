@@ -67,6 +67,8 @@ Upon identifying the optimized models recommended by each of the three methods a
 
   Preliminary exploratory analysis were carried out to answer some common questions related to woodcock detection within New York State. By creating a `season` factor and creating a bar chart showing the number of checklists per season, we visualized the total amount and the difference in number of observations of woodcocks each season. The observation counts were also categorized by time of day to see if there is any significant pattern in time of the day for detection. Then, a chi-squared test is run to test whether the differences between season and day times are significant. Also, the number of observations is also summarized by county.
   
+  We also explored observer behavior to understand how the timing and duration of observation efforts influence woodcock detection. We checked the times when observations started and made a plot showing how they are spread out during the day. We also grouped the observation lengths into half-hour intervals and made another plot to see how long observers spend observing. To see how effort distance and time spent observing are connected, we created a scatter plot, and used different colors representing different times of the day.
+  
   We were able to observe a significant 
   
 ## 4. Conclusion and Discussion
