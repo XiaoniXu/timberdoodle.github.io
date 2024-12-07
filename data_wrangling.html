@@ -396,7 +396,7 @@ library(sf)</code></pre>
 <p>The raw data from eBird has 2,276,777 observations for the sampling
 data (meaning all checklists in New York state from January 2019 to
 January 2024) and 13,748 woodcock observations in New York state in the
-same time frame. There are also a large number of categorical data.</p>
+same time frame.</p>
 <pre class="r"><code># observation data
 amwo &lt;- &quot;data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024.txt&quot;
 
@@ -407,211 +407,133 @@ amwo_samp &lt;- &quot;data/ebd_US-NY_amewoo_201901_202401_smp_relSep-2024_sampli
 # add the .txt file into your local ./data folder
 
 checklists &lt;- read_sampling(amwo_samp) # the 600MB file will take a while to load
-glimpse(checklists)</code></pre>
-<pre><code>## Rows: 2,276,777
-## Columns: 31
-## $ checklist_id              &lt;chr&gt; &quot;S60410417&quot;, &quot;S60409292&quot;, &quot;S60410856&quot;, &quot;S604…
-## $ last_edited_date          &lt;chr&gt; &quot;2021-11-09 21:15:44.959662&quot;, &quot;2022-10-21 03…
-## $ country                   &lt;chr&gt; &quot;United States&quot;, &quot;United States&quot;, &quot;United St…
-## $ country_code              &lt;chr&gt; &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;U…
-## $ state                     &lt;chr&gt; &quot;New York&quot;, &quot;New York&quot;, &quot;New York&quot;, &quot;New Yor…
-## $ state_code                &lt;chr&gt; &quot;US-NY&quot;, &quot;US-NY&quot;, &quot;US-NY&quot;, &quot;US-NY&quot;, &quot;US-NY&quot;,…
-## $ county                    &lt;chr&gt; &quot;Ulster&quot;, &quot;Otsego&quot;, &quot;Schuyler&quot;, &quot;Schuyler&quot;, …
-## $ county_code               &lt;chr&gt; &quot;US-NY-111&quot;, &quot;US-NY-077&quot;, &quot;US-NY-097&quot;, &quot;US-N…
-## $ iba_code                  &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, &quot;US-NY_2792&quot;…
-## $ bcr_code                  &lt;int&gt; 13, 28, 28, 13, 28, 28, 30, 13, 28, 30, 30, …
-## $ usfws_code                &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ atlas_block               &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ locality                  &lt;chr&gt; &quot;Mall&quot;, &quot;West Main Street ,Morris,NY&quot;, &quot;Stea…
-## $ locality_id               &lt;chr&gt; &quot;L10000448&quot;, &quot;L10000309&quot;, &quot;L10000499&quot;, &quot;L100…
-## $ locality_type             &lt;chr&gt; &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;P&quot;,…
-## $ latitude                  &lt;dbl&gt; 41.96585, 42.54558, 42.38840, 42.35100, 42.3…
-## $ longitude                 &lt;dbl&gt; -73.97731, -75.25157, -76.76212, -76.84415, …
-## $ observation_date          &lt;date&gt; 2019-10-06, 2019-10-04, 2019-10-06, 2019-10…
-## $ time_observations_started &lt;chr&gt; NA, &quot;17:20:00&quot;, &quot;09:01:00&quot;, &quot;11:15:00&quot;, &quot;14:…
-## $ observer_id               &lt;chr&gt; &quot;obsr1127554&quot;, &quot;obsr375393&quot;, &quot;obsr295684&quot;, &quot;…
-## $ sampling_event_identifier &lt;chr&gt; &quot;S60410417&quot;, &quot;S60409292&quot;, &quot;S60410856&quot;, &quot;S604…
-## $ protocol_type             &lt;chr&gt; &quot;Incidental&quot;, &quot;Incidental&quot;, &quot;Traveling&quot;, &quot;Tr…
-## $ protocol_code             &lt;chr&gt; &quot;P20&quot;, &quot;P20&quot;, &quot;P22&quot;, &quot;P22&quot;, &quot;P21&quot;, &quot;P21&quot;, &quot;P…
-## $ project_code              &lt;chr&gt; &quot;EBIRD&quot;, &quot;EBIRD&quot;, &quot;EBIRD&quot;, &quot;EBIRD&quot;, &quot;EBIRD&quot;,…
-## $ duration_minutes          &lt;int&gt; NA, NA, 50, 52, 6, 7, 5, 1, 20, NA, 15, 30, …
-## $ effort_distance_km        &lt;dbl&gt; NA, NA, 3.059, 1.609, NA, NA, NA, NA, NA, NA…
-## $ effort_area_ha            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ number_observers          &lt;int&gt; NA, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 3, 1…
-## $ all_species_reported      &lt;lgl&gt; FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, …
-## $ group_identifier          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ trip_comments             &lt;chr&gt; NA, NA, &quot;Steam Mill Rd. From Carley to the p…</code></pre>
-<pre class="r"><code>observations &lt;- read_ebd(amwo)
-glimpse(observations)</code></pre>
-<pre><code>## Rows: 13,748
-## Columns: 48
-## $ checklist_id              &lt;chr&gt; &quot;G10001395&quot;, &quot;G10004562&quot;, &quot;G10006357&quot;, &quot;G100…
-## $ global_unique_identifier  &lt;chr&gt; &quot;URN:CornellLabOfOrnithology:EBIRD:OBS168599…
-## $ last_edited_date          &lt;chr&gt; &quot;2023-04-15 11:23:38.035561&quot;, &quot;2023-10-24 13…
-## $ taxonomic_order           &lt;dbl&gt; 6031, 6031, 6031, 6031, 6031, 6031, 6031, 60…
-## $ category                  &lt;chr&gt; &quot;species&quot;, &quot;species&quot;, &quot;species&quot;, &quot;species&quot;, …
-## $ taxon_concept_id          &lt;chr&gt; &quot;avibase-F4829920&quot;, &quot;avibase-F4829920&quot;, &quot;avi…
-## $ common_name               &lt;chr&gt; &quot;American Woodcock&quot;, &quot;American Woodcock&quot;, &quot;A…
-## $ scientific_name           &lt;chr&gt; &quot;Scolopax minor&quot;, &quot;Scolopax minor&quot;, &quot;Scolopa…
-## $ exotic_code               &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ observation_count         &lt;chr&gt; &quot;1&quot;, &quot;1&quot;, &quot;4&quot;, &quot;1&quot;, &quot;2&quot;, &quot;5&quot;, &quot;2&quot;, &quot;1&quot;, &quot;1&quot;,…
-## $ breeding_code             &lt;chr&gt; NA, NA, &quot;C &quot;, &quot;H &quot;, NA, &quot;C &quot;, &quot;C &quot;, &quot;C &quot;, &quot;S…
-## $ breeding_category         &lt;chr&gt; NA, NA, &quot;C3&quot;, &quot;C2&quot;, NA, &quot;C3&quot;, &quot;C3&quot;, &quot;C3&quot;, &quot;C…
-## $ behavior_code             &lt;chr&gt; NA, NA, &quot;C &quot;, &quot;H &quot;, NA, &quot;C &quot;, &quot;C &quot;, &quot;C &quot;, &quot;S…
-## $ age_sex                   &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ country                   &lt;chr&gt; &quot;United States&quot;, &quot;United States&quot;, &quot;United St…
-## $ country_code              &lt;chr&gt; &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;U…
-## $ state                     &lt;chr&gt; &quot;New York&quot;, &quot;New York&quot;, &quot;New York&quot;, &quot;New Yor…
-## $ state_code                &lt;chr&gt; &quot;US-NY&quot;, &quot;US-NY&quot;, &quot;US-NY&quot;, &quot;US-NY&quot;, &quot;US-NY&quot;,…
-## $ county                    &lt;chr&gt; &quot;Albany&quot;, &quot;Chemung&quot;, &quot;Monroe&quot;, &quot;Monroe&quot;, &quot;Er…
-## $ county_code               &lt;chr&gt; &quot;US-NY-001&quot;, &quot;US-NY-015&quot;, &quot;US-NY-055&quot;, &quot;US-N…
-## $ iba_code                  &lt;chr&gt; NA, NA, &quot;BIRDLIFE_26109|US-NY_1723&quot;, NA, &quot;US…
-## $ bcr_code                  &lt;int&gt; 13, 28, 13, 13, 13, 13, 13, 14, 13, 13, 13, …
-## $ usfws_code                &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ atlas_block               &lt;chr&gt; &quot;42073E8NE&quot;, NA, &quot;43077C6CW&quot;, &quot;43077B5SE&quot;, N…
-## $ locality                  &lt;chr&gt; &quot;Five Rivers EEC&quot;, &quot;The Schoolhouse&quot;, &quot;Bradd…
-## $ locality_id               &lt;chr&gt; &quot;L213239&quot;, &quot;L24332414&quot;, &quot;L390730&quot;, &quot;L392124&quot;…
-## $ locality_type             &lt;chr&gt; &quot;H&quot;, &quot;P&quot;, &quot;H&quot;, &quot;H&quot;, &quot;H&quot;, &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;P&quot;,…
-## $ latitude                  &lt;dbl&gt; 42.61000, 42.06903, 43.32014, 43.14913, 42.8…
-## $ longitude                 &lt;dbl&gt; -73.89077, -76.93469, -77.72643, -77.51756, …
-## $ observation_date          &lt;date&gt; 2023-04-15, 2023-04-15, 2023-04-15, 2023-04…
-## $ time_observations_started &lt;chr&gt; &quot;09:49:00&quot;, &quot;17:13:00&quot;, &quot;20:11:00&quot;, &quot;12:32:0…
-## $ observer_id               &lt;chr&gt; &quot;obsr839489,obsr2659179,obsr2179341&quot;, &quot;obsr1…
-## $ sampling_event_identifier &lt;chr&gt; &quot;S133826157,S133826160,S133826162&quot;, &quot;S133879…
-## $ protocol_type             &lt;chr&gt; &quot;Traveling&quot;, &quot;Traveling&quot;, &quot;Traveling&quot;, &quot;Trav…
-## $ protocol_code             &lt;chr&gt; &quot;P22&quot;, &quot;P22&quot;, &quot;P22&quot;, &quot;P22&quot;, &quot;P22&quot;, &quot;P21&quot;, &quot;P…
-## $ project_code              &lt;chr&gt; &quot;EBIRD_ATL_NY&quot;, &quot;EBIRD&quot;, &quot;EBIRD_ATL_NY&quot;, &quot;EB…
-## $ duration_minutes          &lt;int&gt; 93, 30, 31, 50, 176, 105, 11, 26, 30, 67, 15…
-## $ effort_distance_km        &lt;dbl&gt; 3.701, 0.805, 1.236, 1.609, 2.866, NA, NA, N…
-## $ effort_area_ha            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ number_observers          &lt;int&gt; 3, 2, 3, 2, 2, 2, 2, 2, 4, 3, 2, 2, 3, 2, 2,…
-## $ all_species_reported      &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TR…
-## $ group_identifier          &lt;chr&gt; &quot;G10001395&quot;, &quot;G10004562&quot;, &quot;G10006357&quot;, &quot;G100…
-## $ has_media                 &lt;lgl&gt; FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FAL…
-## $ approved                  &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TR…
-## $ reviewed                  &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FA…
-## $ reason                    &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ trip_comments             &lt;chr&gt; NA, NA, &quot;Warm and calm. 59F. A few scattered…
-## $ species_comments          &lt;chr&gt; NA, NA, NA, NA, &quot;South end of Snakeroot Trai…</code></pre>
+
+observations &lt;- read_ebd(amwo)</code></pre>
 <div id="variable-summary-ebird-basic-dataset" class="section level3">
 <h3>Variable Summary: eBird Basic Dataset</h3>
-<p>The eBird Basic Dataset contains the following variables:</p>
-<ol style="list-style-type: decimal">
-<li><p><strong>GLOBAL UNIQUE IDENTIFIER</strong>:<br />
+<ul>
+<li><p><code>checklist_id</code><br />
+Identification tag for each checklist, composed of unique alphanumeric
+codes.</p></li>
+<li><p><code>global_unique_identifier</code><br />
 A unique alphanumeric code assigned to each record that persists through
 database revisions, updates, and edits.</p></li>
-<li><p><strong>LAST EDITED DATE</strong>:<br />
+<li><p><code>last_edited_date</code><br />
 The date and time of the most recent edit to the observation, useful for
 determining whether updates are necessary for locally stored
 data.</p></li>
-<li><p><strong>TAXONOMIC ORDER</strong>:<br />
+<li><p><code>taxonomic_order</code><br />
 A numeric value used to arrange species in the latest taxonomic sequence
 as per the eBird/Clements taxonomy.</p></li>
-<li><p><strong>CATEGORY</strong>:<br />
+<li><p><code>category</code><br />
 The taxonomic category (e.g., species, hybrid, slash) assigned to the
 taxon.</p></li>
-<li><p><strong>COMMON NAME</strong>:<br />
+<li><p><code>taxon_concept_id</code><br />
+A unique identifier for the taxonomic concept in external databases like
+Avibase.</p></li>
+<li><p><code>common_name</code><br />
 The primary English common name of the taxon.</p></li>
-<li><p><strong>SCIENTIFIC NAME</strong>:<br />
+<li><p><code>scientific_name</code><br />
 The scientific name of the taxon.</p></li>
-<li><p><strong>SUBSPECIES COMMON NAME</strong>:<br />
-Common name of the subspecies or subspecies group, including
-intergrades, forms, and domestics.</p></li>
-<li><p><strong>SUBSPECIES SCIENTIFIC NAME</strong>:<br />
-Scientific name of the subspecies or subspecies group.</p></li>
-<li><p><strong>OBSERVATION COUNT</strong>:<br />
+<li><p><code>exotic_code</code><br />
+Indicates whether the taxon is exotic or introduced in the
+region.</p></li>
+<li><p><code>observation_count</code><br />
 The count of individuals observed. An ‘X’ indicates presence if no count
 was made.</p></li>
-<li><p><strong>BREEDING BIRD ATLAS CODE</strong>:<br />
+<li><p><code>breeding_code</code><br />
 The highest level of breeding information reported for the species on a
 given checklist.</p></li>
-<li><p><strong>BREEDING BIRD ATLAS CATEGORY</strong>:<br />
+<li><p><code>breeding_category</code><br />
 Breeding status categories (e.g., C1 – Observed, C4 – Confirmed) based
 on atlas codes.</p></li>
-<li><p><strong>AGE/SEX</strong>:<br />
+<li><p><code>behavior_code</code><br />
+Behavioral observations recorded for the species (e.g., displaying
+courtship, carrying food).</p></li>
+<li><p><code>age_sex</code><br />
 Counts for combinations of age (adult, immature, juvenile) and sex
 (male, female, unknown).</p></li>
-<li><p><strong>COUNTRY</strong>:<br />
+<li><p><code>country</code><br />
 The country where the observation was made.</p></li>
-<li><p><strong>COUNTRY CODE</strong>:<br />
+<li><p><code>country_code</code><br />
 Abbreviation for the country name (ISO 3166-2).</p></li>
-<li><p><strong>STATE</strong>:<br />
+<li><p><code>state</code><br />
 The state or province where the observation was made.</p></li>
-<li><p><strong>STATE CODE</strong>:<br />
+<li><p><code>state_code</code><br />
 Abbreviation for the state or province name (ISO 3166-2).</p></li>
-<li><p><strong>COUNTY</strong>:<br />
+<li><p><code>county</code><br />
 The county where the observation was made.</p></li>
-<li><p><strong>COUNTY CODE</strong>:<br />
+<li><p><code>county_code</code><br />
 Alphanumeric code representing the county in
 <code>COUNTRY-STATE-COUNTY</code> format.</p></li>
-<li><p><strong>IBA CODE</strong>:<br />
+<li><p><code>iba_code</code><br />
 Code for Important Bird Areas (IBAs) if the observation falls within
 such an area.</p></li>
-<li><p><strong>BCR CODE</strong>:<br />
+<li><p><code>bcr_code</code><br />
 Code for Bird Conservation Regions (BCRs).</p></li>
-<li><p><strong>USFWS CODE</strong>:<br />
+<li><p><code>usfws_code</code><br />
 Code for United States Fish and Wildlife Service land holdings.</p></li>
-<li><p><strong>ATLAS BLOCK</strong>:<br />
+<li><p><code>atlas_block</code><br />
 A code indicating the block used for specific atlas projects, based on
 7.5-minute USGS topographic maps.</p></li>
-<li><p><strong>LOCALITY</strong>:<br />
+<li><p><code>locality</code><br />
 The location name for the observation (e.g., eBird Hotspots).</p></li>
-<li><p><strong>LOCALITY ID</strong>:<br />
+<li><p><code>locality_id</code><br />
 A unique alphanumeric code for the location.</p></li>
-<li><p><strong>LOCALITY TYPE</strong>:<br />
+<li><p><code>locality_type</code><br />
 The type of location (e.g., Personal, Hotspot, County).</p></li>
-<li><p><strong>LATITUDE</strong>:<br />
+<li><p><code>latitude</code><br />
 Latitude of the observation in decimal degrees.</p></li>
-<li><p><strong>LONGITUDE</strong>:<br />
+<li><p><code>longitude</code><br />
 Longitude of the observation in decimal degrees.</p></li>
-<li><p><strong>OBSERVATION DATE</strong>:<br />
+<li><p><code>observation_date</code><br />
 The date of the observation in <code>YYYY-MM-DD</code> format.</p></li>
-<li><p><strong>TIME OBSERVATIONS STARTED</strong>:<br />
+<li><p><code>time_observations_started</code><br />
 The time when observations began (24-hour clock format).</p></li>
-<li><p><strong>OBSERVER ID</strong>:<br />
-A unique identifier for the observer.</p></li>
-<li><p><strong>SAMPLING EVENT IDENTIFIER</strong>:<br />
+<li><p><code>observer_id</code><br />
+A unique identifier for the observer or group of observers.</p></li>
+<li><p><code>sampling_event_identifier</code><br />
 A unique code for the sampling event (eBird checklist).</p></li>
-<li><p><strong>PROTOCOL TYPE</strong>:<br />
+<li><p><code>protocol_type</code><br />
 The type of survey conducted (e.g., Traveling Count, Stationary
 Count).</p></li>
-<li><p><strong>PROTOCOL CODE</strong>:<br />
+<li><p><code>protocol_code</code><br />
 Short alphanumeric code identifying the protocol.</p></li>
-<li><p><strong>PROJECT CODE</strong>:<br />
+<li><p><code>project_code</code><br />
 Portal or project through which the data was collected (e.g., eBird
 Chile, Wisconsin Breeding Bird Atlas).</p></li>
-<li><p><strong>DURATION MINUTES</strong>:<br />
+<li><p><code>duration_minutes</code><br />
 Duration of the sampling event in minutes.</p></li>
-<li><p><strong>EFFORT DISTANCE KM</strong>:<br />
+<li><p><code>effort_distance_km</code><br />
 Distance traveled during the sampling event (kilometers).</p></li>
-<li><p><strong>EFFORT AREA HA</strong>:<br />
+<li><p><code>effort_area_ha</code><br />
 Area covered during the sampling event (hectares).</p></li>
-<li><p><strong>NUMBER OBSERVERS</strong>:<br />
+<li><p><code>number_observers</code><br />
 Total number of observers participating in the event.</p></li>
-<li><p><strong>ALL SPECIES REPORTED</strong>:<br />
+<li><p><code>all_species_reported</code><br />
 Indicates if all species detected were reported (1 = yes, 0 =
 no).</p></li>
-<li><p><strong>GROUP IDENTIFIER</strong>:<br />
+<li><p><code>group_identifier</code><br />
 Unique ID for shared checklists among multiple observers.</p></li>
-<li><p><strong>HAS MEDIA</strong>:<br />
+<li><p><code>has_media</code><br />
 Indicates whether the observation includes media (photos, audio, or
 video).</p></li>
-<li><p><strong>APPROVED</strong>:<br />
+<li><p><code>approved</code><br />
 Status of the record within the eBird data quality process (Approved/Not
 Approved).</p></li>
-<li><p><strong>REVIEWED</strong>:<br />
+<li><p><code>reviewed</code><br />
 Indicates whether the record was reviewed by a regional editor (1 = yes,
 0 = no).</p></li>
-<li><p><strong>REASON</strong>:<br />
+<li><p><code>reason</code><br />
 Reason for a record being “Not Approved” (e.g.,
 Species—Introduced/Exotic).</p></li>
-<li><p><strong>TRIP COMMENTS</strong>:<br />
+<li><p><code>trip_comments</code><br />
 Comments about the sampling event (checklist) provided by the
 observer.</p></li>
-<li><p><strong>SPECIES COMMENTS</strong>:<br />
+<li><p><code>species_comments</code><br />
 Comments about the specific species observation provided by the
 observer.</p></li>
-</ol>
+</ul>
 </div>
 </div>
 <div id="collapsing-shared-checklists" class="section level2">
@@ -640,19 +562,14 @@ checklists_shared |&gt;
 ##  9 S133796980                G10000122       
 ## 10 S133797306                G10000134       
 ## # ℹ 499,621 more rows</code></pre>
-<pre class="r"><code>checklists_unique &lt;- auk_unique(checklists_shared, checklists_only = TRUE)
-
-nrow(checklists_shared)</code></pre>
-<pre><code>## [1] 2561151</code></pre>
-<pre class="r"><code>nrow(checklists_unique)</code></pre>
-<pre><code>## [1] 2276777</code></pre>
+<pre class="r"><code>checklists_unique &lt;- auk_unique(checklists_shared, checklists_only = TRUE)</code></pre>
 <p>A new variable, <code>checklist_id</code>, was created that is set to
 group_identifier for shared checklists and sampling_event_identifier for
 non-shared checklists.</p>
 </div>
 <div id="filtering-non-complete-checklists" class="section level2">
 <h2>Filtering non-complete checklists</h2>
-<p>Exclude non-complete checklists:</p>
+<p>Non-complete checklists were excluded for better data quality.</p>
 <pre class="r"><code>checklists &lt;- checklists |&gt; 
   filter(all_species_reported)
 
