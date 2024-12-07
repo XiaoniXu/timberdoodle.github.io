@@ -56,10 +56,15 @@ For general information about American Woodcocks, visit its [eBird page](https:/
 
 Here is a screen cast for our website:
 
+<div style="text-align: center;">
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/9QMmyT30Xoo" 
+          frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen>
+  </iframe>
+</div>
 
 
-
-Here is a map showing the distribution of American Woodcocks Observation in NY.
+Here is a map showing the distribution of American Woodcocks observation in NY.
 
 ```{r, echo=FALSE, message=FALSE, warning = FALSE}
 library(auk)
