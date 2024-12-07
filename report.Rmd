@@ -84,21 +84,9 @@ Upon identifying the optimized models recommended by each of the three methods a
   
   The observational and sampling data from eBird allows for computing absence of a species in a given time and space, something that is rather difficult to attain as most online databases only incorporate presence data. Such data allows for occupancy modeling, a prospective next-step research to our project in predicting frequency data.
   
-  Data selection has always been one of the main factors affecting the outcome of modeling in ecological and ornithological research, especially when associating with citizen science data. For eBird data, analyzing complete checklists and using effort variables as covariates made the largest difference to the model quality [@johnston_analytical_2021].
+  Data selection has always been one of the main factors affecting the outcome of modeling in ecological and ornithological research, especially when associating with citizen science data. For eBird data, analyzing complete checklists and using effort variables as covariates made the largest difference to the model quality [@johnston_analytical_2021]. On the other hand, the checklists themselves also introduce bias as birders tend to over-report rare birds, such as the woodcock, and under-report common birds. Checklist submission might be driven by the availability of public green spaces where birders are attracted [@lopez_insights_2020]. There is also a study that demonstrate road density to be negatively associated with the sampling intensity across multiple taxa [@mair_explaining_2016]. As a result, selected sampling given the above situations can lead to incorrect inferences about the relationship between variables of interest [@grade_evaluating_2022].
   
-
-  
-  
-  
-  
-  
-  One possibility is that checklist submission might be driven by the availability of public green spaces where birders are attracted (Lopez et al.)
-  
-  road density to be negatively associated with the sampling intensity across multiple taxa (Mair and Ruete)
-  
-  how selected sampling can lead to incorrect inferences about the relationship between variables of interest (Grade et al.)
-  
-  Within the scope of time and the previous background and experience in computational and ornithological knowledge, we were able to uncover a plethora of results that would otherwise well hidden inside the data set. However, a deeper dive into the more fine-tuned ecology and micro-habitats of the woodcock (or other species that reside in successional habitats that favor areas with more urban development) is needed to provide enough precision for the prediction model suitable for ornithological research. 
+  Within the scope of time and the previous background and experience in computational and ornithological knowledge, we were able to uncover a plethora of results that would otherwise well hidden inside the data set. However, a deeper dive into the more fine-tuned ecology and micro-habitats of the woodcock (or other species that reside in succession habitats that favor areas with more urban development) is needed to provide enough precision for the prediction model suitable for ornithological research. We hope that our study can inspire more refined and comprehensive research using citizen science data that reveal further findings in avian ecology and migration.
   
   
 # References
