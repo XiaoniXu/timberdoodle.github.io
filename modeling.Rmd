@@ -21,11 +21,11 @@ library(broom)
 ```
 
 
-# Introduction and Objcetive
+# Introduction and Objective
 
 The primary goal of this section is to conduct a modeling analysis on the existing dataset. By leveraging environmental variables such as latitude, longitude, temperature, and snowfall, we aim to train regression models and ultimately generate a predictive heatmap highlighting the likelihood of observing American Woodcock in New York State.
 
-# Data preprocessing
+# Data pre-processing
 
 The dataset used in this analysis includes eBird data previously collected and augmented with relevant environmental variables. To derive the observation ratio for subsequent modeling, we implemented the following steps:
 
@@ -78,9 +78,9 @@ ny_boundary <- tigris::states(cb = TRUE) |>
   st_as_sf()
 ```
 
-# Griding for NY state
+# Dividing the land area
 
-Making boundary for NY state, preparing for ploting heating map. We applied grid operations to the map of New York State, dividing it into grids to more precisely identify bird observation locations and simulate real-world conditions. After multiple adjustments, a grid size of 0.1 was selected as the optimal scale.
+We applied grid operations to the map of New York State, dividing it into square grids to more precisely identify bird observation locations and simulate real-world conditions. After multiple adjustments, a grid size of 0.1 was selected as the optimal scale.
 
 ```{r}
 ny_boundary <- st_make_valid(ny_boundary)
@@ -114,7 +114,7 @@ For continuous variables such as `tmax`, `tmin`, `snow`, and `snwd`, we fitted t
 
 Within each generated grid, 1,000 data points were simulated, with their latitude and longitude constrained to lie within the respective grid boundaries. Using the previously trained regression model, we predicted the observation ratio (`obs_ratio`) for each point and summed these values to obtain the total observation probability for each grid. Additionally, realistic landcover data were assigned to each grid based on its geographic location, further enhancing the accuracy and realism of the simulated data to align with actual conditions.
 
-```{r}
+```{r, warning = FALSE}
 ny_grid <- ny_grid |> st_make_valid()
 
 set.seed(42)  
@@ -207,9 +207,9 @@ grid_predictions <- st_join(ny_grid, st_as_sf(predict_data_final, coords = c("lo
   ungroup()
 ```
 
-# Predcting results display
+# Displaying the prediction results
 
-The observation probabilities of the American woodcock are displayed in the form of a heatmap.
+The observation probabilities of the American woodcock are displayed in the form of a heat map.
 
 ```{r}
 ggplot() +
@@ -226,7 +226,7 @@ ggplot() +
 
 # Model Optimization
 
-## Lasso Regression
+## LASSO Regression
 
 *LASSO (Least Absolute Shrinkage and Selection Operator)* is a regression method that performs variable selection and regularization to enhance prediction accuracy. It adds a penalty term $\lambda \sum_{j=1}^{p} |\beta_j|$ to the regression model, encouraging some coefficients to shrink to exactly zero. The optimization problem can be summarized as:
 
@@ -305,7 +305,7 @@ cv_lasso %>%
 ```
 
 
-### 1. Lasso Regression Path Plot:
+### 1. LASSO Regression Path Plot:
 
 * **How to Read:**
     - Each line shows how a predictor's coefficient changes as $\log(\lambda)$ varies. The vertical dashed line indicates the optimal $\lambda$.
@@ -318,7 +318,7 @@ cv_lasso %>%
 
 ---
 
-### 2. Lasso Coefficient Estimates Scatter Plot:
+### 2. LASSO Coefficient Estimates Scatter Plot:
 
 * **How to Read:**
   - Each dot represents a coefficient value at a specific $\log(\lambda)$.
@@ -334,7 +334,7 @@ cv_lasso %>%
 
 
 
-## Rdige Regression
+## Ridge Regression
 
 Similar to Lasso, Ridge Regression is a regression method that introduces a penalty term to reduce overfitting and improve model generalization. It adds a $L_2$ (not $L_1$) penalty term $\lambda \sum_{j=1}^{p} \beta_j^2$ to the regression model, which shrinks all coefficients proportionally but does not force them to zero. The optimization problem is given by:
 
@@ -494,7 +494,7 @@ ggplot(elastic_path_df, aes(x = log_lambda, y = estimate, color = term)) +
 
 
 
-## Models representations & Conclusion 
+## Results and Conclusion 
 ```{r,message=FALSE, warning=FALSE}
 # Extract coefficients for each model and convert them to data frames
 lasso_coeff_df <- as.data.frame(as.matrix(coef(cv_lasso, s = "lambda.min"))) %>%
@@ -524,11 +524,9 @@ comparison_df %>%
 ```
 
 
-From the previous table, we may summary the three optimal models suggested by each algorithms:
+From the previous table, we may summarize the three optimal models suggested by each algorithms:
 
 ---
-
-### General Summary:
 
 * **Key Observations:**
 
@@ -536,8 +534,7 @@ From the previous table, we may summary the three optimal models suggested by ea
   - tmin and snow consistently show moderate negative impacts.
   - landcover, while statistically significant in the linear model, has minimal or negligible contributions in the optimized models.
 
-* **Conclusion:**
- - **Removing `landcover` simplifies the model without affecting accuracy or interpretability.**  
+* **Conclusion:****Removing `landcover` simplifies the model without affecting accuracy or interpretability.**  
     - By excluding `landcover`, the model focuses on dynamic, measurable predictors such as temperature and snow for improving model robustness and ecological relevance, which are not only more ecologically relevant but also exhibit stronger predictive power. This approach enhances model efficiency while maintaining its ability to capture critical environmental influences on American woodcock activity.
 
 # Final results

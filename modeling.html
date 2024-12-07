@@ -382,8 +382,8 @@ div.tocify {
 </div>
 
 
-<div id="introduction-and-objcetive" class="section level1">
-<h1>Introduction and Objcetive</h1>
+<div id="introduction-and-objective" class="section level1">
+<h1>Introduction and Objective</h1>
 <p>The primary goal of this section is to conduct a modeling analysis on
 the existing dataset. By leveraging environmental variables such as
 latitude, longitude, temperature, and snowfall, we aim to train
@@ -391,8 +391,8 @@ regression models and ultimately generate a predictive heatmap
 highlighting the likelihood of observing American Woodcock in New York
 State.</p>
 </div>
-<div id="data-preprocessing" class="section level1">
-<h1>Data preprocessing</h1>
+<div id="data-pre-processing" class="section level1">
+<h1>Data pre-processing</h1>
 <p>The dataset used in this analysis includes eBird data previously
 collected and augmented with relevant environmental variables. To derive
 the observation ratio for subsequent modeling, we implemented the
@@ -482,13 +482,12 @@ summary(lm_model)</code></pre>
 ## Multiple R-squared:  0.3359, Adjusted R-squared:  0.3359 
 ## F-statistic: 4.236e+04 on 8 and 669934 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
-<div id="griding-for-ny-state" class="section level1">
-<h1>Griding for NY state</h1>
-<p>Making boundary for NY state, preparing for ploting heating map. We
-applied grid operations to the map of New York State, dividing it into
-grids to more precisely identify bird observation locations and simulate
-real-world conditions. After multiple adjustments, a grid size of 0.1
-was selected as the optimal scale.</p>
+<div id="dividing-the-land-area" class="section level1">
+<h1>Dividing the land area</h1>
+<p>We applied grid operations to the map of New York State, dividing it
+into square grids to more precisely identify bird observation locations
+and simulate real-world conditions. After multiple adjustments, a grid
+size of 0.1 was selected as the optimal scale.</p>
 <pre class="r"><code>ny_boundary &lt;- st_make_valid(ny_boundary)
 
 grid_size &lt;- 0.1  
@@ -539,14 +538,9 @@ set.seed(42)
 sampled_points &lt;- ny_grid |&gt; 
   st_sample(size = 1000, type = &quot;random&quot;) |&gt;  
   st_as_sf() |&gt;  
-  st_join(ny_grid)  </code></pre>
-<pre><code>## Warning in st_poly_sample(x, size = size, ..., type = type, by_polygon =
-## by_polygon, : coordinate ranges not computed along great circles; install
-## package lwgeom to get rid of this warning
-## Warning in st_poly_sample(x, size = size, ..., type = type, by_polygon =
-## by_polygon, : coordinate ranges not computed along great circles; install
-## package lwgeom to get rid of this warning</code></pre>
-<pre class="r"><code>weather_stats &lt;- weather_df |&gt;
+  st_join(ny_grid)  
+
+weather_stats &lt;- weather_df |&gt;
   summarise(
     tmax_mean = mean(tmax, na.rm = TRUE),
     tmax_sd = sd(tmax, na.rm = TRUE),
@@ -579,14 +573,9 @@ predict_data &lt;- ny_grid |&gt;
   st_as_sf() |&gt; 
   st_coordinates() |&gt; 
   as.data.frame() |&gt; 
-  rename(lon = X, lat = Y)  </code></pre>
-<pre><code>## Warning in st_poly_sample(x, size = size, ..., type = type, by_polygon =
-## by_polygon, : coordinate ranges not computed along great circles; install
-## package lwgeom to get rid of this warning
-## Warning in st_poly_sample(x, size = size, ..., type = type, by_polygon =
-## by_polygon, : coordinate ranges not computed along great circles; install
-## package lwgeom to get rid of this warning</code></pre>
-<pre class="r"><code>predict_data &lt;- predict_data |&gt;
+  rename(lon = X, lat = Y)  
+
+predict_data &lt;- predict_data |&gt;
   mutate(
     tmin = runif(n(), min = weather_stats$tmin_ci_low, max = weather_stats$tmin_ci_high),
     tmax = tmin + runif(n(), min = 1, max = weather_stats$tmax_ci_high - weather_stats$tmax_ci_low),
@@ -624,10 +613,10 @@ predict_data_final = st_drop_geometry(predict_data_sf)</code></pre>
   ) |&gt; 
   ungroup()</code></pre>
 </div>
-<div id="predcting-results-display" class="section level1">
-<h1>Predcting results display</h1>
+<div id="displaying-the-prediction-results" class="section level1">
+<h1>Displaying the prediction results</h1>
 <p>The observation probabilities of the American woodcock are displayed
-in the form of a heatmap.</p>
+in the form of a heat map.</p>
 <pre class="r"><code>ggplot() +
   geom_sf(data = ny_boundary, fill = NA, color = &quot;black&quot;) +  
   geom_sf(data = grid_predictions, aes(fill = prob_sum), color = NA, alpha = 0.8) +
@@ -643,7 +632,7 @@ in the form of a heatmap.</p>
 <div id="model-optimization" class="section level1">
 <h1>Model Optimization</h1>
 <div id="lasso-regression" class="section level2">
-<h2>Lasso Regression</h2>
+<h2>LASSO Regression</h2>
 <p><em>LASSO (Least Absolute Shrinkage and Selection Operator)</em> is a
 regression method that performs variable selection and regularization to
 enhance prediction accuracy. It adds a penalty term <span
@@ -717,7 +706,7 @@ cv_lasso %&gt;%
   theme_minimal()</code></pre>
 <p><img src="modeling_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
 <div id="lasso-regression-path-plot" class="section level3">
-<h3>1. Lasso Regression Path Plot:</h3>
+<h3>1. LASSO Regression Path Plot:</h3>
 <ul>
 <li><p><strong>How to Read:</strong></p>
 <ul>
@@ -742,7 +731,7 @@ early.</li>
 </div>
 <div id="lasso-coefficient-estimates-scatter-plot"
 class="section level3">
-<h3>2. Lasso Coefficient Estimates Scatter Plot:</h3>
+<h3>2. LASSO Coefficient Estimates Scatter Plot:</h3>
 <ul>
 <li><p><strong>How to Read:</strong></p>
 <ul>
@@ -761,8 +750,8 @@ dominate as <span class="math inline">\(\lambda\)</span> decreases.</li>
 <hr />
 </div>
 </div>
-<div id="rdige-regression" class="section level2">
-<h2>Rdige Regression</h2>
+<div id="ridge-regression" class="section level2">
+<h2>Ridge Regression</h2>
 <p>Similar to Lasso, Ridge Regression is a regression method that
 introduces a penalty term to reduce overfitting and improve model
 generalization. It adds a <span class="math inline">\(L_2\)</span> (not
@@ -959,8 +948,8 @@ retaining weaker predictors without fully eliminating them.</li>
 <hr />
 </div>
 </div>
-<div id="models-representations-conclusion" class="section level2">
-<h2>Models representations &amp; Conclusion</h2>
+<div id="results-and-conclusion" class="section level2">
+<h2>Results and Conclusion</h2>
 <pre class="r"><code># Extract coefficients for each model and convert them to data frames
 lasso_coeff_df &lt;- as.data.frame(as.matrix(coef(cv_lasso, s = &quot;lambda.min&quot;))) %&gt;%
   rownames_to_column(var = &quot;term&quot;) %&gt;%
@@ -1046,11 +1035,9 @@ comparison_df %&gt;%
 </tr>
 </tbody>
 </table>
-<p>From the previous table, we may summary the three optimal models
+<p>From the previous table, we may summarize the three optimal models
 suggested by each algorithms:</p>
 <hr />
-<div id="general-summary" class="section level3">
-<h3>General Summary:</h3>
 <ul>
 <li><p><strong>Key Observations:</strong></p>
 <ul>
@@ -1060,9 +1047,8 @@ impact across all models.</li>
 <li>landcover, while statistically significant in the linear model, has
 minimal or negligible contributions in the optimized models.</li>
 </ul></li>
-<li><p><strong>Conclusion:</strong></p></li>
-<li><p><strong>Removing <code>landcover</code> simplifies the model
-without affecting accuracy or interpretability.</strong></p>
+<li><p><strong>Conclusion:Removing <code>landcover</code> simplifies the
+model without affecting accuracy or interpretability.</strong></p>
 <ul>
 <li>By excluding <code>landcover</code>, the model focuses on dynamic,
 measurable predictors such as temperature and snow for improving model
@@ -1073,7 +1059,6 @@ capture critical environmental influences on American woodcock
 activity.</li>
 </ul></li>
 </ul>
-</div>
 </div>
 </div>
 <div id="final-results" class="section level1">
