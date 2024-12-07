@@ -1,6 +1,6 @@
 ---
 title: "Report"
-author: "Xiaoni Xu, Wenjie Wu, Boxiang Tang, Yiran Xu, and Zhenyong Chen"
+author: "Xiaoni Xu, Wenjie Wu, Boxiang Tang, Yiran Xu, and Zhengyong Chen"
 date: "2024-12-04"
 output: 
   html_document:
